@@ -6,8 +6,11 @@ import { once } from "node:events";
 import assert from "node:assert/strict";
 import { setTimeout as delay } from "node:timers/promises";
 import { normalizeProject } from "../shared/project.js";
+const version = JSON.parse(
+  readFileSync(new URL("../package.json", import.meta.url), "utf8"),
+).version;
 const original = resolve(
-  process.argv[2] || "artifacts/staging/GordoStage-0.1.0-windows-x64",
+  process.argv[2] || `artifacts/staging/GordoStage-${version}-windows-x64`,
 );
 const directory = mkdtempSync(
   join(tmpdir(), "GordoStage portable con espacios "),

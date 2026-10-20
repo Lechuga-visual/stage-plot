@@ -1,6 +1,6 @@
 Primera versión de prueba de GordoStage para **Windows 10/11 de 64 bits**.
 
-Descarga **GordoStage-0.1.0-windows-x64.zip** de los assets de esta Release. Los enlaces automáticos **Source code** contienen el código fuente y requieren herramientas de desarrollo.
+Descarga **GordoStage-0.1.1-windows-x64.zip** de los assets de esta Release. Los enlaces automáticos **Source code** contienen el código fuente y requieren herramientas de desarrollo.
 
 1. Extrae todo el ZIP en una carpeta con permiso de escritura.
 2. Abre **Iniciar GordoStage.cmd**.

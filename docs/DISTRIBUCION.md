@@ -1,6 +1,6 @@
 # Distribución portable de Windows
 
-Para usar GordoStage, descarga el asset `GordoStage-0.1.0-windows-x64.zip` de la Release correspondiente. Los ZIP automáticos de código fuente de GitHub no son paquetes listos para ejecutar.
+Para usar GordoStage, descarga el asset `GordoStage-0.1.1-windows-x64.zip` de la Release correspondiente. Los ZIP automáticos de código fuente de GitHub no son paquetes listos para ejecutar.
 
 El paquete contiene el frontend compilado, los 173 WebP, el servidor, el esquema compartido, dependencias de producción bloqueadas por `package-lock.json`, el runtime oficial Node.js 24.19.0 para Windows x64, su licencia, un lanzador CMD y un LEEME. La carpeta `data/` se crea al ejecutar; nunca se copia de la máquina de desarrollo al paquete.
 

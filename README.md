@@ -40,7 +40,7 @@ Capturas de la aplicación en funcionamiento con datos de ejemplo.
 
 ## Descargar para Windows
 
-La distribución de pruebas usa **Windows 10/11 de 64 bits**. En [Releases](https://github.com/Lechuga-visual/stage-plot/releases), el paquete listo para usar se llama **GordoStage-0.1.0-windows-x64.zip**; los enlaces automáticos Source code son código fuente.
+La distribución de pruebas usa **Windows 10/11 de 64 bits**. En [Releases](https://github.com/Lechuga-visual/stage-plot/releases), el paquete listo para usar se llama **GordoStage-0.1.1-windows-x64.zip**; los enlaces automáticos Source code son código fuente.
 
 Extrae todo el ZIP y abre **Iniciar GordoStage.cmd**. Incluye Node.js y la interfaz compilada: no requiere instalar herramientas de desarrollo. El navegador se abre en el anfitrión y la consola muestra el código de edición y las direcciones LAN. Mantén la ventana abierta; los datos se guardan en `data/` junto al lanzador. Es un paquete portable, todavía no un instalador ni un ejecutable único. Detalles de construcción y validación en [docs/DISTRIBUCION.md](docs/DISTRIBUCION.md).
 

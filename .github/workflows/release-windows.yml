@@ -29,8 +29,8 @@ jobs:
       - name: Check release version
         run: node -e 'const fs=require("fs");if("v"+JSON.parse(fs.readFileSync("package.json")).version!==process.env.GITHUB_REF_NAME)throw Error("Tag and package version differ")'
       - run: npm ci --no-audit --no-fund
-      - run: npm test
       - run: npm run build
+      - run: npm test
       - run: npm run package:windows
       - name: Test included runtime on Windows and persistence after restart
         run: npm run test:portable
