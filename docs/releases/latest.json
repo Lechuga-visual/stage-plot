@@ -1,8 +1,8 @@
 {
   "status": "published",
-  "tag": "v0.3.1",
-  "url": "https://github.com/Lechuga-visual/stage-plot/releases/tag/v0.3.1",
-  "sourceCommit": "585ae39db1b72e5edfb02c389e53f5ad6066cb19",
+  "tag": "v0.5.0",
+  "url": "https://github.com/Lechuga-visual/stage-plot/releases/tag/v0.5.0",
+  "sourceCommit": "25775a63bc65833afb1752abd8a279490a0a00af",
   "platform": "windows-x64",
   "validatedOn": "windows-latest",
   "checks": [
@@ -14,17 +14,17 @@
     "read-only permissions",
     "persistence after restart"
   ],
-  "runUrl": "https://github.com/Lechuga-visual/stage-plot/actions/runs/39381398450",
+  "runUrl": "https://github.com/Lechuga-visual/stage-plot/actions/runs/39390666756",
   "assets": [
     {
-      "name": "GordoStage-0.3.1-windows-x64.sha256",
-      "url": "https://github.com/Lechuga-visual/stage-plot/releases/download/v0.3.1/GordoStage-0.3.1-windows-x64.sha256",
+      "name": "GordoStage-0.5.0-windows-x64.sha256",
+      "url": "https://github.com/Lechuga-visual/stage-plot/releases/download/v0.5.0/GordoStage-0.5.0-windows-x64.sha256",
       "size": 99
     },
     {
-      "name": "GordoStage-0.3.1-windows-x64.zip",
-      "url": "https://github.com/Lechuga-visual/stage-plot/releases/download/v0.3.1/GordoStage-0.3.1-windows-x64.zip",
-      "size": 50402894
+      "name": "GordoStage-0.5.0-windows-x64.zip",
+      "url": "https://github.com/Lechuga-visual/stage-plot/releases/download/v0.5.0/GordoStage-0.5.0-windows-x64.zip",
+      "size": 41007175
     }
   ]
 }
