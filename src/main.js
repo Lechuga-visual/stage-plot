@@ -1,28 +1,17 @@
+import {
+  SYMBOLS,
+  SYMBOL_CATEGORIES,
+  COMMON_SYMBOL_IDS,
+  getSymbol,
+  symbolSearchText,
+} from "../shared/symbols.js";
+import { reconcileInputs } from "../shared/equipment.js";
+import { mountEquipment } from "./equipment-panel.js";
 import { normalizeProject, exportProject } from "../shared/project.js";
 import { mountFeatures } from "./features.js";
 import { collaborate } from "./collaboration.js";
 let collaboration;
 import "./style.css";
-const icons = {
-  voice: "🎤",
-  guitar: "🎸",
-  bass: "🎸",
-  drums: "🥁",
-  keys: "🎹",
-  monitor: "◢",
-  amp: "▥",
-  di: "▣",
-};
-const names = {
-  voice: "Voz",
-  guitar: "Guitarra",
-  bass: "Bajo",
-  drums: "Batería",
-  keys: "Teclados",
-  monitor: "Monitor",
-  amp: "Amplificador",
-  di: "Caja DI",
-};
 const initial = {
   band: "Los Eléctricos",
   event: "Rider técnico · Tour 2026",
@@ -56,7 +45,9 @@ try {
   state = normalizeProject(initial);
 }
 let selected = null,
-  tab = "plot";
+  tab = "plot",
+  symbolCategory = "Frecuentes",
+  symbolQuery = "";
 const esc = (s) =>
   String(s).replace(
     /[&<>"']/g,
@@ -66,6 +57,7 @@ const esc = (s) =>
       ],
   );
 function save() {
+  reconcileInputs(state);
   try {
     localStorage.setItem("stagecraft-v1", JSON.stringify(state));
     document.querySelector("#save-status").textContent =
@@ -82,20 +74,12 @@ function render() {
 <div class="workspace"><header><div class="wordmark"><img src="/brand/gordostage-logo.png" alt=""><div class="brand-copy"><strong>GordoStage</strong><span>PLATAFORMA DE LOGÍSTICA DE ESCENARIO</span></div></div><div class="header-right"><span id="save-status">● Guardado en este dispositivo</span><button id="export" class="button">↓ Exportar proyecto</button><button id="print" class="button dark">↗ Exportar PDF</button></div></header>
 <main><div class="breadcrumb">MIS PROYECTOS <span>/</span> RIDER TÉCNICO</div><section class="heading"><div><div class="eyebrow">EL SHOW EMPIEZA AQUÍ</div><input id="band" class="band" aria-label="Nombre de la banda" value="${esc(state.band)}"><input id="event" class="event" aria-label="Evento" value="${esc(state.event)}"></div><div class="project-badge"><span class="green-dot"></span> Proyecto en edición</div></section>
 <nav class="tabs"><button data-tab="plot" class="${tab === "plot" ? "active" : ""}">▧ &nbsp; Stage plot</button><button data-tab="channels" class="${tab === "channels" ? "active" : ""}">☷ &nbsp; Lista de canales <span>${state.channels.length}</span></button><div class="tabs-tail">DISEÑA. CONECTA. TOCA.</div></nav>
-<div class="editor ${tab === "channels" ? "channels-only" : ""}"><aside class="palette"><div class="section-label">TU ESCENARIO</div><h2>Todo en su lugar.</h2><p>Añade elementos y arrástralos al escenario.</p><div class="section-label category">INSTRUMENTOS Y EQUIPO</div><div class="tools">${Object.entries(
-    names,
-  )
-    .map(
-      ([k, v]) =>
-        `<button data-add="${k}"><span class="tool-icon ${k === "bass" ? "bass" : ""}">${icons[k]}</span>${v}<span class="plus">+</span></button>`,
-    )
-    .join(
-      "",
-    )}</div><div class="tip"><span>✧</span><div><b>Hecho para el directo</b><p>Piensa el escenario desde el público. Así todos hablan el mismo idioma.</p></div></div></aside>
-<section class="canvas-panel"><div class="canvas-toolbar"><div><b>Vista del escenario</b><span>Perspectiva del público</span></div><div class="dimensions"><input id="width" type="number" min="2" max="100" aria-label="Ancho en metros" value="${state.width}"> × <input id="depth" type="number" min="2" max="100" aria-label="Fondo en metros" value="${state.depth}"> m</div></div><div class="stage-wrap"><div class="stage-top">FONDO DEL ESCENARIO</div><div class="stage" id="stage" style="aspect-ratio:${state.width}/${state.depth}">${state.items.map((i) => `<button class="stage-item ${selected === i.id ? "selected" : ""}" data-item="${i.id}" style="left:${i.x}%;top:${i.y}%" aria-label="${esc(i.label)}"><span class="instrument ${i.type === "bass" ? "bass" : ""}">${icons[i.type]}</span><span class="item-label">${esc(i.label)}</span></button>`).join("")}<div class="stage-mark">GORDOSTAGE</div></div><div class="audience"><span></span>↓ &nbsp; PÚBLICO &nbsp; ↓<span></span></div></div><div class="canvas-footer"><span>↔ Arrastra para mover · Selecciona para editar</span><span>${state.items.length} elementos <i>·</i> ${state.width} × ${state.depth} m</span></div><div class="item-editor">${selected !== null ? `<label>Nombre <input id="item-name" value="${esc(state.items.find((i) => i.id === selected)?.label || "")}"></label><button class="button danger" id="delete-item">Eliminar elemento</button>` : "<span>✧ Un buen show empieza con un buen plano.</span>"}</div></section></div>
+<div class="editor ${tab === "channels" ? "channels-only" : ""}"><aside class="palette"><div class="section-label">TU ESCENARIO</div><h2>Todo en su lugar.</h2><p>Añade elementos y arrástralos al escenario.</p><div class="section-label category">BIBLIOTECA · ${SYMBOLS.length} SÍMBOLOS</div><label class="symbol-search-label">Buscar equipo<input id="symbol-search" type="search" placeholder="Instrumento, micrófono, FOH…" value="${esc(symbolQuery)}"></label><select id="symbol-category" aria-label="Categoría de símbolos"><option>Frecuentes</option><option>Todos</option>${SYMBOL_CATEGORIES.map((c) => `<option ${symbolCategory === c ? "selected" : ""}>${esc(c)}</option>`).join("")}</select><div id="symbol-results" aria-live="polite"></div><div class="tools" id="symbol-tools">${symbolButtons()}</div><div class="tip"><span>✧</span><div><b>Hecho para el directo</b><p>Piensa el escenario desde el público. Así todos hablan el mismo idioma.</p></div></div></aside>
+<section class="canvas-panel"><div class="canvas-toolbar"><div><b>Vista del escenario</b><span>Perspectiva del público</span></div><div class="dimensions"><input id="width" type="number" min="2" max="100" aria-label="Ancho en metros" value="${state.width}"> × <input id="depth" type="number" min="2" max="100" aria-label="Fondo en metros" value="${state.depth}"> m</div></div><div class="stage-wrap"><div class="stage-top">FONDO DEL ESCENARIO</div><div class="stage" id="stage" style="aspect-ratio:${state.width}/${state.depth}">${state.items.map((i) => `<button class="stage-item ${selected === i.id ? "selected" : ""}" data-item="${i.id}" style="left:${i.x}%;top:${i.y}%" aria-label="${esc(i.label)}"><span class="instrument ">${symbolImage(i.type)}</span><span class="item-label">${esc(i.label)}</span></button>`).join("")}<div class="stage-mark">GORDOSTAGE</div></div><div class="audience"><span></span>↓ &nbsp; PÚBLICO &nbsp; ↓<span></span></div></div><div class="canvas-footer"><span>↔ Arrastra para mover · Selecciona para editar</span><span>${state.items.length} elementos <i>·</i> ${state.width} × ${state.depth} m</span></div><div class="item-editor">${selected !== null ? `<label>Nombre <input id="item-name" value="${esc(state.items.find((i) => i.id === selected)?.label || "")}"></label><button class="button danger" id="delete-item">Eliminar elemento</button>` : "<span>✧ Un buen show empieza con un buen plano.</span>"}</div></section></div>
 <section class="channel-section ${tab === "channels" ? "focused" : ""}"><div class="section-heading"><div><div class="section-label">CADA SEÑAL CUENTA</div><h2>Lista de canales <span>${state.channels.length} entradas</span></h2></div><button id="add-channel" class="button">+ Añadir canal</button></div><div class="table-wrap"><table><thead><tr><th>CH</th><th>FUENTE / INSTRUMENTO</th><th>MICRÓFONO / DI</th><th>PIE</th><th>NOTAS</th><th></th></tr></thead><tbody>${state.channels.map((c, n) => `<tr><td><span class="channel-number">${String(n + 1).padStart(2, "0")}</span></td>${["source", "mic", "stand", "notes"].map((k) => `<td><input aria-label="${k} canal ${n + 1}" data-channel="${n}" data-field="${k}" value="${esc(c[k])}" placeholder="—"></td>`).join("")}<td><button class="remove-channel" data-remove="${n}" aria-label="Eliminar canal ${n + 1}">×</button></td></tr>`).join("")}</tbody></table></div></section><section class="notes"><div class="section-label">NOTAS PARA EL EQUIPO TÉCNICO</div><textarea id="notes" aria-label="Notas técnicas" placeholder="Alimentación, monitores, necesidades especiales…">${esc(state.notes)}</textarea></section><footer><span>GordoStage <b>•</b> Menos improvisación. Más música.</span><button id="import" class="text-button">Importar proyecto</button><input type="file" id="import-file" accept="application/json" hidden></footer></main></div>`;
   bind();
   mountFeatures({ state, selected, save, render, collaboration });
+  mountEquipment({ state, selected, save, render });
   collaboration?.decorate();
 }
 function bind() {
@@ -117,35 +101,25 @@ function bind() {
         render();
       }),
   );
-  document.querySelectorAll("[data-add]").forEach(
-    (b) =>
-      (b.onclick = () => {
-        let type = b.dataset.add;
-        const item = {
-          id: Date.now(),
-          type,
-          label: names[type],
-          comment: "",
-          x: 40 + Math.random() * 20,
-          y: 40 + Math.random() * 20,
-        };
-        state.items.push(item);
-        selected = item.id;
-        save();
-        render();
-      }),
-  );
+  bindLibrary();
   document.querySelectorAll("[data-item]").forEach((el) => {
     el.onpointerdown = (e) => {
       e.preventDefault();
       const id = Number(el.dataset.item),
         item = state.items.find((i) => i.id === id);
       selected = id;
+      let moved = false;
       el.setPointerCapture(e.pointerId);
       const rect = document.querySelector("#stage").getBoundingClientRect();
       const offsetX = e.clientX - (rect.left + (item.x / 100) * rect.width),
         offsetY = e.clientY - (rect.top + (item.y / 100) * rect.height);
       el.onpointermove = (ev) => {
+        if (
+          Math.abs(ev.clientX - e.clientX) + Math.abs(ev.clientY - e.clientY) <
+          3
+        )
+          return;
+        moved = true;
         item.x = Math.max(
           7,
           Math.min(93, ((ev.clientX - offsetX - rect.left) / rect.width) * 100),
@@ -159,12 +133,12 @@ function bind() {
       };
       el.onpointerup = () => {
         el.onpointermove = null;
-        save();
+        if (moved) save();
         render();
       };
       el.onpointercancel = () => {
         el.onpointermove = null;
-        save();
+        if (moved) save();
         render();
       };
     };
@@ -202,6 +176,16 @@ function bind() {
   const del = document.querySelector("#delete-item");
   if (del)
     del.onclick = () => {
+      const linked = state.channels.filter(
+        (c) => c._link?.itemId === selected,
+      ).length;
+      if (
+        linked &&
+        !confirm(
+          `Se eliminarán el equipo y sus ${linked} canales vinculados. ¿Continuar?`,
+        )
+      )
+        return;
       state.items = state.items.filter((i) => i.id !== selected);
       selected = null;
       save();
@@ -267,7 +251,7 @@ collaboration = await collaborate({
   getState: () => state,
   setState: (s) => {
     state = normalizeProject(s);
-    selected = null;
+    if (!state.items.some((item) => item.id === selected)) selected = null;
   },
   render,
 });
@@ -284,3 +268,74 @@ window.addEventListener("afterprint", () =>
     el.style.height = el.dataset.printHeight || "";
   }),
 );
+
+function symbolImage(type) {
+  const symbol = getSymbol(type);
+  return symbol ? `<img src="${symbol.src}" alt="" draggable="false">` : "";
+}
+function filteredSymbols() {
+  const query = symbolQuery
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim();
+  return SYMBOLS.filter((symbol) =>
+    !query
+      ? symbolCategory === "Todos" ||
+        (symbolCategory === "Frecuentes"
+          ? COMMON_SYMBOL_IDS.includes(symbol.id)
+          : symbol.category === symbolCategory)
+      : symbolSearchText(symbol).includes(query),
+  );
+}
+function symbolButtons() {
+  return filteredSymbols()
+    .map(
+      (symbol) =>
+        `<button data-add="${symbol.id}" title="${esc(symbol.label)} · ${symbol.id}"><span class="tool-icon">${symbolImage(symbol.id)}</span><span>${esc(symbol.label)}</span><span class="plus">+</span></button>`,
+    )
+    .join("");
+}
+function bindLibrary() {
+  const category = document.querySelector("#symbol-category");
+  category.value = symbolCategory;
+  const repaint = () => {
+    document.querySelector("#symbol-tools").innerHTML = symbolButtons();
+    const count = filteredSymbols().length;
+    document.querySelector("#symbol-results").textContent =
+      `${count} símbolos${count ? "" : " · Prueba otra búsqueda"}`;
+    bindSymbolButtons();
+    collaboration?.decorate();
+  };
+  document.querySelector("#symbol-search").oninput = (e) => {
+    symbolQuery = e.target.value;
+    repaint();
+  };
+  category.onchange = (e) => {
+    symbolCategory = e.target.value;
+    repaint();
+  };
+  repaint();
+}
+function bindSymbolButtons() {
+  document.querySelectorAll("[data-add]").forEach(
+    (button) =>
+      (button.onclick = () => {
+        if (state.items.length >= 500) return alert("Máximo 500 elementos");
+        const symbol = getSymbol(button.dataset.add);
+        const item = {
+          id: Math.max(Date.now(), ...state.items.map((i) => i.id + 1)),
+          type: symbol.id,
+          label: symbol.label,
+          comment: "",
+          technical: { power: "none", powerNotes: "", inputs: [] },
+          x: 40 + Math.random() * 20,
+          y: 40 + Math.random() * 20,
+        };
+        state.items.push(item);
+        selected = item.id;
+        save();
+        render();
+      }),
+  );
+}

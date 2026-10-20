@@ -57,7 +57,7 @@ export async function collaborate({ getState, setState, render }) {
     if (!canEdit || !connected || conflict) {
       document
         .querySelectorAll(
-          "main input:not([type=file]),main textarea,[data-add],[data-item],[data-remove],#add-channel,#delete-item,#import,[data-edit]",
+          "main input:not([type=file]),main textarea,.equipment-panel select,[data-add],[data-item],[data-remove],#add-channel,#delete-item,#import,[data-edit]",
         )
         .forEach((e) => (e.disabled = true));
     }

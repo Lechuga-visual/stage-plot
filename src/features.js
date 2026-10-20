@@ -1,3 +1,9 @@
+import {
+  updateChannel,
+  removeChannel,
+  findLinkedInput,
+} from "../shared/equipment.js";
+import { refreshChannelCells } from "./equipment-panel.js";
 const esc = (s) =>
   String(s).replace(
     /[&<>"']/g,
@@ -65,6 +71,16 @@ export function mountFeatures({
   // Customize the input list without losing hidden cells when removing a column.
   const table = document.querySelector(".channel-section table");
   table.innerHTML = `<thead><tr><th>CH</th>${state.columns.map((c, n) => `<th><input data-edit data-column="${n}" aria-label="Nombre columna ${n + 1}" value="${esc(c.label)}"><div class="column-actions"><button data-edit data-col-move="${n}" data-dir="-1" aria-label="Mover columna a la izquierda" ${n === 0 ? "disabled" : ""}>←</button><button data-edit data-col-move="${n}" data-dir="1" aria-label="Mover columna a la derecha" ${n === state.columns.length - 1 ? "disabled" : ""}>→</button><button data-edit data-col-delete="${n}" aria-label="Eliminar columna" ${state.columns.length === 1 ? "disabled" : ""}>×</button></div></th>`).join("")}<th class="row-actions">Orden</th></tr></thead><tbody>${state.channels.map((c, n) => `<tr><td>${n + 1}</td>${state.columns.map((col) => `<td><input data-channel="${n}" data-field="${col.id}" aria-label="${esc(col.label)} canal ${n + 1}" value="${esc(c[col.id] || "")}"></td>`).join("")}<td class="row-actions"><button data-edit data-row-move="${n}" data-dir="-1" aria-label="Subir canal ${n + 1}" ${n === 0 ? "disabled" : ""}>↑</button><button data-edit data-row-move="${n}" data-dir="1" aria-label="Bajar canal ${n + 1}" ${n === state.channels.length - 1 ? "disabled" : ""}>↓</button><button data-edit data-row-delete="${n}" aria-label="Eliminar canal ${n + 1}">×</button></td></tr>`).join("")}</tbody>`;
+  table.querySelectorAll("[data-channel]").forEach((el) => {
+    const row = state.channels[+el.dataset.channel];
+    if (
+      row._link &&
+      ["c_signal", "c_phantom", "c_power"].includes(el.dataset.field)
+    ) {
+      el.readOnly = true;
+      el.title = "Editar desde el equipo en el stage plot";
+    }
+  });
   const colButton = document.createElement("button");
   colButton.className = "button";
   colButton.id = "add-column";
@@ -75,7 +91,11 @@ export function mountFeatures({
     if (state.columns.length >= 20) return alert("Máximo 20 columnas");
     const label = prompt("Nombre de la columna:");
     if (!label?.trim()) return;
-    const id = "c_" + crypto.randomUUID();
+    const id =
+      "c_" +
+      Array.from(crypto.getRandomValues(new Uint32Array(3)), (n) =>
+        n.toString(16),
+      ).join("_");
     state.columns.push({ id, label: label.trim().slice(0, 100) });
     state.channels.forEach((c) => (c[id] = ""));
     save();
@@ -91,11 +111,28 @@ export function mountFeatures({
   table.querySelectorAll("[data-channel]").forEach(
     (input) =>
       (input.oninput = () => {
-        state.channels[+input.dataset.channel][input.dataset.field] =
-          input.value;
+        updateChannel(
+          state,
+          +input.dataset.channel,
+          input.dataset.field,
+          input.value,
+        );
+        refreshChannelCells(state, input);
+        const linked = findLinkedInput(
+          state,
+          state.channels[+input.dataset.channel],
+        ).input;
+        if (linked)
+          document.querySelectorAll("[data-technical-field]").forEach((el) => {
+            if (el.dataset.inputId === linked.id)
+              el.value = String(linked[el.dataset.technicalField]);
+          });
         save();
       }),
   );
+  table.querySelectorAll("[data-channel]").forEach((el) => {
+    if (state.channels[+el.dataset.channel]._link) el.onchange = render;
+  });
   table.querySelectorAll("[data-col-move],[data-row-move]").forEach(
     (b) =>
       (b.onclick = () => {
@@ -122,7 +159,18 @@ export function mountFeatures({
   table.querySelectorAll("[data-row-delete]").forEach(
     (b) =>
       (b.onclick = () => {
-        state.channels.splice(+b.dataset.rowDelete, 1);
+        const { input } = findLinkedInput(
+          state,
+          state.channels[+b.dataset.rowDelete],
+        );
+        if (
+          input &&
+          !confirm(
+            "Se eliminará la entrada vinculada y sus canales. ¿Continuar?",
+          )
+        )
+          return;
+        removeChannel(state, +b.dataset.rowDelete);
         save();
         render();
       }),

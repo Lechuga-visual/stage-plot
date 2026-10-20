@@ -6,20 +6,13 @@ Prototipo de stage plot y lista de canales para bandas. Editor con elementos mó
 
 La identidad visual y el estado de la biblioteca de símbolos se documentan en [docs/IDENTIDAD.md](docs/IDENTIDAD.md).
 
-## Equipos e iconografía disponibles
+## Biblioteca y equipos vinculados
 
-| Elemento        | Icono actual                 |
-| --------------- | ---------------------------- |
-| Voz / micrófono | 🎤                           |
-| Guitarra        | 🎸                           |
-| Bajo            | 🎸 invertida horizontalmente |
-| Batería         | 🥁                           |
-| Teclados        | 🎹                           |
-| Monitor de piso | ◢                            |
-| Amplificador    | ▥                            |
-| Caja DI         | ▣                            |
+Incluye **173 símbolos WebP en 12 categorías**, con búsqueda en español o por nombre original y una selección de equipos frecuentes. Los ocho tipos de equipo anteriores siguen abriendo correctamente y ahora usan los símbolos nuevos. Los recursos de producción y logística también se conservan para futuras funciones de interfaz.
 
-Los iconos son emojis y símbolos provisionales, mostrados en escala de grises. Cada elemento se puede mover, renombrar y acompañar con un comentario de posición. Su apariencia puede variar según las fuentes disponibles en cada equipo.
+Consulta el [inventario completo de símbolos](docs/SIMBOLOS.md). Al pulsar un equipo en el plano se abre su ficha para configurar alimentación y entradas de audio: fuente, micrófono/DI, mono/estéreo, phantom, soporte y notas. Cada entrada genera canales vinculados; también se pueden asociar canales que ya existan. Un equipo puede tener varias entradas independientes.
+
+El [funcionamiento y orden del input list](docs/INPUT_LIST.md) está documentado con ejemplos. El proyecto de ejemplo sigue una convención de sonido en vivo, sin imponer una norma universal ni ordenar automáticamente los canales nuevos.
 
 ## Capturas
 
@@ -32,6 +25,14 @@ Capturas de la aplicación en funcionamiento con datos de ejemplo.
 ### Input list personalizable
 
 ![Lista de canales con columna Patch, edición de celdas y controles de orden](docs/screenshots/input-list.png)
+
+### Datos técnicos por equipo
+
+![Ficha de un teclado estéreo con DI, phantom y alimentación eléctrica](docs/screenshots/ficha-tecnica.png)
+
+### Símbolos de producción y logística
+
+![Biblioteca con búsqueda, categorías y recursos para producción](docs/screenshots/biblioteca-simbolos.png)
 
 ### Coordinación durante el montaje
 
@@ -79,7 +80,7 @@ Las tareas cloud ya están aisladas: usa el checkout existente, sin crear worktr
 
 ## Formato portable
 
-Los proyectos actuales llevan `formatVersion: 2`. Conservan los datos de banda, dimensiones, instrumentos y sus comentarios, columnas ordenadas, celdas, trazos, comentarios de posiciones y de montaje. El esquema y las migraciones se comparten en `shared/project.js` entre navegador y servidor. Se admiten los JSON antiguos sin versión; los formatos futuros desconocidos se rechazan. Importar reemplaza el proyecto actual después de confirmación: expórtalo primero si necesitas conservarlo. Transferir un archivo no sincroniza los servidores automáticamente.
+Los proyectos actuales llevan `formatVersion: 3`. Conservan los datos de banda, dimensiones, instrumentos y sus comentarios, columnas ordenadas, celdas, trazos, comentarios de posiciones y de montaje, además de la ficha técnica y los vínculos entre equipo y canales. El esquema y las migraciones se comparten en `shared/project.js` entre navegador y servidor. Se admiten los JSON anteriores sin versión y de versiones 1 y 2; los formatos futuros desconocidos se rechazan. Importar reemplaza el proyecto actual después de confirmación: expórtalo primero si necesitas conservarlo. Transferir un archivo no sincroniza los servidores automáticamente.
 
 La transferencia entre dos instancias locales está probada. El editor estático también usa el mismo formato. La versión de servidor web con cuentas todavía no existe: su adaptación está registrada en [ROADMAP.md](ROADMAP.md).
 
@@ -92,7 +93,7 @@ npx playwright install chromium
 npm run test:browser
 ```
 
-Si Chromium ya está instalado, puedes usar `CHROMIUM_PATH=/usr/bin/chromium npm run test:browser` en Linux. Esta prueba crea una base temporal, dos sesiones de edición y una de lectura. Verifica chat, permisos, columnas personalizadas, dibujo, comentarios, transferencia JSON por la interfaz, generación PDF y ancho móvil. No modifica los datos del servidor habitual. Ejecutar `npm test` no requiere navegador.
+Si Chromium ya está instalado, puedes usar `CHROMIUM_PATH=/usr/bin/chromium npm run test:browser` en Linux. Esta prueba crea una base temporal, dos sesiones de edición y una de lectura. Las pruebas verifican chat, permisos, columnas personalizadas, dibujo, comentarios, carga de los 173 símbolos, ficha técnica, canales L/R, alimentación, edición desde la tabla, transferencia JSON por la interfaz, generación PDF y ancho móvil. No modifica los datos del servidor habitual. Ejecutar `npm test` no requiere navegador.
 
 ## Regenerar capturas
 

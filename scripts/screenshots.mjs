@@ -4,6 +4,11 @@ import { join } from "node:path";
 import { tmpdir } from "node:os";
 import { randomBytes } from "node:crypto";
 import { createServer } from "../server/app.js";
+import {
+  ensureTechnicalColumns,
+  reconcileInputs,
+  newInput,
+} from "../shared/equipment.js";
 import { normalizeProject } from "../shared/project.js";
 
 // Demo data only. Never connect to the user's running server or database.
@@ -82,6 +87,35 @@ try {
     text: "Confirmar las tres mezclas de monitores antes de comenzar la prueba de sonido.",
     createdAt: "2026-10-19T18:00:00Z",
   });
+  // Demo equipment shares channels with the input list, including a stereo keyboard.
+  const voice = document.items.find((item) => item.type === "voice");
+  const voiceInput = newInput("Voz principal");
+  voiceInput.microphone = "Shure SM58";
+  voiceInput.stand = "Alto";
+  voice.technical.inputs.push(voiceInput);
+  document.channels[6]._link = {
+    itemId: voice.id,
+    inputId: voiceInput.id,
+    side: "M",
+  };
+  const keys = {
+    id: 8,
+    type: "double_keyboard_rig",
+    label: "Teclados",
+    x: 22,
+    y: 22,
+    comment: "Alimentación detrás del soporte. Dos salidas balanceadas.",
+    technical: { power: "mains", powerNotes: "230 V · 2 enchufes", inputs: [] },
+  };
+  const keysInput = newInput("Teclados");
+  keysInput.microphone = "DI estéreo";
+  keysInput.signal = "stereo";
+  keysInput.phantom = true;
+  keysInput.notes = "Salidas L/R";
+  keys.technical.inputs.push(keysInput);
+  document.items.push(keys);
+  ensureTechnicalColumns(document);
+  reconcileInputs(document);
   const headers = { "x-edit-code": editCode };
   const saved = await app.inject({
     method: "PUT",
@@ -133,7 +167,22 @@ try {
   await page.locator("#chat-log article").nth(2).waitFor();
   await page.evaluate(() => document.fonts.ready);
   mkdirSync("docs/screenshots", { recursive: true });
+  await page
+    .locator("#stage img")
+    .evaluateAll((imgs) => Promise.all(imgs.map((img) => img.decode())));
   await page.screenshot({ path: "docs/screenshots/stage-plot.png" });
+  await page.locator("#symbol-category").selectOption("Producción, RF y vídeo");
+  await page
+    .locator("#symbol-tools img")
+    .evaluateAll((imgs) => Promise.all(imgs.map((img) => img.decode())));
+  await page
+    .locator(".palette")
+    .screenshot({ path: "docs/screenshots/biblioteca-simbolos.png" });
+  await page.locator("#symbol-category").selectOption("Frecuentes");
+  await page.locator('[data-item="8"]').click();
+  await page
+    .locator(".equipment-panel")
+    .screenshot({ path: "docs/screenshots/ficha-tecnica.png" });
   await page.locator('[data-tab="channels"]').click();
   await page.screenshot({ path: "docs/screenshots/input-list.png" });
   await page.evaluate(() => {
@@ -148,7 +197,7 @@ try {
     .screenshot({ path: "docs/screenshots/montaje-chat.png" });
   if (errors.length) throw Error(errors.join("\n"));
   console.log(
-    "Capturas generadas: stage-plot, input-list, montaje-chat (datos de ejemplo).",
+    "Capturas generadas: stage-plot, input-list, montaje-chat, biblioteca y ficha técnica (datos de ejemplo).",
   );
 } finally {
   await browser?.close();

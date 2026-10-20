@@ -1104,3 +1104,196 @@ th input {
     font-size: 17px;
   }
 }
+.symbol-search-label {
+  display: block;
+  font-size: 10px;
+  margin: 14px 0 9px;
+  color: #8b6146;
+}
+.symbol-search-label input,
+#symbol-category {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  border: 1px solid #dfcdbd;
+  background: white;
+  border-radius: 5px;
+  padding: 8px;
+  font: inherit;
+  font-size: 11px;
+  margin-top: 6px;
+}
+#symbol-results {
+  font-size: 10px;
+  color: #8a7563;
+  margin: 10px 0;
+}
+.tools {
+  max-height: 410px;
+  overflow-y: auto;
+  padding: 2px 3px 2px 0;
+  align-content: start;
+}
+.tools button {
+  min-height: 108px;
+  gap: 7px;
+}
+.tool-icon {
+  filter: none;
+  opacity: 1;
+  height: 49px;
+}
+.tool-icon img {
+  width: 53px;
+  height: 49px;
+  object-fit: contain;
+}
+.instrument {
+  filter: none;
+  opacity: 1;
+  line-height: 1;
+}
+.instrument img {
+  width: 76px;
+  height: 64px;
+  object-fit: contain;
+  display: block;
+  pointer-events: none;
+}
+.tools button > span:nth-child(2) {
+  overflow-wrap: anywhere;
+  line-height: 1.35;
+}
+.equipment-panel {
+  padding: 20px 24px;
+  border-top: 1px solid #ead8c9;
+  background: #fffaf4;
+}
+.equipment-panel > p {
+  font-size: 12px;
+  color: #8b705c;
+  line-height: 1.6;
+}
+.equipment-power,
+.technical-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.equipment-panel label {
+  display: flex;
+  flex-direction: column;
+  font-size: 11px;
+  gap: 6px;
+}
+.equipment-panel input,
+.equipment-panel select {
+  padding: 8px;
+  border: 1px solid #e3ccba;
+  border-radius: 5px;
+  max-width: 100%;
+  min-width: 0;
+  width: 100%;
+  font: inherit;
+  background: white;
+  color: #49382b;
+}
+.equipment-panel fieldset {
+  border: 1px solid #e7d5c5;
+  border-radius: 7px;
+  margin: 18px 0;
+  padding: 14px;
+  min-width: 0;
+}
+.equipment-panel legend {
+  font-size: 12px;
+  font-weight: 600;
+}
+.equipment-actions,
+.input-footer {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  flex-wrap: wrap;
+  margin-top: 15px;
+}
+.input-footer span {
+  font-size: 11px;
+  color: #805c3b;
+  margin-right: auto;
+}
+.input-footer .button {
+  font-size: 10px;
+}
+.equipment-summary {
+  margin: 25px 0;
+  padding: 20px;
+  background: white;
+  border: 1px solid #e5d5c6;
+  border-radius: 8px;
+}
+.equipment-summary article {
+  font-size: 11px;
+}
+.equipment-summary p {
+  margin: 6px 0;
+}
+@media (max-width: 650px) {
+  .tools {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    max-height: 255px;
+  }
+  .palette .category {
+    display: block;
+    margin: 12px 0;
+  }
+  .tool-icon {
+    height: 39px;
+  }
+  .tool-icon img {
+    width: 44px;
+    height: 39px;
+  }
+  .tools button {
+    min-height: 90px;
+    font-size: 9px;
+  }
+  .instrument img {
+    width: 55px;
+    height: 50px;
+  }
+  .equipment-panel {
+    padding: 15px;
+  }
+  .equipment-power,
+  .technical-grid {
+    grid-template-columns: 1fr;
+  }
+  .equipment-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .input-footer {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}
+@media print {
+  .equipment-panel {
+    display: none !important;
+  }
+  .equipment-summary {
+    padding: 10px;
+    border: 0;
+  }
+  .equipment-summary article {
+    break-inside: avoid;
+  }
+  .instrument img {
+    width: 65px;
+    height: 55px;
+  }
+  .tools {
+    overflow: visible;
+  }
+}

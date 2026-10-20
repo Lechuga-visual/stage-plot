@@ -11,12 +11,10 @@ La identidad usa la referencia visual enviada por el usuario: sala de ensayo iso
 | Azul    | `#56b8db` | Estado de sesión y detalles   |
 | Crema   | `#fff3e8` | Fondos y superficies          |
 
-Los nombres internos de almacenamiento `stagecraft-v1`, `stagecraft-edit-code` y `data/stagecraft.sqlite` se conservan para mantener los proyectos y sesiones existentes. El formato JSON sigue en versión 2 y los archivos exportados se llaman `gordostage-rider.json`.
+Los nombres internos de almacenamiento `stagecraft-v1`, `stagecraft-edit-code` y `data/stagecraft.sqlite` se conservan para mantener los proyectos y sesiones existentes. El formato JSON está en versión 3, con importación de proyectos anteriores y los archivos exportados se llaman `gordostage-rider.json`.
 
-## Biblioteca de símbolos pendiente
+## Biblioteca de símbolos
 
-Fuente solicitada: https://techrider.live/tools/stage-plot-symbol-library
+Se integraron los 173 WebP del archivo `iconos.zip` aportado por el usuario, conservando nombres y contenido original en `public/symbols/techrider/`. Fuente indicada por el usuario: https://techrider.live/tools/stage-plot-symbol-library. El proxy bloqueó la descarga directa; la integración usa el ZIP recibido, no una descarga de esa página.
 
-El proxy del entorno devolvió HTTP 403 al intentar acceder a esa página; no se descargaron ni incorporaron símbolos de TechRider. Los ocho símbolos anteriores siguen disponibles provisionalmente.
-
-Para la siguiente integración se pueden entregar los archivos en un ZIP, conservando nombres y carpetas originales. Se admiten PNG y WebP, preferentemente con fondo transparente; SVG también es adecuado para impresión. Mantener los archivos de atribución o licencia que acompañen a la biblioteca.
+El [inventario completo](SIMBOLOS.md) identifica cada símbolo, su categoría y el uso de escenario o producción. Los ocho tipos originales conservan alias para abrir proyectos existentes. No se reutilizan los emojis anteriores como símbolos del plano.
