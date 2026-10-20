@@ -14,7 +14,7 @@ Consulta [distribución y actualización](docs/DISTRIBUCION.md) y [notas de vers
 
 ## Muestras de la familia propia de iconos
 
-Ya se pueden revisar [180 diseños SVG propios en claro y oscuro](muestra-de-iconos/familia-gordostage-v1/) y una [prueba de 20 iconos en vista cenital](muestra-de-iconos/cenital-20/). Cada icono tiene archivo independiente; las muestras incluyen láminas PNG, inventarios, catálogo HTML y ZIP descargable. Consulta [el índice de muestras](muestra-de-iconos/). Son propuestas para revisión; la biblioteca activa de la aplicación conserva sus recursos actuales.
+Ya están disponibles [180 diseños SVG propios en la vista original](muestra-de-iconos/familia-gordostage-v1/) y [los mismos 180 en vista cenital](muestra-de-iconos/familia-gordostage-cenital-v1/), con el estilo de los 20 cenitales aprobados. Ambas colecciones incluyen variantes claras y oscuras: **720 SVG independientes**, láminas PNG, inventarios, catálogo HTML y ZIP descargable. Consulta [el índice de muestras](muestra-de-iconos/). La biblioteca activa de la aplicación conserva sus recursos actuales.
 
 ## Implementado
 

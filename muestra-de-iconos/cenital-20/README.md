@@ -1,6 +1,6 @@
-# GordoStage — prueba de 20 iconos cenitales
+# GordoStage — referencia aprobada de 20 iconos cenitales
 
-**20 conceptos, 40 SVG individuales**: una versión clara y otra oscura de cada uno. Esta prueba sirve para decidir el estilo antes de ampliar la vista cenital a los 180.
+**20 conceptos, 40 SVG individuales**: una versión clara y otra oscura de cada uno. Esta muestra fue aprobada y sus dibujos se conservan sin cambios dentro de la [colección cenital completa de 180](../familia-gordostage-cenital-v1/).
 
 - [SVG claros](claro/) · [SVG oscuros](oscuro/) · [Metadatos](catalogo.json)
 - [Descargar ZIP de la prueba cenital](../gordostage-muestra-20-cenitales.zip)
@@ -47,4 +47,4 @@ Se mantiene la paleta de GordoStage: contorno carbón/marfil, naranja y detalles
 | 19 | Silla | [chair.svg](claro/chair.svg) | [chair.svg](oscuro/chair.svg) |
 | 20 | Cabeza móvil | [moving_head_light.svg](claro/moving_head_light.svg) | [moving_head_light.svg](oscuro/moving_head_light.svg) |
 
-La ampliación cenital y su incorporación a la aplicación quedan pendientes de revisar esta muestra. Para regenerar ambas familias: `python3 scripts/generate-icon-sample.py` y `node scripts/render-icon-sample.mjs` desde la raíz del repositorio.
+Los 180 cenitales ya están dibujados con este estilo; su incorporación a la aplicación se trata por separado. Para regenerar las colecciones: `python3 scripts/generate-icon-sample.py` y `node scripts/render-icon-sample.mjs` desde la raíz del repositorio.

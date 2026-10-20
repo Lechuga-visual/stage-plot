@@ -15,7 +15,7 @@ Los nombres internos de almacenamiento `stagecraft-v1`, `stagecraft-edit-code` y
 
 ## Biblioteca de símbolos
 
-La [familia SVG propia en revisión](../muestra-de-iconos/) reúne 180 diseños en claro y oscuro, con trazos redondeados, marfil/carbón, naranja y detalles azules. Incluye los 173 conceptos iniciales redibujados más cencerro, XLR, TRS, RJ45, PowerCON, cabeza móvil y barra LED. Se añade una [prueba de 20 vistas cenitales](../muestra-de-iconos/cenital-20/) para revisar antes de ampliar esa perspectiva. Cada variante es un SVG separado y editable; ambas mantienen la misma geometría. Las muestras todavía no se integran al selector de la aplicación.
+La [familia SVG propia](../muestra-de-iconos/) reúne 180 conceptos con trazos redondeados, marfil/carbón, naranja y detalles azules: los 173 conceptos iniciales más cencerro, XLR, TRS, RJ45, PowerCON, cabeza móvil y barra LED. Están dibujados en la vista original y en una [colección cenital completa](../muestra-de-iconos/familia-gordostage-cenital-v1/) con el estilo de los [20 cenitales aprobados](../muestra-de-iconos/cenital-20/), que se conservan sin cambios. Cada vista tiene variantes claras y oscuras con la misma geometría: 720 SVG en las colecciones completas. Cada archivo es independiente, transparente y editable; las láminas, catálogos y ZIP están publicados para su uso gráfico. Las colecciones todavía no se integran al selector de la aplicación.
 
 Se integraron los 173 WebP del archivo `iconos.zip` aportado por el usuario, conservando nombres y contenido original en `public/symbols/techrider/`. Fuente indicada por el usuario: https://techrider.live/tools/stage-plot-symbol-library. El proxy bloqueó la descarga directa; la integración usa el ZIP recibido, no una descarga de esa página.
 

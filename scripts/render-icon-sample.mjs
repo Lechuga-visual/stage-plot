@@ -1,7 +1,7 @@
 // Render and validate the review sample, without modifying the application's icon library.
 import { chromium } from 'playwright';
 import { createServer } from 'node:http';
-import { readFile, mkdir, stat } from 'node:fs/promises';
+import { readFile, readdir, mkdir, stat } from 'node:fs/promises';
 import { resolve, dirname, extname, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { execFileSync } from 'node:child_process';
@@ -15,6 +15,9 @@ async function renderPack({ directory, expectedCount, archive }) {
   const icons = manifest.icons;
   assert.equal(icons.length, expectedCount);
   assert.equal(new Set(icons.map(i => i.id)).size, expectedCount);
+  assert.equal(manifest.designs, expectedCount);
+  assert.equal(manifest.svgFiles, expectedCount * 2);
+  assert.deepEqual(manifest.variants, ['claro', 'oscuro']);
   if (manifest.view === 'original') {
     assert.deepEqual(icons.slice(0, 173).map(i => i.id), SYMBOLS.map(i => i.id));
     assert.equal(icons.filter(i => i.origin === 'addition').length, 7);
@@ -22,6 +25,14 @@ async function renderPack({ directory, expectedCount, archive }) {
   } else {
     const initial = JSON.parse(await readFile(resolve(root, 'muestra-de-iconos/familia-gordostage-v1/catalogo.json'), 'utf8'));
     for (const icon of icons) assert(initial.icons.some(i => i.id === icon.id && i.label === icon.label));
+    if (expectedCount === 180) {
+      const identity = list => list.map(({ id, label, category, number }) => ({ id, label, category, number }));
+      assert.deepEqual(identity(icons), identity(initial.icons), 'Both complete views must cover the same numbered concepts');
+    }
+  }
+  for (const theme of manifest.variants) {
+    const files = (await readdir(resolve(output, theme))).filter(name => name.endsWith('.svg')).sort();
+    assert.deepEqual(files, icons.map(i => `${i.id}.svg`).sort(), 'One standalone SVG per concept and theme');
   }
   const documents = [];
   for (const icon of icons) {
@@ -29,6 +40,15 @@ async function renderPack({ directory, expectedCount, archive }) {
       const source = await readFile(resolve(output, icon.files[theme]), 'utf8');
       assert(!/<(?:image|script|foreignObject)\b|(?:href|url\()|<!DOCTYPE/i.test(source), `Non-vector or external content: ${icon.id}`);
       documents.push({ id: icon.id, theme, source });
+    }
+  }
+  if (manifest.view === 'cenital' && expectedCount === 180) {
+    const approvedDirectory = resolve(root, 'muestra-de-iconos/cenital-20');
+    const approved = JSON.parse(await readFile(resolve(approvedDirectory, 'catalogo.json'), 'utf8'));
+    for (const icon of approved.icons) {
+      for (const theme of manifest.variants) {
+        assert.equal(await readFile(resolve(output, icon.files[theme]), 'utf8'), await readFile(resolve(approvedDirectory, icon.files[theme]), 'utf8'), `Preserve the approved SVG: ${theme}/${icon.id}`);
+      }
     }
   }
 
@@ -93,7 +113,7 @@ async function renderPack({ directory, expectedCount, archive }) {
     await page.locator('#search').fill('');
     const filter = manifest.view === 'original' ? 'Conectores y cableado' : 'Cuerdas';
     await page.locator('#category').selectOption(filter);
-    assert.equal(await page.locator('.icon').count(), manifest.view === 'original' ? 4 : 3);
+    assert.equal(await page.locator('.icon').count(), icons.filter(i => i.category === filter).length);
     await page.locator('#theme').click();
     await decoded();
     assert.equal(await page.locator('html').getAttribute('data-theme'), 'oscuro');
@@ -116,7 +136,7 @@ async function renderPack({ directory, expectedCount, archive }) {
     const categories = [...new Set(icons.map(i => i.category))];
     const slug = value => value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
     for (const theme of ['claro', 'oscuro']) {
-      if (manifest.view === 'cenital') {
+      if (manifest.view === 'cenital' && expectedCount === 20) {
         await page.setViewportSize({ width: 1500, height: 1000 });
         await page.goto(`${base}?${new URLSearchParams({ theme, sheet: 'sample' })}`);
         await decoded();
@@ -160,12 +180,18 @@ with ZipFile(target) as z:
     assert z.testzip() is None
     assert len([n for n in z.namelist() if n.endswith('.svg')])==int(sys.argv[3])
 `, output, zipPath, String(expectedCount * 2)]);
-    console.log(JSON.stringify({ pack: directory, designs: icons.length, svgDecoded: decodedCount, distinctDesigns: expectedCount, matchingThemeGeometry: true, previews: manifest.view === 'cenital' ? 2 : 30, galleryChecks: ['search', 'accent-insensitive search', 'category filter', 'theme switch', 'size switch', 'mobile'], nativeFileCheck, zipBytes: (await stat(zipPath)).size }, null, 2));
+    console.log(JSON.stringify({ pack: directory, designs: icons.length, svgDecoded: decodedCount, distinctDesigns: expectedCount, matchingThemeGeometry: true, preservedApprovedSvg: manifest.view === 'cenital' && expectedCount === 180 ? 40 : undefined, previews: expectedCount === 20 ? 2 : categories.length * 2 + 2, galleryChecks: ['search', 'accent-insensitive search', 'category filter', 'theme switch', 'size switch', 'mobile'], nativeFileCheck, zipBytes: (await stat(zipPath)).size }, null, 2));
   } finally {
     if (browser) await browser.close();
     await new Promise(resolve => server.close(resolve));
   }
 
 }
-await renderPack({ directory: 'familia-gordostage-v1', expectedCount: 180, archive: 'gordostage-180-iconos-claro-oscuro.zip' });
-await renderPack({ directory: 'cenital-20', expectedCount: 20, archive: 'gordostage-muestra-20-cenitales.zip' });
+const packs = {
+  original: { directory: 'familia-gordostage-v1', expectedCount: 180, archive: 'gordostage-180-iconos-claro-oscuro.zip' },
+  referencia: { directory: 'cenital-20', expectedCount: 20, archive: 'gordostage-muestra-20-cenitales.zip' },
+  cenital: { directory: 'familia-gordostage-cenital-v1', expectedCount: 180, archive: 'gordostage-180-cenitales-claro-oscuro.zip' },
+};
+const requested = process.argv.slice(2);
+assert(requested.length <= 1 && (!requested.length || /^--pack=(original|referencia|cenital)$/.test(requested[0])), 'Use --pack=original, --pack=referencia or --pack=cenital, or omit it to render all packs');
+for (const key of requested.length ? [requested[0].slice('--pack='.length)] : Object.keys(packs)) await renderPack(packs[key]);
