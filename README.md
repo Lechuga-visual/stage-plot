@@ -4,11 +4,11 @@
 
 Stage plots y riders técnicos para bandas, productoras y equipos de montaje. Funciona como servidor local compartido desde un PC Windows, con acceso desde los navegadores de la misma red. También incluye un editor individual que se puede alojar como sitio estático.
 
-Los cambios de la biblioteca propia, puerto, interfaz y créditos están preparados en `main`; **todavía no se ha publicado una versión nueva de Windows**. La descarga siguiente corresponde a la versión anterior publicada.
+**Versión 0.5.0:** biblioteca propia completa, edición remota del input list, puerto configurable y presentación actualizada.
 
 ## Descargar para Windows
 
-Descarga **GordoStage-0.3.1-windows-x64.zip** desde [la Release v0.3.1](https://github.com/Lechuga-visual/stage-plot/releases/tag/v0.3.1), extrae todo y abre **Iniciar GordoStage.cmd**. Incluye la interfaz compilada y Node.js; no requiere herramientas de desarrollo. Los enlaces **Source code** son código fuente.
+Descarga **GordoStage-0.5.0-windows-x64.zip** desde [la Release v0.5.0](https://github.com/Lechuga-visual/stage-plot/releases/tag/v0.5.0), extrae todo y abre **Iniciar GordoStage.cmd**. Incluye la interfaz compilada y Node.js; no requiere herramientas de desarrollo. Los enlaces **Source code** son código fuente. La release se publica después de validar el paquete en Windows; el [registro de publicación](docs/releases/latest.json) identifica el último paquete verificado.
 
 En una instalación nueva **no se pide clave**. La bienvenida permite abrir proyectos, importar/exportar JSON, configurar seguridad, registrar usuarios y elegir tema. El PC anfitrión administra los permisos desde su propio navegador. La consola muestra las direcciones LAN para los demás PCs y tablets. Mantén esa ventana abierta mientras trabajan; los datos se guardan en `data/` junto al lanzador. Es un ZIP portable con lanzador CMD; todavía no es un instalador ni un único `.exe`.
 
@@ -32,7 +32,7 @@ La aplicación incluye [180 conceptos en vista original](public/symbols/gordosta
 - **Input list:** celdas editables, hasta 20 columnas personalizadas, nombres y orden configurables, altas/bajas y orden manual de hasta 500 canales. Inserción antes de cualquier fila, asas de arrastre a ambos extremos —también por HTTP desde otro PC—, selección múltiple y destino por teclado para mover grupos conservando vínculos y patch. La edición de datos vinculados actualiza la ficha del equipo.
 - **Lectura y acceso:** texto un 20% mayor por defecto, controles A−/A+ de 100% a 180% por dispositivo y «Acceso en red» desplegable en el encabezado y direcciones con Copiar en la bienvenida. Administración visiblemente deshabilitada fuera del anfitrión.
 - **PDF configurable:** selección de secciones, equipos y canales; opciones de iconos, etiquetas, trazos, cableado, marcadores y cuadrícula. **Exportar con todo** omite la selección personalizada. La exportación no altera el proyecto.
-- **Portabilidad:** JSON editable v6, con importación de versiones anteriores, e impresión a PDF del rider con plano, rutas, comentarios y resumen técnico. Los símbolos personalizados usados viajan incrustados en el JSON.
+- **Portabilidad:** JSON editable v6 e impresión a PDF del rider con plano, rutas, comentarios y resumen técnico. Los símbolos personalizados usados viajan incrustados en el JSON. Usa 0.5.0 en ambos servidores para transferir proyectos con la biblioteca propia.
 
 El [orden del input list](docs/INPUT_LIST.md) usa una convención de sonido en vivo como punto de partida: batería, percusión, bajo, guitarras, teclados, pistas/DJ, vientos/cuerdas, coros, voz principal y talkback. No impone una norma universal ni ordena automáticamente los canales nuevos. Consulta el [inventario completo de símbolos](docs/SIMBOLOS.md) y la [identidad visual](docs/IDENTIDAD.md).
 

@@ -1,10 +1,8 @@
-> Los ajustes de puerto y la biblioteca propia descritos aquí están en `main`, pendientes de la próxima distribución. La release publicada anteriormente conserva su contenido original.
-
 # Distribución portable de Windows
 
-Para Windows 10/11 x64, descarga `GordoStage-0.3.1-windows-x64.zip` de [la Release v0.3.1](https://github.com/Lechuga-visual/stage-plot/releases/tag/v0.3.1). Los ZIP automáticos de código fuente no son paquetes listos para ejecutar.
+Para Windows 10/11 x64, descarga `GordoStage-0.5.0-windows-x64.zip` de [la Release v0.5.0](https://github.com/Lechuga-visual/stage-plot/releases/tag/v0.5.0). Los ZIP automáticos de código fuente no son paquetes listos para ejecutar. La publicación exige completar las comprobaciones nativas de Windows; consulta el [registro del último paquete publicado](releases/latest.json).
 
-El paquete publicado v0.3.1 incluye la interfaz y las bibliotecas anteriores a la colección propia, servidor, esquema compartido, dependencias de producción bloqueadas y runtime oficial Node.js 24.19.0 x64 con licencia. Incluye lanzador CMD y LEEME. No copia la carpeta de datos del desarrollo. La próxima distribución desde `main` incluirá únicamente los 720 SVG propios de GordoStage.
+El paquete 0.5.0 incluye la interfaz compilada, los 720 SVG propios de GordoStage, servidor, esquema compartido, dependencias de producción bloqueadas y runtime oficial Node.js 24.19.0 x64 con licencia. Incluye lanzador CMD y LEEME. No copia la carpeta de datos del desarrollo ni las muestras de iconos retiradas.
 
 ## Inicio y acceso
 
@@ -20,9 +18,9 @@ Si el puerto 3000 está ocupado, cambia `PORT`. `GORDOSTAGE_NO_BROWSER=1` evita 
 
 ## Datos y actualización
 
-Los datos se crean en `data/stagecraft.sqlite` junto al lanzador. Para actualizar: detén el servidor, respalda `data/`, extrae la versión nueva en otra carpeta y copia allí `data/` antes de iniciar. Se migran los proyectos y chat de las versiones anteriores, incluida 0.2.0, sin descartarlos. Conserva el respaldo anterior mientras pruebas.
+Los datos se crean en `data/stagecraft.sqlite` junto al lanzador. Para actualizar: detén el servidor, respalda `data/`, extrae la versión nueva en otra carpeta y copia allí `data/` antes de iniciar. Conserva el respaldo anterior mientras pruebas. La versión 0.5.0 utiliza exclusivamente la biblioteca propia; no contiene los catálogos externos retirados. El proyecto base ya usa los identificadores definitivos.
 
-Exportar JSON transfiere un proyecto con descripción, plano, fichas, input list, comentarios, rutas e imágenes personalizadas usadas. No transfiere perfiles, claves o chat; esos datos están en el respaldo completo. Los JSON v6 requieren una versión compatible del servidor de destino. Las preferencias de pestañas/tema pertenecen al navegador y las sesiones se vuelven a identificar tras reiniciar el servidor.
+Exportar JSON transfiere un proyecto con descripción, plano, fichas, input list, comentarios, rutas e imágenes personalizadas usadas. No transfiere perfiles, claves o chat; esos datos están en el respaldo completo. Los JSON v6 con la biblioteca propia requieren 0.5.0 en el servidor de destino. Las preferencias de pestañas/tema pertenecen al navegador y las sesiones se vuelven a identificar tras reiniciar el servidor.
 
 ## Construcción y validación
 
@@ -46,7 +44,7 @@ El workflow `.github/workflows/release-windows.yml`, activado por tags `v*`, ver
 
 Para versiones siguientes, actualiza versión y notas, sube el commit y crea un tag nuevo. No reemplaces assets ni reutilices tags ya entregados. Una compilación local o un tag por sí solos no acreditan que se haya publicado el paquete; comprueba la Release y su registro.
 
-Desde 0.3.1 el encabezado y la bienvenida muestran las direcciones detectadas y el puerto real. Con varias interfaces se ofrecen otras direcciones; elige la de la red compartida con los puestos. Los controles A−/A+ y el mute del chat se guardan en cada navegador. En `main`, el JSON v6 guarda la vista original o cenital de la biblioteca propia; los grupos de canales ya se incluían en el formato anterior.
+El encabezado y la bienvenida muestran las direcciones detectadas y el puerto real. Con varias interfaces se ofrecen otras direcciones; elige la de la red compartida con los puestos. Los controles A−/A+ y el mute del chat se guardan en cada navegador. El JSON v6 guarda la vista original o cenital de la biblioteca propia y los grupos de canales personalizados.
 
 ## Puerto desde la interfaz
 
