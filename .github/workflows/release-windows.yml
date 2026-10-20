@@ -1,0 +1,95 @@
+name: Windows portable release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: windows-release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  package:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24.19.0"
+          cache: npm
+      - name: Check release version
+        run: node -e 'const fs=require("fs");if("v"+JSON.parse(fs.readFileSync("package.json")).version!==process.env.GITHUB_REF_NAME)throw Error("Tag and package version differ")'
+      - run: npm ci --no-audit --no-fund
+      - run: npm test
+      - run: npm run build
+      - run: npm run package:windows
+      - name: Test included runtime on Windows and persistence after restart
+        run: npm run test:portable
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows-portable
+          path: |
+            artifacts/GordoStage-*-windows-x64.zip
+            artifacts/GordoStage-*-windows-x64.sha256
+          if-no-files-found: error
+          compression-level: 0
+
+  publish:
+    needs: package
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      TAG: ${{ github.ref_name }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/download-artifact@v4
+        with:
+          name: windows-portable
+          path: artifacts
+      - name: Verify uploaded package checksum
+        working-directory: artifacts
+        run: sha256sum --check *.sha256
+      - name: Publish verified Windows prerelease
+        run: |
+          gh release create "$TAG" artifacts/*.zip artifacts/*.sha256 \
+            --verify-tag --prerelease --title "GordoStage $TAG - Windows portable" \
+            --notes-file docs/RELEASE_NOTES.md
+          gh release view "$TAG" --json tagName,url,assets > /tmp/gordostage-release.json
+      - name: Record publication and validation in repository
+        run: |
+          git fetch origin main
+          git checkout -B main origin/main
+          python - <<'PY'
+          import json, pathlib, os
+          release=json.loads(pathlib.Path('/tmp/gordostage-release.json').read_text())
+          assets=release['assets']
+          if not any(a['name'].endswith('.zip') for a in assets):
+              raise SystemExit('Release ZIP missing')
+          if not any(a['name'].endswith('.sha256') for a in assets):
+              raise SystemExit('Release checksum missing')
+          receipt={'status':'published','tag':release['tagName'],'url':release['url'],
+                   'sourceCommit':os.environ['GITHUB_SHA'],'platform':'windows-x64',
+                   'validatedOn':'windows-latest','checks':['unit tests','compiled frontend','official runtime checksum','native packaged server','HTTP and symbols','read-only permissions','persistence after restart'],
+                   'runUrl':os.environ['GITHUB_SERVER_URL']+'/'+os.environ['GITHUB_REPOSITORY']+'/actions/runs/'+os.environ['GITHUB_RUN_ID'],
+                   'assets':[{'name':a['name'],'url':a['url'],'size':a['size']} for a in assets]}
+          target=pathlib.Path('docs/releases/latest.json');target.parent.mkdir(parents=True,exist_ok=True)
+          target.write_text(json.dumps(receipt,ensure_ascii=False,indent=2)+'\n')
+          PY
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add docs/releases/latest.json
+          git commit -m "Record published Windows release $TAG"
+          git push origin HEAD:main
