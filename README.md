@@ -12,6 +12,10 @@ En una instalación nueva **no se pide clave**. La bienvenida permite abrir proy
 
 Consulta [distribución y actualización](docs/DISTRIBUCION.md) y [notas de versión](docs/RELEASE_NOTES.md).
 
+## Muestras de la familia propia de iconos
+
+Ya se pueden revisar [180 diseños SVG propios en claro y oscuro](muestra-de-iconos/familia-gordostage-v1/) y una [prueba de 20 iconos en vista cenital](muestra-de-iconos/cenital-20/). Cada icono tiene archivo independiente; las muestras incluyen láminas PNG, inventarios, catálogo HTML y ZIP descargable. Consulta [el índice de muestras](muestra-de-iconos/). Son propuestas para revisión; la biblioteca activa de la aplicación conserva sus recursos actuales.
+
 ## Implementado
 
 - **Proyectos compartidos:** crear y abrir varios proyectos; pestañas en la barra lateral, cierre de pestañas por dispositivo y nombre/descripción al pasar el ratón o enfocar. Cada puesto elige su proyecto sin cambiar la vista de los demás. Todos los proyectos guardados siguen disponibles en el servidor.

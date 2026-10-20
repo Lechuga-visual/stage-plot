@@ -1,0 +1,300 @@
+{
+  "name": "GordoStage",
+  "family": "gordostage-cenital-preview",
+  "view": "cenital",
+  "status": "awaiting-style-review",
+  "designs": 20,
+  "variants": [
+    "claro",
+    "oscuro"
+  ],
+  "svgFiles": 40,
+  "viewBox": "0 0 100 100",
+  "transparentBackground": true,
+  "palettes": {
+    "claro": {
+      "ink": "#292e34",
+      "body": "#fff4e5",
+      "soft": "#e3e7e9",
+      "panel": "#303841",
+      "line": "#a8b3bc",
+      "orange": "#ed7529",
+      "blue": "#56b8db",
+      "white": "#ffffff",
+      "off": "#f6f3ee"
+    },
+    "oscuro": {
+      "ink": "#edf3f8",
+      "body": "#182a3b",
+      "soft": "#2d4559",
+      "panel": "#101c29",
+      "line": "#91aabd",
+      "orange": "#ff8a3d",
+      "blue": "#63c7e8",
+      "white": "#edf3f8",
+      "off": "#0c1522"
+    }
+  },
+  "icons": [
+    {
+      "id": "acoustic_guitar",
+      "label": "Guitarra acústica",
+      "category": "Cuerdas",
+      "usage": "stage",
+      "origin": "initial-inventory",
+      "number": 1,
+      "files": {
+        "claro": "claro/acoustic_guitar.svg",
+        "oscuro": "oscuro/acoustic_guitar.svg"
+      },
+      "originalNumber": 1
+    },
+    {
+      "id": "electric_guitar",
+      "label": "Guitarra eléctrica",
+      "category": "Cuerdas",
+      "usage": "stage",
+      "origin": "initial-inventory",
+      "number": 2,
+      "files": {
+        "claro": "claro/electric_guitar.svg",
+        "oscuro": "oscuro/electric_guitar.svg"
+      },
+      "originalNumber": 3
+    },
+    {
+      "id": "bass_guitar",
+      "label": "Bajo eléctrico",
+      "category": "Cuerdas",
+      "usage": "stage",
+      "origin": "initial-inventory",
+      "number": 3,
+      "files": {
+        "claro": "claro/bass_guitar.svg",
+        "oscuro": "oscuro/bass_guitar.svg"
+      },
+      "originalNumber": 4
+    },
+    {
+      "id": "acoustic_drum_kit",
+      "label": "Batería acústica",
+      "category": "Batería y percusión",
+      "usage": "stage",
+      "origin": "initial-inventory",
+      "number": 4,
+      "files": {
+        "claro": "claro/acoustic_drum_kit.svg",
+        "oscuro": "oscuro/acoustic_drum_kit.svg"
+      },
+      "originalNumber": 26
+    },
+    {
+      "id": "electronic_drum_kit",
+      "label": "Batería electrónica",
+      "category": "Batería y percusión",
+      "usage": "stage",
+      "origin": "initial-inventory",
+      "number": 5,
+      "files": {
+        "claro": "claro/electronic_drum_kit.svg",
+        "oscuro": "oscuro/electronic_drum_kit.svg"
+      },
+      "originalNumber": 27
+    },
+    {
+      "id": "conga_set",
+      "label": "Congas",
+      "category": "Batería y percusión",
+      "usage": "stage",
+      "origin": "initial-inventory",
+      "number": 6,
+      "files": {
+        "claro": "claro/conga_set.svg",
+        "oscuro": "oscuro/conga_set.svg"
+      },
+      "originalNumber": 38
+    },
+    {
+      "id": "single_keyboard_rig",
+      "label": "Teclado simple",
+      "category": "Teclados y electrónica",
+      "usage": "stage",
+      "origin": "initial-inventory",
+      "number": 7,
+      "files": {
+        "claro": "claro/single_keyboard_rig.svg",
+        "oscuro": "oscuro/single_keyboard_rig.svg"
+      },
+      "originalNumber": 15
+    },
+    {
+      "id": "grand_piano",
+      "label": "Piano de cola",
+      "category": "Teclados y electrónica",
+      "usage": "stage",
+      "origin": "initial-inventory",
+      "number": 8,
+      "files": {
+        "claro": "claro/grand_piano.svg",
+        "oscuro": "oscuro/grand_piano.svg"
+      },
+      "originalNumber": 18
+    },
+    {
+      "id": "vocal_mic_wired",
+      "label": "Micrófono vocal con cable",
+      "category": "Micrófonos",
+      "usage": "stage",
+      "origin": "initial-inventory",
+      "number": 9,
+      "files": {
+        "claro": "claro/vocal_mic_wired.svg",
+        "oscuro": "oscuro/vocal_mic_wired.svg"
+      },
+      "originalNumber": 69
+    },
+    {
+      "id": "boom_mic_stand",
+      "label": "Pie de micrófono jirafa",
+      "category": "Soportes y mobiliario",
+      "usage": "stage",
+      "origin": "initial-inventory",
+      "number": 10,
+      "files": {
+        "claro": "claro/boom_mic_stand.svg",
+        "oscuro": "oscuro/boom_mic_stand.svg"
+      },
+      "originalNumber": 84
+    },
+    {
+      "id": "wedge_monitor",
+      "label": "Monitor de piso",
+      "category": "Monitores y PA",
+      "usage": "stage",
+      "origin": "initial-inventory",
+      "number": 11,
+      "files": {
+        "claro": "claro/wedge_monitor.svg",
+        "oscuro": "oscuro/wedge_monitor.svg"
+      },
+      "originalNumber": 116
+    },
+    {
+      "id": "electric_guitar_amp",
+      "label": "Amplificador de guitarra",
+      "category": "Amplificadores y audio",
+      "usage": "stage",
+      "origin": "initial-inventory",
+      "number": 12,
+      "files": {
+        "claro": "claro/electric_guitar_amp.svg",
+        "oscuro": "oscuro/electric_guitar_amp.svg"
+      },
+      "originalNumber": 95
+    },
+    {
+      "id": "bass_amp_rig",
+      "label": "Amplificador de bajo",
+      "category": "Amplificadores y audio",
+      "usage": "stage",
+      "origin": "initial-inventory",
+      "number": 13,
+      "files": {
+        "claro": "claro/bass_amp_rig.svg",
+        "oscuro": "oscuro/bass_amp_rig.svg"
+      },
+      "originalNumber": 97
+    },
+    {
+      "id": "active_di_box",
+      "label": "Caja DI activa",
+      "category": "Amplificadores y audio",
+      "usage": "stage",
+      "origin": "initial-inventory",
+      "number": 14,
+      "files": {
+        "claro": "claro/active_di_box.svg",
+        "oscuro": "oscuro/active_di_box.svg"
+      },
+      "originalNumber": 101
+    },
+    {
+      "id": "stagebox",
+      "label": "Stagebox",
+      "category": "Amplificadores y audio",
+      "usage": "stage",
+      "origin": "initial-inventory",
+      "number": 15,
+      "files": {
+        "claro": "claro/stagebox.svg",
+        "oscuro": "oscuro/stagebox.svg"
+      },
+      "originalNumber": 105
+    },
+    {
+      "id": "dj_setup",
+      "label": "Set de DJ",
+      "category": "DJ y reproducción",
+      "usage": "stage",
+      "origin": "initial-inventory",
+      "number": 16,
+      "files": {
+        "claro": "claro/dj_setup.svg",
+        "oscuro": "oscuro/dj_setup.svg"
+      },
+      "originalNumber": 133
+    },
+    {
+      "id": "lead_vocalist",
+      "label": "Vocalista principal",
+      "category": "Artistas y equipo humano",
+      "usage": "stage",
+      "origin": "initial-inventory",
+      "number": 17,
+      "files": {
+        "claro": "claro/lead_vocalist.svg",
+        "oscuro": "oscuro/lead_vocalist.svg"
+      },
+      "originalNumber": 140
+    },
+    {
+      "id": "foh_position",
+      "label": "Posición FOH",
+      "category": "Producción, RF y vídeo",
+      "usage": "production",
+      "origin": "initial-inventory",
+      "number": 18,
+      "files": {
+        "claro": "claro/foh_position.svg",
+        "oscuro": "oscuro/foh_position.svg"
+      },
+      "originalNumber": 158
+    },
+    {
+      "id": "chair",
+      "label": "Silla",
+      "category": "Soportes y mobiliario",
+      "usage": "stage",
+      "origin": "initial-inventory",
+      "number": 19,
+      "files": {
+        "claro": "claro/chair.svg",
+        "oscuro": "oscuro/chair.svg"
+      },
+      "originalNumber": 92
+    },
+    {
+      "id": "moving_head_light",
+      "label": "Cabeza móvil",
+      "category": "Iluminación",
+      "usage": "production",
+      "origin": "addition",
+      "number": 20,
+      "files": {
+        "claro": "claro/moving_head_light.svg",
+        "oscuro": "oscuro/moving_head_light.svg"
+      },
+      "originalNumber": 179
+    }
+  ]
+}

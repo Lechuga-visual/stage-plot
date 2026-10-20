@@ -4,6 +4,8 @@ Se incorporaron los **173 WebP originales** del ZIP proporcionado por el usuario
 
 Los nombres visibles están en español. La búsqueda también encuentra el nombre original del archivo. Los recursos de producción y anotaciones permanecen accesibles en sus categorías y disponibles en el catálogo compartido para futuras funciones de interfaz; añadir su imagen al plano no implementa funciones de vídeo, RF, intercom o electricidad.
 
+La [muestra de la familia SVG propia](../muestra-de-iconos/) conserva estos 173 identificadores y los redibuja con un estilo común. Suma siete conceptos para completar 180 diseños, cada uno claro y oscuro, y publica aparte una prueba de 20 cenitales con ambas variantes. Los **400 SVG de muestra**, sus láminas y ZIP están en `muestra-de-iconos/`; no se suman al inventario activo de la aplicación hasta revisar su integración.
+
 ## Cuerdas (14)
 
 | Nombre                | Archivo original                                                                             |
