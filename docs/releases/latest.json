@@ -1,0 +1,30 @@
+{
+  "status": "published",
+  "tag": "v0.1.1",
+  "url": "https://github.com/Lechuga-visual/stage-plot/releases/tag/v0.1.1",
+  "sourceCommit": "4fe042122eeb68d866e9eee0c5b6a61b2ec2b8ee",
+  "platform": "windows-x64",
+  "validatedOn": "windows-latest",
+  "checks": [
+    "unit tests",
+    "compiled frontend",
+    "official runtime checksum",
+    "native packaged server",
+    "HTTP and symbols",
+    "read-only permissions",
+    "persistence after restart"
+  ],
+  "runUrl": "https://github.com/Lechuga-visual/stage-plot/actions/runs/39369924299",
+  "assets": [
+    {
+      "name": "GordoStage-0.1.1-windows-x64.sha256",
+      "url": "https://github.com/Lechuga-visual/stage-plot/releases/download/v0.1.1/GordoStage-0.1.1-windows-x64.sha256",
+      "size": 99
+    },
+    {
+      "name": "GordoStage-0.1.1-windows-x64.zip",
+      "url": "https://github.com/Lechuga-visual/stage-plot/releases/download/v0.1.1/GordoStage-0.1.1-windows-x64.zip",
+      "size": 41366325
+    }
+  ]
+}
