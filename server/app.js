@@ -96,11 +96,9 @@ export async function createServer({
       !text.trim() ||
       text.length > 2000
     )
-      return reply
-        .code(400)
-        .send({
-          error: "Nombre y mensaje requeridos (80 / 2000 caracteres máximo)",
-        });
+      return reply.code(400).send({
+        error: "Nombre y mensaje requeridos (80 / 2000 caracteres máximo)",
+      });
     const createdAt = new Date().toISOString();
     const result = db
       .prepare("INSERT INTO chat (author,text,createdAt) VALUES (?,?,?)")
@@ -112,14 +110,12 @@ export async function createServer({
     for (const client of wss.clients)
       if (client.readyState === 1)
         client.send(JSON.stringify({ type: "chat" }));
-    return reply
-      .code(201)
-      .send({
-        id: Number(result.lastInsertRowid),
-        author: author.trim(),
-        text: text.trim(),
-        createdAt,
-      });
+    return reply.code(201).send({
+      id: Number(result.lastInsertRowid),
+      author: author.trim(),
+      text: text.trim(),
+      createdAt,
+    });
   });
   const wss = new WebSocketServer({ noServer: true });
   app.server.on("upgrade", (req, socket, head) => {
@@ -157,7 +153,7 @@ if (process.argv[1] === resolve("server/app.js")) {
   const port = Number(process.env.PORT || 3000);
   await app.listen({ port, host: process.env.HOST || "0.0.0.0" });
   console.log(
-    `Stagecraft: puerto ${port}\nCódigo de edición: ${editCode}\nComparte la dirección de tu red local:`,
+    `GordoStage: puerto ${port}\nCódigo de edición: ${editCode}\nComparte la dirección de tu red local:`,
   );
   for (const entries of Object.values(networkInterfaces()))
     for (const entry of entries || [])

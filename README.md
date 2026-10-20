@@ -1,6 +1,10 @@
-# Stagecraft
+# GordoStage
+
+**Plataforma de logística de escenario.**
 
 Prototipo de stage plot y lista de canales para bandas. Editor con elementos móviles, notas técnicas, exportación/importación JSON e impresión a PDF. La primera prueba colaborativa reutiliza el editor JavaScript existente; la migración a React/TypeScript y el ejecutable quedan para etapas posteriores.
+
+La identidad visual y el estado de la biblioteca de símbolos se documentan en [docs/IDENTIDAD.md](docs/IDENTIDAD.md).
 
 ## Equipos e iconografía disponibles
 
