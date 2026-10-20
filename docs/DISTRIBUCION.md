@@ -1,8 +1,10 @@
+> Los ajustes de puerto y la biblioteca propia descritos aquí están en `main`, pendientes de la próxima distribución. La release publicada anteriormente conserva su contenido original.
+
 # Distribución portable de Windows
 
 Para Windows 10/11 x64, descarga `GordoStage-0.3.1-windows-x64.zip` de [la Release v0.3.1](https://github.com/Lechuga-visual/stage-plot/releases/tag/v0.3.1). Los ZIP automáticos de código fuente no son paquetes listos para ejecutar.
 
-El paquete incluye interfaz compilada, 173 WebP, 309 PNG de TecRider con registro de procedencia y 74 SVG X32/M32 con su licencia, servidor, esquema compartido, dependencias de producción bloqueadas y runtime oficial Node.js 24.19.0 x64 con licencia. Incluye lanzador CMD y LEEME. No copia la carpeta de datos del desarrollo.
+El paquete publicado v0.3.1 incluye la interfaz y las bibliotecas anteriores a la colección propia, servidor, esquema compartido, dependencias de producción bloqueadas y runtime oficial Node.js 24.19.0 x64 con licencia. Incluye lanzador CMD y LEEME. No copia la carpeta de datos del desarrollo. La próxima distribución desde `main` incluirá únicamente los 720 SVG propios de GordoStage.
 
 ## Inicio y acceso
 
@@ -20,7 +22,7 @@ Si el puerto 3000 está ocupado, cambia `PORT`. `GORDOSTAGE_NO_BROWSER=1` evita 
 
 Los datos se crean en `data/stagecraft.sqlite` junto al lanzador. Para actualizar: detén el servidor, respalda `data/`, extrae la versión nueva en otra carpeta y copia allí `data/` antes de iniciar. Se migran los proyectos y chat de las versiones anteriores, incluida 0.2.0, sin descartarlos. Conserva el respaldo anterior mientras pruebas.
 
-Exportar JSON transfiere un proyecto con descripción, plano, fichas, input list, comentarios, rutas e imágenes personalizadas usadas. No transfiere perfiles, claves o chat; esos datos están en el respaldo completo. Los JSON v5 requieren una versión compatible del servidor de destino. Las preferencias de pestañas/tema pertenecen al navegador y las sesiones se vuelven a identificar tras reiniciar el servidor.
+Exportar JSON transfiere un proyecto con descripción, plano, fichas, input list, comentarios, rutas e imágenes personalizadas usadas. No transfiere perfiles, claves o chat; esos datos están en el respaldo completo. Los JSON v6 requieren una versión compatible del servidor de destino. Las preferencias de pestañas/tema pertenecen al navegador y las sesiones se vuelven a identificar tras reiniciar el servidor.
 
 ## Construcción y validación
 
@@ -44,4 +46,12 @@ El workflow `.github/workflows/release-windows.yml`, activado por tags `v*`, ver
 
 Para versiones siguientes, actualiza versión y notas, sube el commit y crea un tag nuevo. No reemplaces assets ni reutilices tags ya entregados. Una compilación local o un tag por sí solos no acreditan que se haya publicado el paquete; comprueba la Release y su registro.
 
-Desde 0.3.1 el encabezado y la bienvenida muestran las direcciones detectadas y el puerto real. Con varias interfaces se ofrecen otras direcciones; elige la de la red compartida con los puestos. Los controles A−/A+ y el mute del chat se guardan en cada navegador. El JSON v5 añade grupos de canales y elección de iconos; se siguen importando archivos anteriores.
+Desde 0.3.1 el encabezado y la bienvenida muestran las direcciones detectadas y el puerto real. Con varias interfaces se ofrecen otras direcciones; elige la de la red compartida con los puestos. Los controles A−/A+ y el mute del chat se guardan en cada navegador. En `main`, el JSON v6 guarda la vista original o cenital de la biblioteca propia; los grupos de canales ya se incluían en el formato anterior.
+
+## Puerto desde la interfaz
+
+Desde el PC anfitrión abre **Configuración y permisos → Conexión al servidor**, guarda un puerto entre 1 y 65535 y reinicia GordoStage. El valor se conserva en `data/stagecraft.sqlite`. El puerto predeterminado sigue siendo 3000; `PORT` tiene prioridad si lo define el entorno de arranque.
+
+Con el puerto 80 se usa `http://IP` sin añadir el puerto. Si ya está ocupado, el lanzador indica el conflicto: arranca una vez con otro valor de `PORT` y guarda la nueva elección en configuración. Si el sistema exige permisos para el puerto elegido, usa uno permitido. Conserva las reglas del firewall acordes con el puerto utilizado.
+
+El encabezado agrupa las direcciones y la copia en **Acceso en red**. La bienvenida las mantiene visibles. El cambio de puerto guardado no corta una sesión activa: entra en vigor tras reiniciar.

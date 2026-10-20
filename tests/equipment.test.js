@@ -5,7 +5,6 @@ import {
   SYMBOLS,
   getSymbol,
   LEGACY_ALIASES,
-  BEHRINGER_SYMBOLS,
 } from "../shared/symbols.js";
 import { normalizeProject, exportProject } from "../shared/project.js";
 import {
@@ -31,23 +30,6 @@ function project() {
     ],
   });
 }
-test("los 173 archivos originales tienen un ID único y cabecera WebP", () => {
-  assert.equal(SYMBOLS.length, 173);
-  assert.equal(new Set(SYMBOLS.map((s) => s.id)).size, 173);
-  assert.equal(
-    readdirSync("public/symbols/techrider").filter((f) => f.endsWith(".webp"))
-      .length,
-    173,
-  );
-  for (const s of SYMBOLS) {
-    const path = "public" + s.src;
-    assert.ok(existsSync(path), path);
-    const bytes = readFileSync(path);
-    assert.equal(bytes.subarray(0, 4).toString(), "RIFF");
-    assert.equal(bytes.subarray(8, 12).toString(), "WEBP");
-  }
-  for (const id of Object.keys(LEGACY_ALIASES)) assert.ok(getSymbol(id));
-});
 test("mono y estéreo generan canales con micrófono, energía y phantom sin duplicar al guardar", () => {
   const s = project();
   const t = technical(s.items[0]);
@@ -107,7 +89,7 @@ test("eliminar una entrada borra su par, preserva canales manuales y rechaza enl
   assert.equal(s.channels.length, 1);
   assert.equal(s.items[0].technical.inputs.length, 0);
 });
-test("un proyecto v2 conserva columnas, dibujos y canales al migrar a v5", () => {
+test("un proyecto v2 conserva columnas, dibujos y canales al migrar a v6", () => {
   const s = project();
   s.formatVersion = 2;
   delete s.items[0].technical;
@@ -120,7 +102,7 @@ test("un proyecto v2 conserva columnas, dibujos y canales al migrar a v5", () =>
     ],
   });
   const migrated = normalizeProject(s);
-  assert.equal(migrated.formatVersion, 5);
+  assert.equal(migrated.formatVersion, 6);
   assert.deepEqual(
     migrated.drawings.map((d) => d.points),
     s.drawings.map((d) => d.points),
@@ -209,28 +191,9 @@ test("JSON v4 migra las entradas sin perder nombres ni vínculos", () => {
   s.formatVersion = 4;
   delete input.channelLabels;
   const copy = normalizeProject(s);
-  assert.equal(copy.formatVersion, 5);
+  assert.equal(copy.formatVersion, 6);
   assert.deepEqual(copy.items[0].technical.inputs[0].channelLabels, []);
   assert.deepEqual(copy.channels, s.channels);
   assert.equal(s.formatVersion, 4);
   assert.equal(input.channelLabels, undefined);
-});
-
-test("colección X32/M32 incluye 74 SVG originales con licencia, equivalencias y conservación de IDs", () => {
-  assert.equal(BEHRINGER_SYMBOLS.length, 74);
-  assert.equal(new Set(BEHRINGER_SYMBOLS.map((s) => s.id)).size, 74);
-  assert.ok(existsSync("public/symbols/behringer/LICENSE"));
-  for (const symbol of BEHRINGER_SYMBOLS) {
-    const svg = readFileSync("public" + symbol.src, "utf8");
-    assert.match(svg, /<svg/);
-    assert.doesNotMatch(svg, /<script|foreignObject|onload=/i);
-    assert.ok(getSymbol(symbol.id));
-  }
-  assert.equal(getSymbol("guitar", "x32").id, "x32_20");
-  assert.equal(getSymbol("keys", "x32").id, "x32_30");
-  assert.equal(getSymbol("x32_21", "x32").id, "x32_21");
-  const s = project();
-  s.symbolStyle = "x32";
-  s.items[0].type = "x32_21";
-  assert.deepEqual(normalizeProject(JSON.parse(exportProject(s))), s);
 });

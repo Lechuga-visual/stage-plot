@@ -310,8 +310,8 @@ test("usuarios con PIN, lectura/edición y nombre automático del chat", async (
   }));
 test("símbolos locales se guardan en servidor, viajan en JSON y sobreviven reinicio", async () =>
   fixture(async ({ app }, directory) => {
-    const bytes = readFileSync("public/symbols/techrider/cajon.webp");
-    const dataUrl = "data:image/webp;base64," + bytes.toString("base64");
+    const bytes = readFileSync("public/brand/gordostage-logo.png");
+    const dataUrl = "data:image/png;base64," + bytes.toString("base64");
     const response = await call(app, "POST", "/api/assets", {
       label: "Mi cajón",
       dataUrl,
@@ -400,7 +400,7 @@ test("migración conserva proyecto y chat de la versión 0.1", async () => {
     const restored = (await app.inject("/api/project")).json();
     assert.equal(restored.revision, 7);
     assert.equal(restored.document.band, "Banda antigua");
-    assert.equal(restored.document.formatVersion, 5);
+    assert.equal(restored.document.formatVersion, 6);
     assert.equal(
       (await app.inject("/api/chat")).json()[0].text,
       "Guardado antes",

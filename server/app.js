@@ -14,6 +14,7 @@ import { resolve } from "node:path";
 import { networkInterfaces } from "node:os";
 import { normalizeProject } from "../shared/project.js";
 import { validateImage } from "../shared/assets.js";
+import { resolveListenPort, serverAddress } from "./network.js";
 
 export async function createServer({
   directory = resolve("data"),
@@ -189,7 +190,7 @@ export async function createServer({
     const port =
       typeof binding === "object" && binding
         ? binding.port
-        : Number(process.env.PORT || 3000);
+        : resolveListenPort(settings.listenPort);
     const loopback =
       typeof binding === "object" &&
       ["127.0.0.1", "::1"].includes(binding?.address);
@@ -205,9 +206,27 @@ export async function createServer({
         ];
     return {
       port,
-      addresses: hosts.map((ip) => `${req.protocol}://${ip}:${port}`),
+      addresses: hosts.map((ip) => serverAddress(ip, port, req.protocol)),
       currentAddress: `${req.protocol}://${req.headers.host}`,
     };
+  });
+  const serverSettings = () => ({
+    port: settings.listenPort ?? 3000,
+    currentPort: app.server.address()?.port ?? null,
+    environmentOverride: process.env.PORT !== undefined && process.env.PORT !== "",
+  });
+  app.get("/api/server-settings", async (req, reply) => {
+    if (!isHost(req)) return reply.code(403).send({ error: "Solo el PC anfitrión configura el puerto" });
+    return serverSettings();
+  });
+  app.put("/api/server-settings", async (req, reply) => {
+    if (!isHost(req)) return reply.code(403).send({ error: "Solo el PC anfitrión configura el puerto" });
+    const { port } = req.body || {};
+    if (!Number.isInteger(port) || port < 1 || port > 65535)
+      return reply.code(400).send({ error: "Elige un puerto entre 1 y 65535" });
+    settings.listenPort = port;
+    db.prepare("UPDATE settings SET value=? WHERE id=1").run(JSON.stringify(settings));
+    return serverSettings();
   });
   app.get("/api/security", async (req) => access(req));
   app.put("/api/security", async (req, reply) => {
@@ -547,7 +566,7 @@ export async function createServer({
     wss.close();
     db.close();
   });
-  return { app, editCode, securityEnabled: settings.enabled };
+  return { app, editCode, securityEnabled: settings.enabled, listenPort: settings.listenPort ?? 3000 };
 }
 export function valid(s) {
   try {
@@ -558,14 +577,14 @@ export function valid(s) {
   }
 }
 if (process.argv[1] === resolve("server/app.js")) {
-  const { app, editCode, securityEnabled } = await createServer();
-  const port = Number(process.env.PORT || 3000);
+  const { app, editCode, securityEnabled, listenPort } = await createServer();
+  const port = resolveListenPort(listenPort);
   await app.listen({ port, host: process.env.HOST || "0.0.0.0" });
   console.log(
-    `GordoStage: http://127.0.0.1:${port}\n${securityEnabled ? "Seguridad activada" + (editCode ? " · Código: " + editCode : "") : "Seguridad opcional desactivada. Configúrala desde el navegador del anfitrión."}`,
+    `GordoStage: ${serverAddress("127.0.0.1", app.server.address().port)}\n${securityEnabled ? "Seguridad activada" + (editCode ? " · Código: " + editCode : "") : "Seguridad opcional desactivada. Configúrala desde el navegador del anfitrión."}`,
   );
   for (const entries of Object.values(networkInterfaces()))
     for (const entry of entries || [])
       if (entry.family === "IPv4" && !entry.internal)
-        console.log(`http://${entry.address}:${port}`);
+        console.log(serverAddress(entry.address, app.server.address().port));
 }

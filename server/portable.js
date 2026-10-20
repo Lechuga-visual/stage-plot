@@ -2,24 +2,23 @@ import { createServer } from "./app.js";
 import { networkInterfaces } from "node:os";
 import { resolve } from "node:path";
 import { spawn } from "node:child_process";
+import { resolveListenPort, serverAddress } from "./network.js";
 
-const port = Number(process.env.PORT ?? 3000);
-if (!Number.isInteger(port) || port < 0 || port > 65535)
-  throw Error("PORT debe ser un número entre 0 y 65535");
-let app;
+let app, port;
 try {
   const server = await createServer();
   app = server.app;
+  port = resolveListenPort(server.listenPort);
   await app.listen({ port, host: process.env.HOST || "0.0.0.0" });
   const actualPort = app.server.address().port;
-  const local = `http://127.0.0.1:${actualPort}`;
+  const local = serverAddress("127.0.0.1", actualPort);
   console.log(
     `\nGordoStage - Servidor local\n\nEn este PC: ${local}\n${server.securityEnabled ? "Seguridad activada" : "Seguridad opcional desactivada · configúrala desde el anfitrión"}\n\nOtros dispositivos de la misma red:`,
   );
   for (const entries of Object.values(networkInterfaces()))
     for (const entry of entries || [])
       if (entry.family === "IPv4" && !entry.internal)
-        console.log(`  http://${entry.address}:${actualPort}`);
+        console.log(`  ${serverAddress(entry.address, actualPort)}`);
   console.log(
     `\nDatos: ${resolve("data")}\nMantén esta ventana abierta. Ctrl+C para detener el servidor.\n`,
   );
@@ -46,7 +45,7 @@ try {
 } catch (error) {
   console.error(
     error.code === "EADDRINUSE"
-      ? `El puerto ${port} ya está ocupado. Cierra la otra instancia de GordoStage o elige otro puerto con PORT.`
+      ? `El puerto ${port} ya está ocupado. Elige otro con PORT; después puedes guardarlo en Configuración y permisos.`
       : `No se pudo iniciar GordoStage: ${error.message}`,
   );
   await app?.close();

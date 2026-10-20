@@ -100,7 +100,7 @@ try {
     (await (await fetch(base + "/api/project")).json()).document;
   await p.goto(base);
   await p.locator("#welcome-network code").waitFor();
-  assert.equal(await p.locator("#header-network code").innerText(), base);
+  assert.equal(await p.locator("#header-network code").textContent(), base);
   assert.equal(await p.locator("#welcome-network code").innerText(), base);
   assert.equal(
     (await (await fetch(base + "/api/network")).json()).port,
@@ -248,7 +248,7 @@ try {
   const download = await downloadPromise;
   const { readFileSync } = await import("node:fs");
   const portable = JSON.parse(readFileSync(await download.path(), "utf8"));
-  assert.equal(portable.formatVersion, 5);
+  assert.equal(portable.formatVersion, 6);
   assert.equal(portable.items[0].technical.inputs[0].channelLabels[3], "Guía");
   await p.emulateMedia({ media: "print" });
   assert.match(await p.locator(".equipment-summary").innerText(), /Guía/);
@@ -256,24 +256,24 @@ try {
   await p.emulateMedia({ media: "screen" });
   await p.locator('[data-tab="channels"]').click();
   await p.locator('[data-tab="plot"]').click();
-  await p.locator("#symbol-style").selectOption("x32");
+  await p.locator("#symbol-style").selectOption("cenital");
   await saved(p);
   assert.match(
     await p.locator('[data-item="2"] img').getAttribute("src"),
-    /behringer\/30.svg$/,
+    /gordostage\/cenital\/oscuro\/single_keyboard_rig.svg$/,
   );
   await p.locator("#symbol-category").selectOption("Todos");
-  assert.equal(await p.locator("#symbol-tools [data-add]").count(), 74);
+  assert.equal(await p.locator("#symbol-tools [data-add]").count(), 180);
   await p
     .locator("#symbol-tools img")
     .evaluateAll((images) => Promise.all(images.map((img) => img.decode())));
-  await p.locator('[data-add="x32_55"]').click();
+  await p.locator('[data-add="trs_connector"]').click();
   await saved(p);
   await q.waitForFunction(
-    () => document.querySelector("#symbol-style")?.value === "x32",
+    () => document.querySelector("#symbol-style")?.value === "cenital",
   );
-  assert.equal((await stored()).symbolStyle, "x32");
-  const connector = (await stored()).items.find((i) => i.type === "x32_55");
+  assert.equal((await stored()).symbolStyle, "cenital");
+  const connector = (await stored()).items.find((i) => i.type === "trs_connector");
   assert.ok(connector);
   // The native print dialog is intercepted so the generated document can be inspected.
   await p.evaluate(
@@ -366,7 +366,7 @@ try {
   assert.equal(await p.locator("#text-size-value").innerText(), "120%");
   assert.deepEqual(errors, []);
   console.log(
-    "OK: Enter/Shift+Enter, primer aviso, sonido real y mute persistente, papelera con confirmación, arrastre por ambos extremos, selección múltiple, vínculos/patch, fuentes independientes, dirección visible y grupos de canales personalizados en dos puestos, JSON, PDF configurable y 74 SVG X32/M32.",
+    "OK: Enter/Shift+Enter, primer aviso, sonido real y mute persistente, papelera con confirmación, arrastre por ambos extremos, selección múltiple, vínculos/patch, fuentes independientes, dirección visible y grupos de canales personalizados en dos puestos, JSON, PDF configurable y 180 SVG propios por vista.",
   );
 } finally {
   await browser?.close();

@@ -184,9 +184,9 @@ try {
     "FOH → stagebox",
   );
   await p.locator("#symbol-file").setInputFiles({
-    name: "mi-cajon.webp",
-    mimeType: "image/webp",
-    buffer: readFileSync("public/symbols/techrider/cajon.webp"),
+    name: "mi-icono.png",
+    mimeType: "image/png",
+    buffer: readFileSync("public/brand/gordostage-logo.png"),
   });
   await p.locator('[data-add^="custom_"]').waitFor();
   await p.locator('[data-tool="move"]').click();
@@ -202,9 +202,9 @@ try {
   await p.locator("#export").click();
   const downloaded = await downloadPromise;
   const portable = JSON.parse(readFileSync(await downloaded.path(), "utf8"));
-  assert.equal(portable.formatVersion, 5);
+  assert.equal(portable.formatVersion, 6);
   assert.equal(portable.customAssets.length, 1);
-  assert.match(portable.customAssets[0].dataUrl, /^data:image\/webp;base64,/);
+  assert.match(portable.customAssets[0].dataUrl, /^data:image\/png;base64,/);
   assert.equal(portable.drawings.at(-1).kind, "ethernet");
   await p.locator(".brand").click();
   assert.equal(await p.locator("#welcome-page").isVisible(), true);

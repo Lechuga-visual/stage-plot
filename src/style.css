@@ -2064,7 +2064,7 @@ html[data-theme="neon"] .drawing-layer text {
   stroke: #0a1527;
 }
 html[data-theme="neon"] img.builtin-symbol {
-  filter: invert(1);
+  filter: none;
 }
 html[data-theme="neon"] .item-label {
   background: #142b43e8;
@@ -2717,8 +2717,40 @@ tr.drop-after td {
   }
 }
 
-img.tecrider-symbol {
-  background: #f8fafc;
-  border-radius: 5px;
-  padding: 3px;
-}
+
+
+/* Compact session controls and clearly editable project metadata. */
+.project-topline { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px; }
+#project-session { margin-left:auto; }
+#project-session .network-controls { margin:0; justify-content:flex-end; flex-wrap:wrap; gap:8px; }
+.project-fields { width:min(720px,100%); min-width:0; }
+.editable-project-field { display:flex; align-items:center; gap:8px; border:1px solid transparent; border-radius:7px; padding:0 6px; }
+.editable-project-field input { min-width:0; flex:1; max-width:none; }
+.editable-project-field:focus-within { border-color:#be682c; background:#fffaf4; }
+.edit-field-button { display:flex; align-items:center; justify-content:center; flex:0 0 32px; width:32px; height:32px; border:0; background:transparent; color:#a74d20; border-radius:5px; cursor:pointer; }
+.edit-field-button svg { width:17px; height:17px; }
+.edit-field-button:hover { background:#f5e6d8; }
+.edit-field-button:disabled { opacity:.25; cursor:default; }
+#header-network .network-menu { position:relative; margin:0; }
+#header-network .network-menu[open] { padding:0; border:0; background:none; }
+#header-network summary { display:flex; gap:8px; align-items:center; list-style:none; padding:8px 4px; font-size:.72rem; white-space:nowrap; }
+#header-network summary::-webkit-details-marker { display:none; }
+#header-network .network-chevron { display:inline-block; font:inherit; font-size:1.1rem; margin:0; color:inherit; letter-spacing:0; }
+#header-network details[open] .network-chevron { transform:rotate(90deg); }
+.network-popover { position:absolute; z-index:40; top:100%; left:0; width:max-content; max-width:min(440px,calc(100vw - 110px)); padding:14px; border:1px solid #cab9a8; border-radius:9px; background:#fff8ed; box-shadow:0 10px 30px #0002; }
+.network-popover .network-address + .network-address { margin-top:10px; }
+.app-footer { gap:18px; flex-wrap:wrap; font-size:.7rem; line-height:1.7; }
+.app-footer a { color:inherit; text-decoration:underline; text-underline-offset:3px; }
+.footer-credits { margin:7px 0 0; }
+.footer-credits > span { padding:0 7px; }
+.app-version { font-variant-numeric:tabular-nums; }
+#server-port-form fieldset { border:1px solid #b8a99d; border-radius:8px; margin:0 0 20px; padding:16px; }
+#server-port-form p { font-size:.8rem; line-height:1.6; }
+#server-port { max-width:150px; }
+html[data-theme="neon"] .editable-project-field:focus-within { background:#132538; border-color:#48d8ff; }
+html[data-theme="neon"] .edit-field-button { color:#a5dcee; }
+html[data-theme="neon"] .edit-field-button:hover { background:#1b3448; }
+html[data-theme="neon"] .network-popover { background:#122337; border-color:#365a79; }
+html[data-theme="neon"] .app-footer { color:#a9bfd1; }
+@media(max-width:650px) { .project-topline { align-items:flex-start; } .heading { gap:15px; flex-wrap:wrap; } #project-session .network-controls > span { font-size:.58rem; letter-spacing:.05em; } .app-footer { align-items:flex-start; } }
+@media print { .project-topline,.edit-field-button { display:none !important; } .editable-project-field { border:0; padding:0; } }

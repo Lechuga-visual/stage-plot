@@ -223,12 +223,38 @@ export async function collaborate({ getState, setState, render, openEditor }) {
         }),
     );
   }
-  function securityDialog() {
+  async function securityDialog() {
+    let server;
+    try {
+      const response = await request("/api/server-settings");
+      if (!response.ok) throw Error((await response.json()).error);
+      server = await response.json();
+    } catch (error) {
+      alert(error.message || "No se pudo leer la configuración del servidor");
+      return;
+    }
     const el = dialog(
-      `<div class="dialog-heading"><h2>Seguridad de la sesión local</h2><button class="button" data-dismiss>Cerrar</button></div><form id="security-form"><label class="check-label"><input id="security-enabled" type="checkbox" ${securityEnabled ? "checked" : ""}> Pedir clave de edición a otros dispositivos</label><label>Nueva clave<input id="security-code" type="password" minlength="4" maxlength="128" autocomplete="new-password" placeholder="Deja vacío para conservar la actual"></label><label class="check-label"><input id="chat-enabled" type="checkbox" ${chatEnabled ? "checked" : ""}> Habilitar chat</label><label class="check-label"><input id="registered-only" type="checkbox" ${requireRegistered ? "checked" : ""}> Solo usuarios registrados</label><p>Este PC anfitrión puede configurar y editar sin clave. Con seguridad desactivada, los equipos de la red pueden editar.</p><button class="button dark">Guardar configuración</button><p role="status"></p></form>`,
+      `<div class="dialog-heading"><h2>Configuración y permisos</h2><button class="button" data-dismiss>Cerrar</button></div><form id="server-port-form"><fieldset><legend>Conexión al servidor</legend><label>Puerto de funcionamiento<input id="server-port" type="number" min="1" max="65535" step="1" required value="${server.port}" aria-describedby="server-port-help"></label><p id="server-port-help">Puerto actual: ${server.currentPort ?? "sin iniciar"}. Se aplica al reiniciar GordoStage. Con el puerto 80 puedes entrar usando solo http://IP; si está ocupado, elige otro.</p>${server.environmentOverride ? '<p>La variable PORT tiene prioridad sobre este ajuste. El valor guardado se usará cuando retires esa variable del arranque.</p>' : ""}<button class="button">Guardar puerto</button><p id="server-port-status" role="status"></p></fieldset></form><form id="security-form"><label class="check-label"><input id="security-enabled" type="checkbox" ${securityEnabled ? "checked" : ""}> Pedir clave de edición a otros dispositivos</label><label>Nueva clave<input id="security-code" type="password" minlength="4" maxlength="128" autocomplete="new-password" placeholder="Deja vacío para conservar la actual"></label><label class="check-label"><input id="chat-enabled" type="checkbox" ${chatEnabled ? "checked" : ""}> Habilitar chat</label><label class="check-label"><input id="registered-only" type="checkbox" ${requireRegistered ? "checked" : ""}> Solo usuarios registrados</label><p>Este PC anfitrión puede configurar y editar sin clave. Con seguridad desactivada, los equipos de la red pueden editar.</p><button class="button dark">Guardar configuración</button><p role="status"></p></form>`,
     );
     el.querySelector("[data-dismiss]").onclick = () => el.close();
-    el.querySelector("form").onsubmit = async (e) => {
+    el.querySelector("#server-port-form").onsubmit = async (e) => {
+      e.preventDefault();
+      const status = el.querySelector("#server-port-status");
+      try {
+        const port = Number(el.querySelector("#server-port").value);
+        const response = await request("/api/server-settings", { method: "PUT", body: JSON.stringify({ port }) });
+        const result = await response.json();
+        if (!response.ok) throw Error(result.error);
+        const next = new URL(location.href);
+        next.port = port === 80 && next.protocol === "http:" ? "" : String(port);
+        next.pathname = "/"; next.search = ""; next.hash = "";
+        status.textContent = result.environmentOverride
+          ? "Puerto guardado. PORT tiene prioridad: retira esa variable y reinicia para usarlo."
+          : result.currentPort === port ? "Este puerto ya está en uso por GordoStage."
+          : `Puerto guardado. Reinicia GordoStage y abre ${next.href}`;
+      } catch (error) { status.textContent = error.message || "No se pudo guardar el puerto"; }
+    };
+    el.querySelector("#security-form").onsubmit = async (e) => {
       e.preventDefault();
       const value = el.querySelector("#security-code").value;
       const r = await request("/api/security", {
@@ -241,7 +267,7 @@ export async function collaborate({ getState, setState, render, openEditor }) {
         }),
       });
       if (!r.ok) {
-        el.querySelector("[role=status]").textContent = (await r.json()).error;
+        el.querySelector("#security-form [role=status]").textContent = (await r.json()).error;
         return;
       }
       el.close();
@@ -253,8 +279,8 @@ export async function collaborate({ getState, setState, render, openEditor }) {
     const box = document.createElement("div");
     box.id = "network-controls";
     box.className = "network-controls";
-    box.innerHTML = `<span>SESIÓN LOCAL · ${securityEnabled ? "CON CLAVE" : "ABIERTA"}</span>${isHost ? iconButton("security-settings", "settings", "Seguridad y chat") : securityEnabled ? '<button id="access-code" class="button">' + (canEdit ? "Cambiar acceso" : "Entrar a editar") + "</button>" : ""}<button id="identity-button" class="button">${esc(sessionStorage.getItem("gordostage-display-name") || "Identificarme")}</button>${conflict ? '<button id="reload-project" class="button">Cargar versión del servidor</button>' : ""}`;
-    document.querySelector("main").prepend(box);
+    box.innerHTML = `<span>SESIÓN LOCAL · ${securityEnabled ? "CON CLAVE" : "ABIERTA"}</span>${isHost ? iconButton("security-settings", "settings", "Configuración y permisos") : securityEnabled ? '<button id="access-code" class="button">' + (canEdit ? "Cambiar acceso" : "Entrar a editar") + "</button>" : ""}<button id="identity-button" class="button">${esc(sessionStorage.getItem("gordostage-display-name") || "Identificarme")}</button>${conflict ? '<button id="reload-project" class="button">Cargar versión del servidor</button>' : ""}`;
+    document.querySelector("#project-session").append(box);
     box
       .querySelector("#security-settings")
       ?.addEventListener("click", securityDialog);

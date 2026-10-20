@@ -1,6 +1,0 @@
-TecRider stage plot icons
-Source: https://tecrider.com/stage-plot-icons
-Retrieved: 2026-10-20
-309 original PNG images, copied without editing; duplicate entries deduplicated.
-See SOURCE.json for source URLs, hashes and attribution.
-Source page does not state an explicit image redistribution license. No open license is asserted.

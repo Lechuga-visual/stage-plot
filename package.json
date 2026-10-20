@@ -6,10 +6,11 @@
   "scripts": {
     "dev": "vite --host 0.0.0.0",
     "build": "vite build",
+    "icons:generate": "python3 scripts/generate-symbols.py",
     "preview": "vite preview --host 0.0.0.0",
     "start": "node server/app.js",
     "test": "node --test tests/*.test.js",
-    "test:browser": "node tests/browser-smoke.mjs && node tests/equipment-browser.mjs && node tests/workspace-browser.mjs && node tests/live-usability-browser.mjs && node tests/tecrider-browser.mjs",
+    "test:browser": "node tests/browser-smoke.mjs && node tests/equipment-browser.mjs && node tests/workspace-browser.mjs && node tests/live-usability-browser.mjs && node tests/own-symbols-browser.mjs && node tests/next-browser.mjs",
     "screenshots": "node scripts/screenshots.mjs",
     "package:windows": "node scripts/package-windows.mjs",
     "test:portable": "node tests/portable-smoke.mjs"

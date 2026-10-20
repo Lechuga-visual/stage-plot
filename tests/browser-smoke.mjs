@@ -114,7 +114,7 @@ try {
   await p.locator("#export").click();
   const download = await downloadPromise;
   const data = JSON.parse(readFileSync(await download.path(), "utf8"));
-  assert.equal(data.formatVersion, 5);
+  assert.equal(data.formatVersion, 6);
   assert.equal(data.drawings.length, 1);
   assert.equal(data.columns.at(-1).label, "Patch");
   assert.equal(data.channels[0][data.columns.at(-1).id], "A1");

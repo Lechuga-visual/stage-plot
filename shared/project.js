@@ -1,7 +1,7 @@
 import { validateImage } from "./assets.js";
 import { reconcileInputs, POWER_OPTIONS, inputSides } from "./equipment.js";
 import { getSymbol } from "./symbols.js";
-export const FORMAT_VERSION = 5;
+export const FORMAT_VERSION = 6;
 export const DEFAULT_COLUMNS = [
   { id: "source", label: "Fuente / instrumento" },
   { id: "mic", label: "Micrófono / DI" },
@@ -41,7 +41,7 @@ export function validProject(s) {
     text(s.band) &&
     text(s.event) &&
     text(s.description, 1000) &&
-    ["generic", "x32", "tecrider"].includes(s.symbolStyle) &&
+    ["original", "cenital"].includes(s.symbolStyle) &&
     text(s.notes) &&
     list(
       s.customAssets,
@@ -131,14 +131,16 @@ export function normalizeProject(input) {
       s.formatVersion !== 2 &&
       s.formatVersion !== 3 &&
       s.formatVersion !== 4 &&
-      s.formatVersion !== 5)
+      s.formatVersion !== 5 &&
+      s.formatVersion !== 6)
   )
     throw Error("Versión de proyecto no compatible");
   if (
     s.formatVersion !== 2 &&
     s.formatVersion !== 3 &&
     s.formatVersion !== 4 &&
-    s.formatVersion !== 5
+    s.formatVersion !== 5 &&
+    s.formatVersion !== 6
   ) {
     s.formatVersion = 2;
     s.columns = structuredClone(DEFAULT_COLUMNS);
@@ -158,7 +160,7 @@ export function normalizeProject(input) {
   for (const item of s.items || [])
     for (const input of item.technical?.inputs || [])
       input.channelLabels ??= [];
-  s.symbolStyle ??= "generic";
+  if (s.symbolStyle === undefined || ["generic", "x32", "tecrider"].includes(s.symbolStyle)) s.symbolStyle = "original";
   s.description ??= "";
   s.customAssets ||= [];
   if (Array.isArray(s.drawings))

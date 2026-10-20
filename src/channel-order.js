@@ -84,7 +84,10 @@ export function mountChannelOrder({
           selected = new Set([state.channels[n]]);
         drag = {
           projectId: id,
-          token: crypto.randomUUID(),
+          // randomUUID requires HTTPS (or localhost); getRandomValues works on LAN HTTP.
+          token: Array.from(crypto.getRandomValues(new Uint32Array(4)), (n) =>
+            n.toString(16),
+          ).join("-"),
           rows: [...selected],
         };
         e.dataTransfer.effectAllowed = "move";

@@ -194,6 +194,11 @@ try {
   await page.locator('[data-home-open="default"]').waitFor();
   mkdirSync("docs/screenshots", { recursive: true });
   await page.screenshot({ path: "docs/screenshots/bienvenida.png" });
+  await page.locator("#home-security").click();
+  await page.locator("#server-port").waitFor();
+  await page.locator("#workspace-dialog").screenshot({path:"docs/screenshots/configuracion-puerto.png"});
+  await page.locator("#workspace-dialog [data-dismiss]").click();
+
   await openDefault(page);
   await page.evaluate(() => document.fonts.ready);
   mkdirSync("docs/screenshots", { recursive: true });
@@ -231,7 +236,7 @@ try {
     .locator("#workspace-dialog")
     .screenshot({ path: "docs/screenshots/exportacion-pdf.png" });
   await page.locator("#workspace-dialog [data-dismiss]").click();
-  await page.locator("#symbol-style").selectOption("x32");
+  await page.locator("#symbol-style").selectOption("original");
   await page.locator("#symbol-category").selectOption("Todos");
   await page
     .locator("#symbol-tools img")
@@ -241,7 +246,7 @@ try {
     .evaluate((el) => (el.style.alignSelf = "start"));
   await page
     .locator(".palette")
-    .screenshot({ path: "docs/screenshots/iconos-x32-m32.png" });
+    .screenshot({ path: "docs/screenshots/iconos-gordostage-original.png" });
   await page.locator('[data-item="8"]').click();
   await page.locator('[data-technical-field="signal"]').selectOption("custom");
   await page.locator("[data-channel-count]").fill("4");
@@ -258,8 +263,8 @@ try {
   await page
     .locator(".equipment-panel")
     .screenshot({ path: "docs/screenshots/canales-personalizados.png" });
-  await page.locator("#symbol-style").selectOption("tecrider");
-  await page.locator("#symbol-category").selectOption("Guitarras y bajos");
+  await page.locator("#symbol-style").selectOption("cenital");
+  await page.locator("#symbol-category").selectOption("Cuerdas");
   await page
     .locator("#symbol-tools img")
     .evaluateAll((images) => Promise.all(images.map((img) => img.decode())));
@@ -268,10 +273,15 @@ try {
     .evaluate((el) => (el.style.alignSelf = "start"));
   await page
     .locator(".palette")
-    .screenshot({ path: "docs/screenshots/iconos-tecrider.png" });
+    .screenshot({ path: "docs/screenshots/iconos-gordostage-cenital.png" });
+
+  await page.locator("#header-network summary").click();
+  await page.locator("#header-network .network-popover").screenshot({path:"docs/screenshots/acceso-en-red.png"});
+  await page.keyboard.press("Escape");
+  await page.locator("main .app-footer").screenshot({path:"docs/screenshots/creditos-version.png"});
   if (errors.length) throw Error(errors.join("\n"));
   console.log(
-    "Capturas generadas: bienvenida, editor, lista, chat, proyectos, biblioteca, ficha técnica, PDF configurable, X32/M32, TecRider y canales personalizados (datos de ejemplo).",
+    "Capturas generadas: bienvenida, editor, lista, chat, proyectos, biblioteca, ficha técnica, PDF configurable, vistas original/cenital propias y canales personalizados (datos de ejemplo).",
   );
 } finally {
   await browser?.close();

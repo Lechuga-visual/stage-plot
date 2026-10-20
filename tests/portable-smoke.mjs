@@ -5,7 +5,7 @@ import { tmpdir } from "node:os";
 import { once } from "node:events";
 import assert from "node:assert/strict";
 import { setTimeout as delay } from "node:timers/promises";
-import { TECRIDER_SYMBOLS } from "../shared/tecrider-symbols.js";
+import { getSymbol } from "../shared/symbols.js";
 import { normalizeProject } from "../shared/project.js";
 const version = JSON.parse(
   readFileSync(new URL("../package.json", import.meta.url), "utf8"),
@@ -23,7 +23,7 @@ try {
   assert.equal(bytes.subarray(0, 2).toString(), "MZ");
   assert.ok(
     existsSync(
-      join(directory, "dist/symbols/techrider/acoustic_drum_kit.webp"),
+      join(directory, "dist/symbols/gordostage/original/claro/acoustic_drum_kit.svg"),
     ),
   );
   const runtime =
@@ -68,18 +68,15 @@ try {
   let base = await start();
   assert.equal((await fetch(base)).status, 200);
   const symbol = await fetch(
-    base + "/symbols/techrider/acoustic_drum_kit.webp",
+    base + getSymbol("drums").src,
   );
   assert.equal(symbol.status, 200);
-  assert.match(symbol.headers.get("content-type"), /image\/webp/);
-  const tecriderIcon = await fetch(base + TECRIDER_SYMBOLS[0].src);
-  assert.equal(tecriderIcon.status, 200);
-  assert.match(tecriderIcon.headers.get("content-type"), /image\/png/);
-  assert.ok(existsSync(join(directory, "dist/symbols/tecrider/SOURCE.json")));
-  const consoleIcon = await fetch(base + "/symbols/behringer/30.svg");
-  assert.equal(consoleIcon.status, 200);
-  assert.match(consoleIcon.headers.get("content-type"), /image\/svg\+xml/);
-  assert.ok(existsSync(join(directory, "dist/symbols/behringer/LICENSE")));
+  assert.match(symbol.headers.get("content-type"), /image\/svg\+xml/);
+  for (const style of ["original", "cenital"]) for (const theme of ["claro", "oscuro"]) {
+    const response = await fetch(base + getSymbol("guitar", style, theme).src);
+    assert.equal(response.status, 200);
+    assert.match(response.headers.get("content-type"), /image\/svg\+xml/);
+  }
   assert.equal(
     (await (await fetch(base + "/api/network")).json()).port,
     Number(new URL(base).port),

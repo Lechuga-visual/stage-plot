@@ -1,8 +1,10 @@
 # GordoStage
 
-**Plataforma de logística de escenario.**
+**Logística de escenario.**
 
 Stage plots y riders técnicos para bandas, productoras y equipos de montaje. Funciona como servidor local compartido desde un PC Windows, con acceso desde los navegadores de la misma red. También incluye un editor individual que se puede alojar como sitio estático.
+
+Los cambios de la biblioteca propia, puerto, interfaz y créditos están preparados en `main`; **todavía no se ha publicado una versión nueva de Windows**. La descarga siguiente corresponde a la versión anterior publicada.
 
 ## Descargar para Windows
 
@@ -12,11 +14,11 @@ En una instalación nueva **no se pide clave**. La bienvenida permite abrir proy
 
 Consulta [distribución y actualización](docs/DISTRIBUCION.md) y [notas de versión](docs/RELEASE_NOTES.md).
 
-## Muestras de la familia propia de iconos
+## Biblioteca propia de iconos
 
-Ya están disponibles [180 diseños SVG propios en la vista original](muestra-de-iconos/familia-gordostage-v1/) y [los mismos 180 en vista cenital](muestra-de-iconos/familia-gordostage-cenital-v1/), con el estilo de los 20 cenitales aprobados. Ambas colecciones incluyen variantes claras y oscuras: **720 SVG independientes**, láminas PNG, inventarios, catálogo HTML y ZIP descargable. Consulta [el índice de muestras](muestra-de-iconos/). La biblioteca activa de la aplicación conserva sus recursos actuales.
+La aplicación incluye [180 conceptos en vista original](public/symbols/gordostage/original/) y [los mismos 180 en vista cenital](public/symbols/gordostage/cenital/), con variantes claras y oscuras: **720 SVG independientes**. El tema de cada puesto elige su variante y el PDF usa los iconos claros. Consulta el [inventario con enlaces a los archivos definitivos](docs/INVENTARIO_ICONOS.md). Se retiraron las galerías, láminas y ZIP de las muestras aprobadas.
 
-## Implementado
+## Implementado en el código actual
 
 - **Proyectos compartidos:** crear y abrir varios proyectos; pestañas en la barra lateral, cierre de pestañas por dispositivo y nombre/descripción al pasar el ratón o enfocar. Cada puesto elige su proyecto sin cambiar la vista de los demás. Todos los proyectos guardados siguen disponibles en el servidor.
 - **Bienvenida y temas:** accesos a proyectos, importación/exportación, configuración, permisos y usuarios. Tema oscuro Neón y tema claro GordoStage, guardados por navegador. El botón del encabezado también cambia el tema desde el editor.
@@ -24,12 +26,13 @@ Ya están disponibles [180 diseños SVG propios en la vista original](muestra-de
 - **Identidad y chat:** identificación al abrir un proyecto, con puestos Escenario, FOH, Monitores, Producción, Backline, Iluminación, Vídeo, Booking y Otro. Nombre automático por puesto o alias. Chat flotante inferior derecho, minimizable, con aviso destacado de mensajes sin leer, sonido breve y mute por navegador; separado por proyecto y disponible también en la bienvenida.
 - **Plano:** papelera para eliminar el equipo seleccionado con confirmación; las etiquetas permanecen sobre los iconos al superponerse. Instrumentos móviles y comentarios por equipo o por punto libre. Paleta compacta con iconos para seleccionar, dibujar, comentar, borrar un trazo completo o borrar partes con goma. Color, grosor, opacidad y deshacer/rehacer de dibujos.
 - **Cableado visual:** rutas con esquinas y etiquetas para energía, audio, multipar, Ethernet y vídeo, con colores/estilos diferenciados y leyenda. Se conservan en JSON y PDF.
-- **Biblioteca:** 173 símbolos WebP genéricos más 309 PNG de [TecRider](https://tecrider.com/stage-plot-icons) y 74 SVG X32/M32 de [mamarguerat/behringer-icons](https://github.com/mamarguerat/behringer-icons), **556 recursos en total**, con selector de estilo por proyecto y búsqueda en español o por nombre original y frecuentes. Subida de PNG, WebP o JPEG desde cualquier puesto editor; almacenamiento en el servidor y biblioteca compartida de personalizados.
+- **Biblioteca propia:** 180 conceptos GordoStage en vista original y cenital, cada una clara y oscura: **720 SVG incluidos**. Selector de vista por proyecto, variante según el tema de cada puesto y PDF con iconos claros. Iconos personalizados PNG, WebP y JPEG compartidos desde el servidor.
+- **Puerto y presentación:** el anfitrión guarda el puerto en configuración; se aplica al reiniciar y `PORT` tiene prioridad. El puerto 80 permite entrar con `http://IP` si está disponible. Nombre, bajada y descripción muestran lápices; el footer incluye versión y créditos.
 - **Ficha técnica:** pulsar un equipo para indicar energía, entradas, micrófono/DI, señal mono/estéreo, phantom, soporte y notas. Las entradas generan canales vinculados; estéreo genera L/R. También se vinculan canales existentes. La opción de cantidad personalizada genera de 1 a 64 canales, etiquetables uno a uno.
-- **Input list:** celdas editables, hasta 20 columnas personalizadas, nombres y orden configurables, altas/bajas y orden manual de hasta 500 canales. Asas de arrastre a ambos extremos, selección múltiple y destino por teclado para mover grupos conservando vínculos y patch. La edición de datos vinculados actualiza la ficha del equipo.
-- **Lectura y acceso:** texto un 20% mayor por defecto, controles A−/A+ de 100% a 180% por dispositivo y dirección IP/puerto con botón Copiar en encabezado y bienvenida. Administración visiblemente deshabilitada fuera del anfitrión.
+- **Input list:** celdas editables, hasta 20 columnas personalizadas, nombres y orden configurables, altas/bajas y orden manual de hasta 500 canales. Inserción antes de cualquier fila, asas de arrastre a ambos extremos —también por HTTP desde otro PC—, selección múltiple y destino por teclado para mover grupos conservando vínculos y patch. La edición de datos vinculados actualiza la ficha del equipo.
+- **Lectura y acceso:** texto un 20% mayor por defecto, controles A−/A+ de 100% a 180% por dispositivo y «Acceso en red» desplegable en el encabezado y direcciones con Copiar en la bienvenida. Administración visiblemente deshabilitada fuera del anfitrión.
 - **PDF configurable:** selección de secciones, equipos y canales; opciones de iconos, etiquetas, trazos, cableado, marcadores y cuadrícula. **Exportar con todo** omite la selección personalizada. La exportación no altera el proyecto.
-- **Portabilidad:** JSON editable v5, con importación de versiones anteriores, e impresión a PDF del rider con plano, rutas, comentarios y resumen técnico. Los símbolos personalizados usados viajan incrustados en el JSON.
+- **Portabilidad:** JSON editable v6, con importación de versiones anteriores, e impresión a PDF del rider con plano, rutas, comentarios y resumen técnico. Los símbolos personalizados usados viajan incrustados en el JSON.
 
 El [orden del input list](docs/INPUT_LIST.md) usa una convención de sonido en vivo como punto de partida: batería, percusión, bajo, guitarras, teclados, pistas/DJ, vientos/cuerdas, coros, voz principal y talkback. No impone una norma universal ni ordena automáticamente los canales nuevos. Consulta el [inventario completo de símbolos](docs/SIMBOLOS.md) y la [identidad visual](docs/IDENTIDAD.md).
 
@@ -40,6 +43,10 @@ Datos de ejemplo de la aplicación ejecutándose; se regeneran sin acceder a los
 ### Bienvenida y proyectos
 
 ![Bienvenida con acceso a proyectos, configuración, usuarios y tema Neón](docs/screenshots/bienvenida.png)
+
+![Configuración del puerto y aplicación al reiniciar](docs/screenshots/configuracion-puerto.png)
+
+![Direcciones del servidor en el menú Acceso en red](docs/screenshots/acceso-en-red.png)
 
 ### Editor de escenario
 
@@ -65,15 +72,17 @@ Datos de ejemplo de la aplicación ejecutándose; se regeneran sin acceder a los
 
 ![Opciones de PDF con selección de secciones, equipos y canales](docs/screenshots/exportacion-pdf.png)
 
-![Biblioteca de iconos X32/M32](docs/screenshots/iconos-x32-m32.png)
+![Biblioteca propia en vista original](docs/screenshots/iconos-gordostage-original.png)
 
-![Colección TecRider de 309 PNG locales](docs/screenshots/iconos-tecrider.png)
+![Biblioteca propia en vista cenital](docs/screenshots/iconos-gordostage-cenital.png)
 
 ![Grupo de canales con cantidad y etiquetas individuales](docs/screenshots/canales-personalizados.png)
 
+![Créditos y versión de GordoStage](docs/screenshots/creditos-version.png)
+
 ## Uso en red local
 
-El anfitrión abre `http://127.0.0.1:3000`; los otros puestos usan una dirección LAN mostrada en la consola. Permite el puerto TCP 3000 en el firewall de la red privada si es necesario. No se instala nada en los dispositivos que acceden con navegador.
+El anfitrión abre `http://127.0.0.1:3000` por defecto; los otros puestos usan una dirección LAN mostrada en la consola y en **Acceso en red**. El puerto se puede guardar desde la configuración local y se aplica al reiniciar; con el puerto 80 basta `http://IP`. Permite el puerto elegido en el firewall de la red privada si es necesario. No se instala nada en los dispositivos que acceden con navegador.
 
 Desde **Configuración y permisos** el anfitrión decide si usa clave y puede cambiarla. En modo protegido, los otros dispositivos usan **Entrar a editar**. Un perfil de lectura permanece de lectura aunque conozca la clave. Los perfiles sin PIN sirven para identificarse; si necesitas controlar quién usa cada perfil, configura PIN y activa **Solo usuarios registrados**. Esta opción restringe la participación y edición; el rider sigue disponible para consulta en la red. No son cuentas de un servicio web.
 
@@ -111,4 +120,4 @@ En Linux con Chromium instalado puedes anteponer `CHROMIUM_PATH=/usr/bin/chromiu
 
 La goma divide trazos vectoriales. Deshacer/rehacer conserva hasta 50 pasos de dibujo en memoria por proyecto y se reinicia si llegan dibujos modificados desde otro puesto. Las rutas son anotaciones gráficas: no conectan puertos automáticamente ni calculan cargas. El usuario reportó funcionamiento correcto entre dos PCs de la misma red. La prueba de operación durante un montaje real queda para la siguiente etapa.
 
-Enter envía el chat; Shift+Enter inserta una nueva línea. El sonido se habilita después de la primera interacción con la página por las reglas del navegador. El botón del altavoz permite silenciarlo sin quitar el aviso visual. Los estilos disponibles son Genéricos, X32/M32 y TecRider ilustrados. El modo de iconos se guarda en el proyecto; si un equipo genérico no tiene equivalencia X32/M32, conserva su símbolo. Los 74 SVG se distribuyen sin modificar, con licencia GPL-3.0 y procedencia en `public/symbols/behringer/`.
+Enter envía el chat; Shift+Enter inserta una nueva línea. El sonido se habilita después de la primera interacción con la página por las reglas del navegador. El botón del altavoz permite silenciarlo sin quitar el aviso visual. Las vistas disponibles son GordoStage original y cenital. La vista se guarda por proyecto, el tema selecciona los SVG claros u oscuros por dispositivo y el PDF utiliza la variante clara.

@@ -1,3 +1,15 @@
+# Cambios preparados en main — sin nueva release
+
+- Biblioteca propia exclusiva: 180 conceptos, vistas original/cenital y temas claro/oscuro (720 SVG). Se retiraron las colecciones anteriores. Se actualizó el proyecto base.
+- Documentación y capturas actualizadas. Retiradas las carpetas, galerías y ZIP de muestras; los SVG definitivos siguen separados en la biblioteca de la aplicación.
+- Arrastre de canales desde puestos con HTTP, selección múltiple, patch conservado e inserción antes de cualquier fila.
+- Puerto guardado por el anfitrión, aplicado al reiniciar, con prioridad de `PORT`; URLs sin `:80` para ese puerto.
+- Acceso en red desplegable; subtítulo «Logística de escenario»; sesión a la derecha y campos con lápiz.
+- Créditos de Don Xuru y Lechuga con enlaces y versión de la compilación en el footer.
+- JSON v6 con las vistas propias. Los formatos anteriores con símbolos reconocidos siguen siendo importables.
+
+El número de versión de la aplicación no se ha cambiado y no se ha creado un tag ni un paquete Windows nuevo. Las notas siguientes describen versiones ya publicadas.
+
 GordoStage **0.3.1** de prueba para **Windows 10/11 x64**.
 
 Descarga **GordoStage-0.3.1-windows-x64.zip**, extrae todo y abre **Iniciar GordoStage.cmd**. Incluye Node.js e interfaz compilada. Mantén la consola abierta mientras trabajan los demás puestos.

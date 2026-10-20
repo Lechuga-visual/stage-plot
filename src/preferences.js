@@ -55,17 +55,10 @@ function paintNetwork() {
     const signature = JSON.stringify(addresses);
     if (el.dataset.addresses === signature) continue;
     el.dataset.addresses = signature;
-    el.innerHTML = `<span class="network-label">Acceso ${network.addresses?.length ? "en red" : "al servidor"}</span><div class="network-address"><code>${esc(addresses[0])}</code><button type="button" class="button copy-address" data-address="${esc(addresses[0])}" aria-label="Copiar dirección del servidor">Copiar</button></div>${
-      addresses.length > 1
-        ? `<details><summary>Otras direcciones (${addresses.length - 1})</summary>${addresses
-            .slice(1)
-            .map(
-              (url) =>
-                `<div class="network-address"><code>${esc(url)}</code><button type="button" class="button copy-address" data-address="${esc(url)}">Copiar</button></div>`,
-            )
-            .join("")}</details>`
-        : ""
-    }`;
+    const content = addresses.map((url) => `<div class="network-address"><code>${esc(url)}</code><button type="button" class="button copy-address" data-address="${esc(url)}" aria-label="Copiar ${esc(url)}">Copiar</button></div>`).join("");
+    el.innerHTML = id === "header-network"
+      ? `<details class="network-menu"><summary>Acceso en red <span class="network-chevron" aria-hidden="true">›</span></summary><div class="network-popover"><span class="network-label">Direcciones del servidor · puerto ${network.port}</span>${content}</div></details>`
+      : `<span class="network-label">Acceso ${network.addresses?.length ? "en red" : "al servidor"}</span>${content}`;
     el.querySelectorAll(".copy-address").forEach(
       (button) =>
         (button.onclick = async () => {
@@ -92,3 +85,13 @@ function paintNetwork() {
     );
   }
 }
+document.addEventListener("click", (event) => {
+  const menu = document.querySelector("#header-network details");
+  if (menu?.open && !menu.contains(event.target)) menu.open = false;
+});
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape") {
+    const menu = document.querySelector("#header-network details");
+    if (menu?.open) { menu.open = false; menu.querySelector("summary").focus(); }
+  }
+});

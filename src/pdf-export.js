@@ -155,6 +155,8 @@ export function openPdfExport(state) {
       .querySelectorAll(".mounting-section form,#mount-error")
       .forEach((node) => node.remove());
     currentCleanup?.();
+    copy.querySelectorAll("img[data-print-src]").forEach(img => { img.src = img.dataset.printSrc; });
+    copy.querySelectorAll(".edit-field-button,.project-topline").forEach(node => node.remove());
     copy.id = "pdf-export-document";
     document.body.append(copy);
     document.body.dataset.pdfExport = "true";

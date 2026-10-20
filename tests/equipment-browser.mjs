@@ -50,7 +50,7 @@ try {
   await openDefault(q);
   await q.locator("#chat-form").waitFor({ state: "attached" });
   await p.locator("#symbol-category").selectOption("Todos");
-  assert.equal(await p.locator("[data-add]").count(), 173);
+  assert.equal(await p.locator("[data-add]").count(), 180);
   assert.equal(
     await p.locator("#symbol-tools img").evaluateAll(async (imgs) =>
       (
@@ -72,7 +72,7 @@ try {
   assert.equal(await p.locator("[data-add]").count(), 1);
   await p.locator('[data-add="foh_position"]').click();
   assert.equal(
-    await p.locator('#stage img[src$="foh_position.webp"]').count(),
+    await p.locator('#stage img[src$="foh_position.svg"]').count(),
     1,
   );
   await saved();
@@ -131,7 +131,7 @@ try {
   await p.locator("#export").click();
   const download = await downloadPromise;
   const exported = JSON.parse(readFileSync(await download.path(), "utf8"));
-  assert.equal(exported.formatVersion, 5);
+  assert.equal(exported.formatVersion, 6);
   assert.equal(
     exported.items.find((i) => i.id === item.id).technical.powerNotes,
     "230 V · 2 enchufes",
@@ -162,7 +162,7 @@ try {
   );
   assert.deepEqual(errors, []);
   console.log(
-    "OK: 173 WebP, búsqueda, recursos de producción, datos técnicos, canales L/R, energía/phantom, vínculo existente, edición bidireccional, JSON, PDF y segundo editor.",
+    "OK: 180 SVG propios, búsqueda, recursos de producción, datos técnicos, canales L/R, energía/phantom, vínculo existente, edición bidireccional, JSON, PDF y segundo editor.",
   );
 } finally {
   await browser?.close();
