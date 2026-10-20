@@ -270,7 +270,14 @@ El selector **Estilo de iconos** alterna **Genéricos · TechRider** y **X32 / M
 
 El catálogo traducido está en `shared/behringer-symbols.js`, con búsqueda por nombre español, nombre original o ID `x32_01` a `x32_74`. Incluye batería y percusión, bajos, guitarras, amplificadores, teclados, vientos, voces, micrófonos, conectores, monitores, PA y utilidades de mezcla/routing.
 
+## Colección TecRider
 
-## Colección solicitada de Tecrider
+Se descargaron **309 PNG únicos** de https://tecrider.com/stage-plot-icons y del catálogo de su diseñador el 20 de octubre de 2026. Las dos listas tenían 550 referencias, con entradas repetidas y tres imágenes PNG incrustadas en el código de la página; se conservaron los 309 recursos distintos sin modificar sus bytes.
 
-La biblioteca de https://tecrider.com/stage-plot-icons está pendiente de incorporación. La descarga desde el entorno de desarrollo devuelve HTTP 403 del proxy porque el dominio no está permitido. No se han inventado ni sustituido esos recursos; se podrán integrar al habilitar el acceso o recibir los archivos.
+El selector añade **TecRider · ilustrados**, con 11 categorías: guitarras/bajos, amplificadores, pedales, batería/percusión, teclados, voces/micrófonos, PA/monitores/DJ, vientos/orquesta, escenario/iluminación, personas y cables/conectores. Se incluyen etiquetas en español y los nombres originales para la búsqueda.
+
+Los archivos residen en `public/symbols/tecrider/`; `SOURCE.json` registra URLs, hashes SHA-256 y procedencia. La página no declara una licencia explícita de redistribución de sus imágenes; no se les atribuye una licencia abierta. Los archivos se incorporan a petición del usuario, con atribución a TecRider.
+
+El catálogo está en `shared/tecrider-symbols.js`. Los IDs se derivan del contenido, el estilo se guarda en JSON v5 y el servidor de destino necesita esta colección para abrir sus símbolos. Las imágenes coloreadas se muestran sin invertir, sobre una superficie clara en el tema oscuro. La app usa las copias locales, sin consultar TecRider durante el montaje.
+
+Total incluido: **173 WebP genéricos + 74 SVG X32/M32 + 309 PNG TecRider = 556 símbolos**. Los iconos personalizados subidos se agregan a ese total por servidor/proyecto.

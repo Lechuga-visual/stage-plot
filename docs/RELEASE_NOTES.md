@@ -1,8 +1,10 @@
-GordoStage **0.3.0** de prueba para **Windows 10/11 x64**.
+GordoStage **0.3.1** de prueba para **Windows 10/11 x64**.
 
-Descarga **GordoStage-0.3.0-windows-x64.zip**, extrae todo y abre **Iniciar GordoStage.cmd**. Incluye Node.js e interfaz compilada. Mantén la consola abierta mientras trabajan los demás puestos.
+Descarga **GordoStage-0.3.1-windows-x64.zip**, extrae todo y abre **Iniciar GordoStage.cmd**. Incluye Node.js e interfaz compilada. Mantén la consola abierta mientras trabajan los demás puestos.
 
 ## Novedades
+
+- **309 PNG de TecRider**, descargados sin modificar, deduplicados y organizados en 11 categorías. Tercer estilo del selector, imágenes locales para trabajar sin internet, etiquetas en español y búsqueda por nombre original. La biblioteca suma **556 símbolos** entre las tres colecciones. Incluye procedencia y hashes de los archivos.
 
 - Chat con **Enter para enviar** y **Shift+Enter para nueva línea**. Aviso destacado de mensajes sin leer, sonido breve y botón para silenciarlo por navegador. El sonido requiere una interacción inicial con la página.
 - Papelera para borrar equipos con confirmación, avisando si se eliminan canales vinculados. Herramientas agrupadas en Items y Trazos. Las etiquetas se superponen sobre los iconos de los equipos.

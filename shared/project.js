@@ -41,7 +41,7 @@ export function validProject(s) {
     text(s.band) &&
     text(s.event) &&
     text(s.description, 1000) &&
-    ["generic", "x32"].includes(s.symbolStyle) &&
+    ["generic", "x32", "tecrider"].includes(s.symbolStyle) &&
     text(s.notes) &&
     list(
       s.customAssets,

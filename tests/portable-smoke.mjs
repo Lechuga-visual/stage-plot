@@ -5,6 +5,7 @@ import { tmpdir } from "node:os";
 import { once } from "node:events";
 import assert from "node:assert/strict";
 import { setTimeout as delay } from "node:timers/promises";
+import { TECRIDER_SYMBOLS } from "../shared/tecrider-symbols.js";
 import { normalizeProject } from "../shared/project.js";
 const version = JSON.parse(
   readFileSync(new URL("../package.json", import.meta.url), "utf8"),
@@ -71,6 +72,10 @@ try {
   );
   assert.equal(symbol.status, 200);
   assert.match(symbol.headers.get("content-type"), /image\/webp/);
+  const tecriderIcon = await fetch(base + TECRIDER_SYMBOLS[0].src);
+  assert.equal(tecriderIcon.status, 200);
+  assert.match(tecriderIcon.headers.get("content-type"), /image\/png/);
+  assert.ok(existsSync(join(directory, "dist/symbols/tecrider/SOURCE.json")));
   const consoleIcon = await fetch(base + "/symbols/behringer/30.svg");
   assert.equal(consoleIcon.status, 200);
   assert.match(consoleIcon.headers.get("content-type"), /image\/svg\+xml/);

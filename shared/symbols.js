@@ -1,3 +1,5 @@
+import { TECRIDER_SYMBOLS } from "./tecrider-symbols.js";
+export { TECRIDER_SYMBOLS };
 import { BEHRINGER_SYMBOLS } from "./behringer-symbols.js";
 export { BEHRINGER_SYMBOLS };
 // Original WebP files supplied by the user; stable IDs match original filenames.
@@ -1227,6 +1229,13 @@ export const LEGACY_ALIASES = {
 };
 const genericById = new Map(SYMBOLS.map((symbol) => [symbol.id, symbol]));
 const x32ById = new Map(BEHRINGER_SYMBOLS.map((symbol) => [symbol.id, symbol]));
+const tecriderById = new Map(
+  TECRIDER_SYMBOLS.map((symbol) => [symbol.id, symbol]),
+);
+const tecriderEquivalents = new Map();
+for (const symbol of TECRIDER_SYMBOLS)
+  if (symbol.canonical && !tecriderEquivalents.has(symbol.canonical))
+    tecriderEquivalents.set(symbol.canonical, symbol);
 const equivalents = new Map();
 for (const symbol of BEHRINGER_SYMBOLS)
   if (symbol.canonical && !equivalents.has(symbol.canonical))
@@ -1239,24 +1248,41 @@ for (const [id, base] of Object.entries({
   electronic_drum_kit: "acoustic_drum_kit",
   hybrid_drum_kit: "acoustic_drum_kit",
   utility_dynamic_mic: "vocal_mic_wired",
-}))
+})) {
   equivalents.set(id, equivalents.get(base));
+  tecriderEquivalents.set(id, tecriderEquivalents.get(base));
+}
 export function getSymbol(id, style = "generic") {
   const resolved = LEGACY_ALIASES[id] || id;
-  const original = genericById.get(resolved) || x32ById.get(resolved);
+  const original =
+    genericById.get(resolved) ||
+    x32ById.get(resolved) ||
+    tecriderById.get(resolved);
   if (!original) return;
+  if (style === "tecrider")
+    return original.family === "tecrider"
+      ? original
+      : tecriderEquivalents.get(original.canonical || resolved) || original;
   if (style === "x32")
     return original.family === "x32"
       ? original
-      : equivalents.get(resolved) || original;
+      : equivalents.get(original.canonical || resolved) || original;
   return original.canonical
     ? genericById.get(original.canonical) || original
     : original;
 }
 export function getOriginalSymbol(id) {
-  return genericById.get(LEGACY_ALIASES[id] || id) || x32ById.get(id);
+  return (
+    genericById.get(LEGACY_ALIASES[id] || id) ||
+    x32ById.get(id) ||
+    tecriderById.get(id)
+  );
 }
-export const ALL_SYMBOLS = [...SYMBOLS, ...BEHRINGER_SYMBOLS];
+export const ALL_SYMBOLS = [
+  ...SYMBOLS,
+  ...BEHRINGER_SYMBOLS,
+  ...TECRIDER_SYMBOLS,
+];
 export const SYMBOL_CATEGORIES = [
   ...new Set(SYMBOLS.map((symbol) => symbol.category)),
 ];

@@ -207,6 +207,9 @@ try {
     .evaluateAll((imgs) => Promise.all(imgs.map((img) => img.decode())));
   await page
     .locator(".palette")
+    .evaluate((el) => (el.style.alignSelf = "start"));
+  await page
+    .locator(".palette")
     .screenshot({ path: "docs/screenshots/biblioteca-simbolos.png" });
   await page.locator("#symbol-category").selectOption("Frecuentes");
   await page.locator('[data-item="8"]').click();
@@ -235,6 +238,9 @@ try {
     .evaluateAll((images) => Promise.all(images.map((img) => img.decode())));
   await page
     .locator(".palette")
+    .evaluate((el) => (el.style.alignSelf = "start"));
+  await page
+    .locator(".palette")
     .screenshot({ path: "docs/screenshots/iconos-x32-m32.png" });
   await page.locator('[data-item="8"]').click();
   await page.locator('[data-technical-field="signal"]').selectOption("custom");
@@ -252,9 +258,20 @@ try {
   await page
     .locator(".equipment-panel")
     .screenshot({ path: "docs/screenshots/canales-personalizados.png" });
+  await page.locator("#symbol-style").selectOption("tecrider");
+  await page.locator("#symbol-category").selectOption("Guitarras y bajos");
+  await page
+    .locator("#symbol-tools img")
+    .evaluateAll((images) => Promise.all(images.map((img) => img.decode())));
+  await page
+    .locator(".palette")
+    .evaluate((el) => (el.style.alignSelf = "start"));
+  await page
+    .locator(".palette")
+    .screenshot({ path: "docs/screenshots/iconos-tecrider.png" });
   if (errors.length) throw Error(errors.join("\n"));
   console.log(
-    "Capturas generadas: bienvenida, editor, lista, chat, proyectos, biblioteca, ficha técnica, PDF configurable, X32/M32 y canales personalizados (datos de ejemplo).",
+    "Capturas generadas: bienvenida, editor, lista, chat, proyectos, biblioteca, ficha técnica, PDF configurable, X32/M32, TecRider y canales personalizados (datos de ejemplo).",
   );
 } finally {
   await browser?.close();

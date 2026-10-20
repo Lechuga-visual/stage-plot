@@ -10,7 +10,7 @@ El editor común funciona en el servidor local y como sitio estático individual
 | Proyectos           | Varios proyectos compartidos; selección y pestañas por dispositivo                                                         | Organizaciones, propiedad y acceso por proyecto           |
 | Dibujo y posiciones | Color, grosor, opacidad, goma parcial, borrar trazo, deshacer/rehacer y comentarios                                        | Conflictos por anotación e historial persistente          |
 | Cableado            | Rutas visuales de energía/audio/multipar/Ethernet/vídeo, etiqueta y leyenda                                                | Evaluar puertos, conectividad real e inventario           |
-| Biblioteca          | 173 WebP, 74 SVG X32/M32 con selector de estilo y subida PNG/WebP/JPEG; servidor e incrustación en JSON                    | Almacenamiento de objetos y cuotas por organización       |
+| Biblioteca          | 173 WebP, 74 SVG X32/M32 y 309 PNG TecRider con selector de estilo y subida PNG/WebP/JPEG; servidor e incrustación en JSON | Almacenamiento de objetos y cuotas por organización       |
 | Chat                | Flotante, minimizable, mensajes sin leer, por proyecto, nombre/puesto automático                                           | HTTPS, identidades verificadas, retención y deduplicación |
 | Usuarios y permisos | Perfiles locales con rol, lectura/edición y PIN; clave opcional de servidor                                                | Cuentas, organizaciones y permisos por proyecto           |
 | Bienvenida y temas  | Proyectos, importación/exportación, configuración; oscuro Neón y claro por dispositivo                                     | Reutilizar interfaz y añadir gestión de organización      |
@@ -21,4 +21,4 @@ Pendientes locales: instalador/ejecutable único, actualizador, QR y prueba fís
 
 Los perfiles de puesto y PIN no son cuentas web. La seguridad actual controla edición y participación; la consulta del rider sigue disponible a quienes alcanzan el servidor local. La versión pública requerirá un diseño de autenticación y acceso acorde a bandas/productoras.
 
-Biblioteca adicional solicitada: Tecrider (https://tecrider.com/stage-plot-icons), pendiente de acceso o archivos. Los 74 SVG X32/M32 ya están incluidos.
+Las tres bibliotecas están integradas: 173 genéricos, 74 X32/M32 y 309 TecRider. Próxima etapa acordada: una familia SVG propia de GordoStage, empezando por una muestra para unificar grosor de línea, proporciones y legibilidad antes de ampliar el catálogo.

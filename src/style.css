@@ -2716,3 +2716,9 @@ tr.drop-after td {
     border-color: transparent !important;
   }
 }
+
+img.tecrider-symbol {
+  background: #f8fafc;
+  border-radius: 5px;
+  padding: 3px;
+}
