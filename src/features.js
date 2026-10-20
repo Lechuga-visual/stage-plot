@@ -12,54 +12,10 @@ const esc = (s) =>
         c
       ],
   );
-let tool = "move",
-  color = "#cc4433";
-let author = sessionStorage.getItem("stagecraft-author") || "";
-let mountDraft = "";
-let chatDraft = "",
-  chatMessages = [],
-  chatError = "",
-  chatLoading = false,
-  api = null;
-let chatScroll = 0;
+let mountDrafts = new Map();
+import { mountDrawing } from "./drawing.js";
+import { identity } from "./identity.js";
 const time = (s) => new Date(s).toLocaleString("es-CL");
-const authorInput = () =>
-  `<label>Tu nombre <input data-author maxlength="80" value="${esc(author)}" placeholder="Nombre del editor"></label>`;
-function rememberAuthor(value) {
-  author = value;
-  sessionStorage.setItem("stagecraft-author", author);
-}
-function messagesHTML() {
-  return (
-    chatMessages
-      .map(
-        (m) =>
-          `<article><b>${esc(m.author)}</b> <time>${esc(time(m.createdAt))}</time><p>${esc(m.text)}</p></article>`,
-      )
-      .join("") || "<p>Sin mensajes todavía.</p>"
-  );
-}
-async function refreshChat() {
-  if (!api?.access().canEdit) return;
-  try {
-    const r = await api.request("/api/chat");
-    if (!r.ok) throw Error("No se pudo leer el chat");
-    chatMessages = await r.json();
-    chatError = "";
-    const log = document.querySelector("#chat-log");
-    if (log) {
-      const bottom = log.scrollHeight - log.scrollTop - log.clientHeight < 30;
-      log.innerHTML = messagesHTML();
-      if (bottom) log.scrollTop = log.scrollHeight;
-    }
-  } catch {
-    chatError = "Chat sin conexión. Tu borrador se conserva.";
-  }
-  const error = document.querySelector("#chat-error");
-  if (error) error.textContent = chatError;
-}
-window.addEventListener("stagecraft-chat", refreshChat);
-setInterval(refreshChat, 5000);
 export function mountFeatures({
   state,
   selected,
@@ -67,7 +23,8 @@ export function mountFeatures({
   render,
   collaboration,
 }) {
-  api = collaboration;
+  const projectId = collaboration?.access().projectId || "local";
+  const currentIdentity = identity();
   // Customize the input list without losing hidden cells when removing a column.
   const table = document.querySelector(".channel-section table");
   table.innerHTML = `<thead><tr><th>CH</th>${state.columns.map((c, n) => `<th><input data-edit data-column="${n}" aria-label="Nombre columna ${n + 1}" value="${esc(c.label)}"><div class="column-actions"><button data-edit data-col-move="${n}" data-dir="-1" aria-label="Mover columna a la izquierda" ${n === 0 ? "disabled" : ""}>←</button><button data-edit data-col-move="${n}" data-dir="1" aria-label="Mover columna a la derecha" ${n === state.columns.length - 1 ? "disabled" : ""}>→</button><button data-edit data-col-delete="${n}" aria-label="Eliminar columna" ${state.columns.length === 1 ? "disabled" : ""}>×</button></div></th>`).join("")}<th class="row-actions">Orden</th></tr></thead><tbody>${state.channels.map((c, n) => `<tr><td>${n + 1}</td>${state.columns.map((col) => `<td><input data-channel="${n}" data-field="${col.id}" aria-label="${esc(col.label)} canal ${n + 1}" value="${esc(c[col.id] || "")}"></td>`).join("")}<td class="row-actions"><button data-edit data-row-move="${n}" data-dir="-1" aria-label="Subir canal ${n + 1}" ${n === 0 ? "disabled" : ""}>↑</button><button data-edit data-row-move="${n}" data-dir="1" aria-label="Bajar canal ${n + 1}" ${n === state.channels.length - 1 ? "disabled" : ""}>↓</button><button data-edit data-row-delete="${n}" aria-label="Eliminar canal ${n + 1}">×</button></td></tr>`).join("")}</tbody>`;
@@ -183,112 +140,7 @@ export function mountFeatures({
     save();
     render();
   };
-  // Annotations use percentages, so drawings and comments scale with the stage.
-  const stage = document.querySelector("#stage");
-  const toolbar = document.createElement("div");
-  toolbar.className = "drawing-tools";
-  toolbar.innerHTML = `<button data-edit data-tool="move" class="button ${tool === "move" ? "chosen" : ""}">Mover</button><button data-edit data-tool="draw" class="button ${tool === "draw" ? "chosen" : ""}">Dibujar</button><button data-edit data-tool="comment" class="button ${tool === "comment" ? "chosen" : ""}">Comentar posición</button><label>Color <input data-edit id="draw-color" type="color" value="${color}"></label><button data-edit id="undo-drawing" class="button">Deshacer trazo</button>`;
-  document.querySelector(".stage-wrap").prepend(toolbar);
-  toolbar.querySelectorAll("[data-tool]").forEach(
-    (b) =>
-      (b.onclick = () => {
-        tool = b.dataset.tool;
-        render();
-      }),
-  );
-  toolbar.querySelector("#draw-color").oninput = (e) =>
-    (color = e.target.value);
-  toolbar.querySelector("#undo-drawing").onclick = () => {
-    state.drawings.pop();
-    save();
-    render();
-  };
-  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-  svg.classList.add("drawing-layer");
-  svg.setAttribute("viewBox", "0 0 100 100");
-  svg.setAttribute("preserveAspectRatio", "none");
-  const addLine = (d) => {
-    const p = document.createElementNS(svg.namespaceURI, "polyline");
-    p.setAttribute("points", d.points.map((p) => p.join(",")).join(" "));
-    p.setAttribute("stroke", d.color);
-    p.setAttribute("fill", "none");
-    p.setAttribute("stroke-width", "3");
-    p.setAttribute("vector-effect", "non-scaling-stroke");
-    p.setAttribute("stroke-linecap", "round");
-    p.setAttribute("stroke-linejoin", "round");
-    svg.append(p);
-    return p;
-  };
-  state.drawings.forEach(addLine);
-  stage.prepend(svg);
-  state.positionComments.forEach((c, n) => {
-    const pin = document.createElement("span");
-    pin.className = "comment-pin";
-    pin.style.left = c.x + "%";
-    pin.style.top = c.y + "%";
-    pin.textContent = n + 1;
-    pin.title = c.text;
-    stage.append(pin);
-  });
-  if (tool !== "move") stage.classList.add("annotating");
-  const allowed = () =>
-    !api ||
-    (api.access().canEdit && api.access().connected && !api.access().conflict);
-  stage.addEventListener(
-    "pointerdown",
-    (e) => {
-      if (tool === "move" || !allowed()) return;
-      e.preventDefault();
-      e.stopPropagation();
-      const rect = stage.getBoundingClientRect();
-      const point = (event) => [
-        Math.max(
-          0,
-          Math.min(100, ((event.clientX - rect.left) / rect.width) * 100),
-        ),
-        Math.max(
-          0,
-          Math.min(100, ((event.clientY - rect.top) / rect.height) * 100),
-        ),
-      ];
-      if (tool === "comment") {
-        if (state.positionComments.length >= 500) return;
-        const text = prompt("Comentario para esta posición:");
-        if (text?.trim()) {
-          const [x, y] = point(e);
-          state.positionComments.push({ x, y, text: text.trim() });
-          save();
-          render();
-        }
-        return;
-      }
-      if (state.drawings.length >= 200) return alert("Máximo 200 trazos");
-      stage.setPointerCapture(e.pointerId);
-      const drawing = { color, points: [point(e)] };
-      const line = addLine(drawing);
-      stage.onpointermove = (event) => {
-        if (drawing.points.length >= 2000) return;
-        drawing.points.push(point(event));
-        line.setAttribute(
-          "points",
-          drawing.points.map((p) => p.join(",")).join(" "),
-        );
-      };
-      const finish = (event) => {
-        stage.onpointermove = null;
-        stage.onpointerup = null;
-        stage.onpointercancel = null;
-        if (event.type !== "pointercancel" && drawing.points.length >= 2) {
-          state.drawings.push(drawing);
-          save();
-        }
-        render();
-      };
-      stage.onpointerup = finish;
-      stage.onpointercancel = finish;
-    },
-    true,
-  );
+  mountDrawing({ state, save, render, collaboration });
   const item = state.items.find((i) => i.id === selected);
   if (item) {
     const label = document.createElement("label");
@@ -329,72 +181,26 @@ export function mountFeatures({
   );
   const mounting = document.createElement("section");
   mounting.className = "mounting-section";
-  mounting.innerHTML = `<h2>Comentarios de montaje</h2><div>${state.mountComments.map((c) => `<article><b>${esc(c.author)}</b> <time>${esc(time(c.createdAt))}</time><p>${esc(c.text)}</p></article>`).join("")}</div><form id="mount-form">${authorInput()}<label>Comentario<textarea id="mount-text" required maxlength="2000">${esc(mountDraft)}</textarea></label><button data-edit class="button">Añadir comentario</button></form><p id="mount-error" role="status"></p>`;
+  mounting.innerHTML = `<h2>Comentarios de montaje</h2><div>${state.mountComments.map((c) => `<article><b>${esc(c.author)}</b> <time>${esc(time(c.createdAt))}</time><p>${esc(c.text)}</p></article>`).join("")}</div><form id="mount-form"><p class="mount-author">${esc(currentIdentity?.name || "Identifícate desde la sesión para comentar")}</p><label>Comentario<textarea id="mount-text" required maxlength="2000">${esc(mountDrafts.get(projectId) || "")}</textarea></label><button data-edit class="button">Añadir comentario</button></form><p id="mount-error" role="status"></p>`;
   section.after(mounting);
-  mounting.querySelector("[data-author]").oninput = (e) =>
-    rememberAuthor(e.target.value);
   mounting.querySelector("textarea").oninput = (e) =>
-    (mountDraft = e.target.value);
+    mountDrafts.set(projectId, e.target.value);
   mounting.querySelector("form").onsubmit = (e) => {
     e.preventDefault();
     const text = mounting.querySelector("textarea").value.trim();
-    if (!author.trim() || !text) {
+    if (!currentIdentity?.name || !text) {
       mounting.querySelector("#mount-error").textContent =
         "Escribe tu nombre y un comentario.";
       return;
     }
     if (state.mountComments.length >= 500) return;
     state.mountComments.push({
-      author: author.trim(),
+      author: currentIdentity.name,
       text,
       createdAt: new Date().toISOString(),
     });
-    mountDraft = "";
+    mountDrafts.set(projectId, "");
     save();
     render();
   };
-  if (api?.access().canEdit) {
-    const chat = document.createElement("section");
-    chat.className = "chat-section";
-    chat.innerHTML = `<h2>Chat de editores · servidor local</h2><p>Conversación del montaje. No se incluye en el JSON ni en el PDF.</p><div id="chat-log" role="log" aria-live="polite">${messagesHTML()}</div><form id="chat-form">${authorInput()}<label>Mensaje<textarea id="chat-text" required maxlength="2000">${esc(chatDraft)}</textarea></label><button data-edit class="button" ${chatLoading ? "disabled" : ""}>Enviar mensaje</button></form><p id="chat-error" role="status">${esc(chatError)}</p>`;
-    mounting.after(chat);
-    const log = chat.querySelector("#chat-log");
-    log.scrollTop = chatScroll;
-    log.onscroll = () => (chatScroll = log.scrollTop);
-    chat.querySelector("[data-author]").oninput = (e) =>
-      rememberAuthor(e.target.value);
-    chat.querySelector("textarea").oninput = (e) =>
-      (chatDraft = e.target.value);
-    chat.querySelector("form").onsubmit = async (e) => {
-      e.preventDefault();
-      if (chatLoading) return;
-      if (!author.trim() || !chatDraft.trim()) {
-        chat.querySelector("#chat-error").textContent =
-          "Escribe tu nombre y un mensaje.";
-        return;
-      }
-      chatLoading = true;
-      chat.querySelector("button").disabled = true;
-      try {
-        const r = await api.request("/api/chat", {
-          method: "POST",
-          body: JSON.stringify({
-            author: author.trim(),
-            text: chatDraft.trim(),
-          }),
-        });
-        if (!r.ok) throw Error();
-        chatDraft = "";
-        chat.querySelector("textarea").value = "";
-        await refreshChat();
-      } catch {
-        chatError = "No se pudo enviar. El mensaje sigue en el borrador.";
-        chat.querySelector("#chat-error").textContent = chatError;
-      } finally {
-        chatLoading = false;
-        chat.querySelector("button").disabled = false;
-      }
-    };
-    refreshChat();
-  }
 }

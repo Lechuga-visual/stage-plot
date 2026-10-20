@@ -102,7 +102,7 @@ test("eliminar una entrada borra su par, preserva canales manuales y rechaza enl
   assert.equal(s.channels.length, 1);
   assert.equal(s.items[0].technical.inputs.length, 0);
 });
-test("un proyecto v2 conserva columnas, dibujos y canales al migrar a v3", () => {
+test("un proyecto v2 conserva columnas, dibujos y canales al migrar a v4", () => {
   const s = project();
   s.formatVersion = 2;
   delete s.items[0].technical;
@@ -115,8 +115,12 @@ test("un proyecto v2 conserva columnas, dibujos y canales al migrar a v3", () =>
     ],
   });
   const migrated = normalizeProject(s);
-  assert.equal(migrated.formatVersion, 3);
-  assert.deepEqual(migrated.drawings, s.drawings);
+  assert.equal(migrated.formatVersion, 4);
+  assert.deepEqual(
+    migrated.drawings.map((d) => d.points),
+    s.drawings.map((d) => d.points),
+  );
+  assert.equal(migrated.drawings[0].opacity, 1);
   assert.deepEqual(migrated.channels, s.channels);
   assert.equal(migrated.items[0].type, "keys");
 });

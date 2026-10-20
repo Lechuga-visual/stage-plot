@@ -1,30 +1,45 @@
 # Distribución portable de Windows
 
-Para usar GordoStage, descarga el asset `GordoStage-0.1.1-windows-x64.zip` de la Release correspondiente. Los ZIP automáticos de código fuente de GitHub no son paquetes listos para ejecutar.
+Para Windows 10/11 x64, descarga `GordoStage-0.2.0-windows-x64.zip` de [la Release v0.2.0](https://github.com/Lechuga-visual/stage-plot/releases/tag/v0.2.0). Los ZIP automáticos de código fuente no son paquetes listos para ejecutar.
 
-El paquete contiene el frontend compilado, los 173 WebP, el servidor, el esquema compartido, dependencias de producción bloqueadas por `package-lock.json`, el runtime oficial Node.js 24.19.0 para Windows x64, su licencia, un lanzador CMD y un LEEME. La carpeta `data/` se crea al ejecutar; nunca se copia de la máquina de desarrollo al paquete.
+El paquete incluye interfaz compilada, 173 WebP, servidor, esquema compartido, dependencias de producción bloqueadas y runtime oficial Node.js 24.19.0 x64 con licencia. Incluye lanzador CMD y LEEME. No copia la carpeta de datos del desarrollo.
 
-El lanzador cambia al directorio del paquete, por lo que admite rutas con espacios. Abre el navegador en el anfitrión y muestra el código de edición y direcciones LAN en la consola. Si el puerto 3000 está ocupado, se muestra un error; se puede cambiar con la variable PORT. `GORDOSTAGE_NO_BROWSER=1` desactiva la apertura automática del navegador. Mantener la consola abierta mantiene el servidor funcionando.
+## Inicio y acceso
 
-## Construcción
+1. Extrae todo el ZIP en una carpeta con permiso de escritura.
+2. Abre **Iniciar GordoStage.cmd** y mantén la consola abierta. Admite rutas con espacios.
+3. El navegador del anfitrión abre la bienvenida. En una instalación nueva no hay clave obligatoria.
+4. Usa **Configuración y permisos** para habilitar/cambiar la clave, el chat o el requisito de usuarios registrados. **Usuarios y puestos** permite crear perfiles de edición/lectura y PIN opcional.
+5. Los demás dispositivos usan la dirección LAN indicada en consola. Cada uno elige sus proyectos y tema; abrir un proyecto en uno no mueve a los demás.
 
-Para construir desde el repositorio se necesitan Node.js 24, npm, Python 3 y curl:
+La administración se realiza desde el PC anfitrión, preferiblemente con `http://127.0.0.1:3000`. Los demás dispositivos solo necesitan navegador. Si Windows lo solicita, permite acceso en tu red privada. La aplicación no configura el firewall ni el Wi-Fi.
+
+Si el puerto 3000 está ocupado, cambia `PORT`. `GORDOSTAGE_NO_BROWSER=1` evita abrir el navegador automáticamente. Ctrl+C detiene el servidor. El paquete portable no incluye instalador, actualizador automático ni un único GordoStage.exe.
+
+## Datos y actualización
+
+Los datos se crean en `data/stagecraft.sqlite` junto al lanzador. Para actualizar: detén el servidor, respalda `data/`, extrae la versión nueva en otra carpeta y copia allí `data/` antes de iniciar. Se migran el proyecto y chat de las versiones anteriores sin descartarlos. Conserva el respaldo anterior mientras pruebas.
+
+Exportar JSON transfiere un proyecto con descripción, plano, fichas, input list, comentarios, rutas e imágenes personalizadas usadas. No transfiere perfiles, claves o chat; esos datos están en el respaldo completo. Los JSON v4 requieren una versión compatible del servidor de destino. Las preferencias de pestañas/tema pertenecen al navegador y las sesiones se vuelven a identificar tras reiniciar el servidor.
+
+## Construcción y validación
+
+Desde el repositorio, con Node.js 24, npm, Python 3 y curl:
 
 ```sh
 npm ci
 npm run build
+npm test
 npm run package:windows
 npm run test:portable
 ```
 
-El runtime se descarga de nodejs.org y se comprueba contra el SHA-256 oficial fijado en el empaquetador. Una discrepancia detiene la construcción. El ZIP se escribe en `artifacts/` junto con su suma SHA-256; estos archivos y caches no se suben al historial de Git. Se puede construir desde Linux, pero solo Windows permite ejecutar el runtime incluido: fuera de Windows la prueba usa Node de la máquina y lo comunica expresamente.
+El runtime se descarga de nodejs.org y se verifica con SHA-256 fijado en el empaquetador. El ZIP y su checksum quedan en `artifacts/`, fuera del historial de Git. `BUILD.json` identifica versión y commit fuente. Desde Linux se puede empaquetar, pero la prueba usa el Node anfitrión; la validación del `node.exe` incluido se ejecuta en Windows.
 
-La prueba copia la distribución a una carpeta temporal con espacios, arranca el servidor, consulta página y símbolos, verifica permisos y persiste un proyecto tras detener y volver a iniciar. No abre el navegador ni usa los datos de desarrollo.
+La prueba portable copia a una ruta con espacios, inicia HTTP, comprueba símbolos, modo abierto, perfil de lectura y persistencia después de reiniciar. Usa datos temporales y no abre el navegador. Las pruebas de navegador se ejecutan aparte con Chromium.
 
 ## Publicación
 
-El workflow `.github/workflows/release-windows.yml` se activa con tags `v*`. Comprueba que el tag coincide con `package.json`, instala con lockfile, ejecuta los tests, compila y construye el ZIP en Windows. Solo publica la prerelease si la prueba del paquete pasa con su Node.exe incluido.
+El workflow `.github/workflows/release-windows.yml`, activado por tags `v*`, verifica versión, instala con lockfile, compila, ejecuta los tests y empaqueta en Windows. Solo publica la prerelease tras aprobar la prueba con su runtime incluido. Después verifica el checksum y registra tag, commit, assets y ejecución en `docs/releases/latest.json`.
 
-Después de publicar, registra en `docs/releases/latest.json` el tag, commit, assets y enlace de la ejecución de GitHub Actions. Ese archivo acredita la publicación y sus comprobaciones; un tag o un ZIP construido localmente no equivalen por sí solos a una Release publicada.
-
-Para publicar versiones siguientes, actualiza la versión y las notas de Release, sube el commit y crea un tag nuevo. No reutilices tags ni reemplaces assets de una versión ya entregada. Esta primera distribución no incluye un instalador, actualización automática ni un ejecutable único GordoStage.exe.
+Para versiones siguientes, actualiza versión y notas, sube el commit y crea un tag nuevo. No reemplaces assets ni reutilices tags ya entregados. Una compilación local o un tag por sí solos no acreditan que se haya publicado el paquete; comprueba la Release y su registro.

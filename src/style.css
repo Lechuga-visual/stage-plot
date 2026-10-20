@@ -1297,3 +1297,963 @@ th input {
     overflow: visible;
   }
 }
+/* Shared workspace and compact tool controls. */
+[hidden] {
+  display: none !important;
+}
+.icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border: 1px solid #ddc9b7;
+  border-radius: 7px;
+  background: #fffaf4;
+  color: #57402f;
+  cursor: pointer;
+  padding: 7px;
+}
+.icon-button svg {
+  width: 22px;
+  height: 22px;
+}
+.icon-button:hover,
+.icon-button.chosen {
+  background: #ffe2c3;
+  border-color: #df8744;
+}
+.icon-button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+}
+.rail {
+  width: 164px;
+  align-items: stretch;
+  padding: 0 10px;
+}
+.rail .brand {
+  align-self: center;
+}
+.rail > .rail-active {
+  display: none;
+}
+.rail-bottom {
+  align-self: center;
+}
+.workspace {
+  margin-left: 164px;
+}
+#project-rail {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+  min-height: 0;
+  padding-top: 10px;
+}
+.rail-caption {
+  font-size: 9px;
+  letter-spacing: 1.6px;
+  color: #b5a397;
+  padding: 0 7px 8px;
+}
+.project-tab {
+  position: relative;
+  display: flex;
+  align-items: center;
+  border-radius: 8px;
+  background: #ffffff06;
+}
+.project-tab > button:first-child {
+  display: flex;
+  gap: 7px;
+  align-items: center;
+  border: 0;
+  background: transparent;
+  color: #e5dcd6;
+  padding: 9px 6px;
+  width: 100%;
+  height: auto;
+  min-width: 0;
+  font-size: 11px;
+  text-align: left;
+}
+.project-tab.active {
+  background: #ef7b2525;
+  box-shadow: inset 3px 0 #ef7b25;
+}
+.project-initials {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 30px;
+  flex-shrink: 0;
+  font-size: 10px;
+  border: 1px solid #887565;
+  border-radius: 6px;
+}
+.project-name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 78px;
+}
+.rail .close-project {
+  border: 0;
+  background: none;
+  color: #b9a89c;
+  font-size: 16px;
+  padding: 2px;
+  width: 17px;
+  height: 26px;
+  margin-right: 3px;
+}
+.project-tooltip {
+  display: none;
+  position: absolute;
+  left: calc(100% + 12px);
+  top: 0;
+  width: 260px;
+  background: #fffaf5;
+  color: #33271f;
+  border: 1px solid #e4cdb6;
+  border-radius: 9px;
+  padding: 13px;
+  box-shadow: 0 8px 30px #0004;
+  pointer-events: none;
+  z-index: 30;
+  line-height: 1.5;
+}
+.project-tooltip b,
+.project-tooltip span {
+  display: block;
+  overflow-wrap: anywhere;
+}
+.project-tooltip b {
+  font-size: 13px;
+}
+.project-tooltip span {
+  font-size: 11px;
+  margin-top: 5px;
+}
+.project-tab:hover .project-tooltip,
+.project-tab:focus-within .project-tooltip {
+  display: block;
+}
+#project-rail > #browse-projects {
+  align-self: center;
+  margin-top: 5px;
+  width: 36px;
+  height: 36px;
+  font-size: 14px;
+  padding: 7px;
+}
+.project-description {
+  display: block;
+  background: none;
+  border: 0;
+  padding: 8px 0;
+  color: #92745c;
+  font-size: 11px;
+  width: 100%;
+  min-width: 280px;
+}
+.project-picker {
+  display: grid;
+  gap: 9px;
+  max-height: 45vh;
+  overflow: auto;
+}
+.project-picker button {
+  text-align: left;
+  white-space: normal;
+}
+.project-picker small {
+  display: block;
+  margin-top: 5px;
+  color: #947b66;
+}
+.registered-users {
+  max-height: 30vh;
+  overflow: auto;
+}
+.registered-users article {
+  display: flex;
+  gap: 7px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.registered-users span {
+  flex: 1;
+  font-size: 11px;
+}
+dialog {
+  border: 1px solid #dfcbb8;
+  border-radius: 13px;
+  padding: 24px;
+  color: #35281d;
+  background: #fffaf4;
+  width: min(540px, calc(100% - 24px));
+  max-height: 90vh;
+  overflow: auto;
+  box-shadow: 0 24px 100px #0007;
+}
+dialog::backdrop {
+  background: #101923aa;
+  backdrop-filter: blur(3px);
+}
+dialog p {
+  font-size: 12px;
+  line-height: 1.65;
+}
+dialog input,
+dialog select {
+  width: 100%;
+  padding: 9px;
+  border: 1px solid #d7c4b1;
+  border-radius: 6px;
+  background: white;
+  color: #35281d;
+}
+dialog label {
+  display: block;
+  font-size: 12px;
+  margin: 14px 0;
+}
+dialog .check-label {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+dialog .check-label input {
+  width: auto;
+}
+.dialog-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.dialog-heading h2 {
+  margin: 0;
+}
+.upload-symbol-button {
+  width: 100%;
+  margin-top: 10px;
+  font-size: 10px;
+}
+.stage-wrap {
+  position: relative;
+  padding-right: 87px;
+}
+.drawing-tools {
+  display: block;
+  margin-bottom: 15px;
+}
+.tool-rail {
+  position: absolute;
+  right: 15px;
+  top: 97px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  padding: 8px;
+  border: 1px solid #e3cdb9;
+  border-radius: 10px;
+  background: #fff9f1;
+  box-shadow: 0 5px 18px #44240f0a;
+  z-index: 5;
+}
+.drawing-options {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  font-size: 10px;
+  min-height: 57px;
+}
+.drawing-options label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10px;
+}
+.drawing-options input,
+.drawing-options select {
+  border: 1px solid #ddc7b3;
+  border-radius: 5px;
+  padding: 5px;
+  color: inherit;
+  background: white;
+  min-width: 0;
+}
+.drawing-options input[type="number"] {
+  width: 45px;
+}
+.drawing-options input[type="range"] {
+  width: 72px;
+}
+.drawing-options input[type="color"] {
+  width: 27px;
+  height: 27px;
+  padding: 1px;
+}
+.drawing-options #cable-label {
+  width: 140px;
+}
+.drawing-hint {
+  font-size: 9px;
+  color: #94745c;
+  flex: 1;
+  min-width: 160px;
+}
+.drawing-layer .selected-stroke {
+  filter: drop-shadow(0 0 2px #5bcbee);
+}
+#redo-drawing svg {
+  transform: scaleX(-1);
+}
+.eraser-active {
+  cursor: cell;
+}
+.cable-legend {
+  display: flex;
+  gap: 12px;
+  font-size: 10px;
+  margin-top: 13px;
+  flex-wrap: wrap;
+}
+.cable-legend span:before {
+  content: "";
+  display: inline-block;
+  width: 20px;
+  height: 3px;
+  background: var(--cable-color);
+  margin-right: 5px;
+  vertical-align: middle;
+}
+.drawing-layer text {
+  paint-order: stroke;
+  stroke: #fffaf4;
+  stroke-width: 0.35;
+  stroke-linejoin: round;
+}
+.welcome-intro {
+  margin: 35px 0 25px;
+}
+.welcome-intro h1 {
+  font:
+    600 37px "Space Grotesk",
+    sans-serif;
+  letter-spacing: -1.3px;
+  margin: 15px 0;
+}
+.welcome-intro p {
+  font-size: 13px;
+  color: #8f7560;
+}
+#welcome-page {
+  max-width: 1260px;
+  margin: auto;
+  padding: 25px 38px 60px;
+}
+.welcome-actions {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  margin: 35px 0;
+}
+.welcome-action {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  gap: 12px;
+  background: white;
+  border: 1px solid #e7d4c2;
+  padding: 20px;
+  border-radius: 12px;
+  color: inherit;
+}
+.welcome-action:hover {
+  border-color: #e98134;
+}
+.welcome-action svg {
+  width: 27px;
+  height: 27px;
+  color: #bd5b25;
+}
+.welcome-action b {
+  font-size: 12px;
+}
+.welcome-action span {
+  font-size: 11px;
+  line-height: 1.6;
+  color: #93745a;
+}
+.welcome-section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+.welcome-section-heading small {
+  font-size: 12px;
+  margin-left: 10px;
+  color: #99785c;
+}
+.welcome-section-heading label {
+  font-size: 11px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.welcome-section-heading select {
+  border: 1px solid #d8c6b4;
+  border-radius: 5px;
+  padding: 7px;
+  background: white;
+  color: inherit;
+}
+.welcome-projects {
+  display: grid;
+  gap: 12px;
+  margin-top: 18px;
+}
+.welcome-projects article {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 18px;
+  border: 1px solid #e7d4c2;
+  border-radius: 10px;
+  background: white;
+}
+.welcome-projects h3 {
+  font-size: 15px;
+  margin: 0 0 5px;
+}
+.welcome-projects p {
+  font-size: 11px;
+  color: #987558;
+  margin: 0;
+}
+.project-card-mark {
+  display: grid;
+  place-items: center;
+  background: #fff0dc;
+  color: #ab511f;
+  border-radius: 8px;
+  width: 43px;
+  height: 43px;
+  flex-shrink: 0;
+}
+.project-card-actions {
+  display: flex;
+  gap: 7px;
+  margin-left: auto;
+}
+.welcome-local-note {
+  font-size: 11px;
+  color: #9a7c63;
+  line-height: 1.7;
+  margin-top: 24px;
+}
+.chat-dock {
+  display: block;
+}
+#chat-dock {
+  position: fixed;
+  right: 22px;
+  bottom: 18px;
+  width: 340px;
+  max-width: calc(100vw - 30px);
+  z-index: 12;
+  border: 1px solid #d0bda8;
+  border-radius: 12px;
+  background: #fffaf4;
+  box-shadow: 0 10px 45px #0004;
+  overflow: hidden;
+}
+.chat-dock-heading > button {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  border: 0;
+  background: #392e26;
+  color: #fff3e8;
+  padding: 13px;
+  font-size: 12px;
+  text-align: left;
+}
+.chat-dock-heading > button span:first-child {
+  max-width: 255px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.chat-dock-heading b {
+  background: #eb792e;
+  color: white;
+  border-radius: 15px;
+  font-size: 10px;
+  padding: 1px 5px;
+}
+.chat-dock-heading b:empty {
+  display: none;
+}
+.chat-dock-body {
+  padding: 12px;
+}
+#chat-dock.minimized .chat-dock-body {
+  display: none;
+}
+.chat-identity {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 10px;
+  gap: 8px;
+}
+.chat-identity button {
+  border: 0;
+  background: none;
+  color: #aa511e;
+  font-size: 10px;
+}
+#chat-dock #chat-log {
+  margin-top: 10px;
+  max-height: 260px;
+  min-height: 90px;
+  overflow: auto;
+  padding: 5px 8px;
+}
+#chat-dock article {
+  font-size: 11px;
+  padding: 8px 0;
+}
+#chat-dock article small {
+  font-size: 9px;
+  color: #94765d;
+  display: block;
+  margin-top: 3px;
+}
+#chat-dock article p {
+  margin: 5px 0;
+}
+#chat-dock form {
+  display: flex;
+  gap: 7px;
+  align-items: flex-end;
+  margin-top: 10px;
+}
+#chat-dock textarea {
+  resize: vertical;
+  min-height: 55px;
+  margin: 0;
+  font-size: 11px;
+}
+#chat-dock form button {
+  padding: 9px 10px;
+  font-size: 10px;
+}
+.chat-empty {
+  font-size: 11px;
+  color: #947a64;
+}
+#chat-error {
+  font-size: 10px;
+  margin: 5px 0 0;
+}
+@media (max-width: 1000px) {
+  .welcome-actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 650px) {
+  .rail {
+    width: 58px;
+    padding: 0 4px;
+  }
+  .workspace {
+    margin-left: 58px;
+  }
+  .rail-caption,
+  .project-name,
+  .close-project {
+    display: none;
+  }
+  .project-tab > button:first-child {
+    justify-content: center;
+    padding: 7px 3px;
+  }
+  .project-tooltip {
+    left: calc(100% + 7px);
+    width: 220px;
+  }
+  .rail .brand img {
+    width: 45px;
+  }
+  .project-description {
+    min-width: 0;
+    font-size: 10px;
+  }
+  .stage-wrap {
+    padding: 14px 63px 14px 12px;
+  }
+  .tool-rail {
+    right: 5px;
+    top: 160px;
+    padding: 4px;
+    gap: 4px;
+  }
+  .tool-rail .icon-button {
+    width: 32px;
+    height: 32px;
+    padding: 6px;
+  }
+  .drawing-options {
+    gap: 7px;
+    min-height: 115px;
+  }
+  .drawing-hint {
+    font-size: 8px;
+    min-width: 100%;
+  }
+  .drawing-options input[type="range"] {
+    width: 55px;
+  }
+  #welcome-page {
+    padding: 20px 15px;
+  }
+  .welcome-intro h1 {
+    font-size: 27px;
+  }
+  .welcome-actions {
+    gap: 8px;
+    margin: 24px 0;
+  }
+  .welcome-action {
+    padding: 13px;
+    gap: 8px;
+  }
+  .welcome-projects article {
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .project-card-actions {
+    width: 100%;
+    margin-left: 0;
+  }
+  .welcome-section-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  #chat-dock {
+    right: 10px;
+    bottom: 10px;
+    width: 310px;
+  }
+  .chat-dock-body #chat-log {
+    max-height: 210px;
+  }
+}
+/* Neón: per-device theme for dark rooms and live stages. */
+html[data-theme="neon"] {
+  color-scheme: dark;
+  background: #090e19;
+}
+html[data-theme="neon"] body {
+  background: #090e19;
+  color: #dfeaf9;
+}
+html[data-theme="neon"] .rail {
+  background: #080c14;
+  border-right: 1px solid #1d2b46;
+}
+html[data-theme="neon"] header {
+  background: #0c1322;
+  border-color: #1f2c45;
+}
+html[data-theme="neon"] .brand-copy strong,
+html[data-theme="neon"] .band {
+  color: #e6f7ff;
+}
+html[data-theme="neon"] .brand-copy span {
+  color: #58dcef;
+}
+html[data-theme="neon"] .button,
+html[data-theme="neon"] .icon-button {
+  background: #132137;
+  color: #d4e8ff;
+  border-color: #2b4161;
+}
+html[data-theme="neon"] .button:hover,
+html[data-theme="neon"] .icon-button:hover {
+  border-color: #43d9f1;
+  background: #19324b;
+}
+html[data-theme="neon"] .button.dark {
+  background: #143b47;
+  border-color: #40d7f0;
+  color: #8df1ff;
+}
+html[data-theme="neon"] .eyebrow,
+html[data-theme="neon"] .section-label {
+  color: #61dcea;
+}
+html[data-theme="neon"] .project-tab.active {
+  background: #21d6e71a;
+  box-shadow: inset 3px 0 #3de5f4;
+}
+html[data-theme="neon"] .project-initials {
+  border-color: #41678c;
+  color: #91e9fb;
+}
+html[data-theme="neon"] .project-tooltip,
+html[data-theme="neon"] dialog {
+  background: #101b2e;
+  color: #e0efff;
+  border-color: #33516f;
+}
+html[data-theme="neon"] .editor,
+html[data-theme="neon"] .palette,
+html[data-theme="neon"] .canvas-panel,
+html[data-theme="neon"] .table-wrap,
+html[data-theme="neon"] .annotation-section,
+html[data-theme="neon"] .mounting-section,
+html[data-theme="neon"] .equipment-summary {
+  background: #0e1829;
+  border-color: #243955;
+}
+html[data-theme="neon"] .stage-wrap,
+html[data-theme="neon"] .equipment-panel,
+html[data-theme="neon"] .item-editor {
+  background: #0e192b;
+  border-color: #263c58;
+}
+html[data-theme="neon"] .stage {
+  background-color: #0a1527;
+  background-image: radial-gradient(#25415d 0.8px, transparent 0.8px);
+  border-color: #2b4c6b;
+  box-shadow: 0 4px 0 #142d46;
+}
+html[data-theme="neon"] .tool-rail {
+  background: #0b1526;
+  border-color: #2d4667;
+  box-shadow: 0 0 20px #00c9ff0b;
+}
+html[data-theme="neon"] .icon-button.chosen {
+  background: #12506a !important;
+  border-color: #47daf3 !important;
+  color: #99f4ff;
+}
+html[data-theme="neon"] .drawing-layer text {
+  stroke: #0a1527;
+}
+html[data-theme="neon"] img.builtin-symbol {
+  filter: invert(1);
+}
+html[data-theme="neon"] .item-label {
+  background: #142b43e8;
+  color: #e1f5ff;
+  border-color: #335579;
+}
+html[data-theme="neon"] .stage-item.selected {
+  background: #1b56687d;
+  border-color: #68e6fb;
+}
+html[data-theme="neon"] .tools button,
+html[data-theme="neon"] .tip,
+html[data-theme="neon"] .dimensions,
+html[data-theme="neon"] th {
+  background: #15253a;
+  border-color: #293e59;
+  color: #c1d6f2;
+}
+html[data-theme="neon"] .tools button:hover {
+  border-color: #5bd9f0;
+  background: #1b354b;
+}
+html[data-theme="neon"] input,
+html[data-theme="neon"] textarea,
+html[data-theme="neon"] select {
+  background: #101f34;
+  color: #dcefff;
+  border-color: #2c4665;
+}
+html[data-theme="neon"] #symbol-category {
+  background: #101f34;
+  color: #dcefff;
+  border-color: #2c4665;
+}
+html[data-theme="neon"] .symbol-search-label,
+html[data-theme="neon"] #symbol-results,
+html[data-theme="neon"] #save-status,
+html[data-theme="neon"] .welcome-local-note,
+html[data-theme="neon"] .welcome-section-heading small,
+html[data-theme="neon"] .network-controls > span,
+html[data-theme="neon"] .chat-empty {
+  color: #99afca;
+}
+html[data-theme="neon"] .band,
+html[data-theme="neon"] .event,
+html[data-theme="neon"] .project-description,
+html[data-theme="neon"] td input,
+html[data-theme="neon"] th input {
+  background: transparent;
+}
+html[data-theme="neon"] .tabs,
+html[data-theme="neon"] td,
+html[data-theme="neon"] article,
+html[data-theme="neon"] .canvas-toolbar,
+html[data-theme="neon"] .canvas-footer {
+  border-color: #233c57;
+}
+html[data-theme="neon"] .tabs button.active {
+  color: #72e4f5;
+  border-color: #48d6f2;
+}
+html[data-theme="neon"] .tabs button span,
+html[data-theme="neon"] .project-badge {
+  background: #163044;
+  color: #a6e8f5;
+  border-color: #295271;
+}
+html[data-theme="neon"] .equipment-panel fieldset {
+  border-color: #304a6b;
+}
+html[data-theme="neon"] .drawing-options,
+html[data-theme="neon"] .palette p,
+html[data-theme="neon"] .welcome-intro p,
+html[data-theme="neon"] .welcome-action span,
+html[data-theme="neon"] .welcome-projects p,
+html[data-theme="neon"] .project-description,
+html[data-theme="neon"] .event,
+html[data-theme="neon"] .drawing-hint {
+  color: #99afca;
+}
+html[data-theme="neon"] .welcome-action,
+html[data-theme="neon"] .welcome-projects article {
+  background: #0f1a2c;
+  border-color: #293c58;
+}
+html[data-theme="neon"] .welcome-action svg {
+  color: #50dff5;
+}
+html[data-theme="neon"] .project-card-mark {
+  background: #163246;
+  color: #81ebfc;
+}
+html[data-theme="neon"] #chat-dock {
+  background: #0c192a;
+  border-color: #365a79;
+  box-shadow: 0 7px 35px #0009;
+}
+html[data-theme="neon"] .chat-dock-heading > button {
+  background: #132c42;
+  color: #a8f4ff;
+  border-bottom: 1px solid #315c78;
+}
+html[data-theme="neon"] #chat-log {
+  background: #0d2136;
+}
+html[data-theme="neon"] .chat-identity button {
+  color: #5cd8ef;
+}
+html[data-theme="neon"] .project-tooltip span {
+  color: #a2bad4;
+}
+html[data-theme="neon"] .comment-pin {
+  background: #214a62;
+  border-color: #6feaff;
+  color: #c9fbff;
+}
+@media print {
+  #welcome-page,
+  #chat-dock,
+  .drawing-options,
+  .tool-rail,
+  .cable-legend,
+  #project-rail {
+    display: none !important;
+  }
+  .workspace {
+    margin: 0 !important;
+  }
+  .stage-wrap {
+    padding: 12px !important;
+  }
+  html[data-theme="neon"] body,
+  html[data-theme="neon"] .workspace,
+  html[data-theme="neon"] .stage-wrap,
+  html[data-theme="neon"] .equipment-summary,
+  html[data-theme="neon"] .annotation-section,
+  html[data-theme="neon"] .mounting-section,
+  html[data-theme="neon"] .table-wrap,
+  html[data-theme="neon"] .canvas-panel {
+    background: white !important;
+    color: #111 !important;
+  }
+  html[data-theme="neon"] .stage {
+    background-color: #fffaf4 !important;
+    background-image: radial-gradient(
+      #d6c3af 0.8px,
+      transparent 0.8px
+    ) !important;
+  }
+  html[data-theme="neon"] img.builtin-symbol {
+    filter: none !important;
+  }
+  html[data-theme="neon"] .item-label {
+    background: white !important;
+    color: #111 !important;
+  }
+  html[data-theme="neon"] input,
+  html[data-theme="neon"] textarea,
+  html[data-theme="neon"] th {
+    background: white !important;
+    color: #111 !important;
+  }
+  html[data-theme="neon"] .drawing-layer text {
+    stroke: white !important;
+  }
+  table {
+    table-layout: fixed;
+    min-width: 0 !important;
+  }
+  th,
+  td {
+    padding: 5px 3px !important;
+  }
+}
+#chat-dock.minimized {
+  width: 235px;
+}
+.welcome-projects {
+  padding-bottom: 45px;
+}
+.instrument img.custom-symbol {
+  background: #f9fafb;
+  border-radius: 5px;
+  padding: 3px;
+}
+.tool-icon img.custom-symbol {
+  background: #f9fafb;
+  border-radius: 4px;
+  padding: 2px;
+}
+.on-home #print,
+.on-home #export {
+  display: none;
+}

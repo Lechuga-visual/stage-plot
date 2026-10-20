@@ -1,20 +1,30 @@
-Primera versión de prueba de GordoStage para **Windows 10/11 de 64 bits**.
+GordoStage **0.2.0** de prueba para **Windows 10/11 x64**.
 
-Descarga **GordoStage-0.1.1-windows-x64.zip** de los assets de esta Release. Los enlaces automáticos **Source code** contienen el código fuente y requieren herramientas de desarrollo.
+Descarga **GordoStage-0.2.0-windows-x64.zip**, extrae todo y abre **Iniciar GordoStage.cmd**. Incluye Node.js e interfaz compilada. Los enlaces Source code contienen código fuente. Mantén la consola abierta mientras trabajan los demás puestos.
 
-1. Extrae todo el ZIP en una carpeta con permiso de escritura.
-2. Abre **Iniciar GordoStage.cmd**.
-3. El navegador se abre en el PC anfitrión. La consola muestra el código de edición y las direcciones de la red local.
-4. Mantén esa ventana abierta mientras trabajan los otros dispositivos. Detén con Ctrl+C.
+## Novedades
 
-No requiere instalar Node.js, npm, Python ni Codex. El ZIP incluye el runtime oficial Node.js 24.19.0, la interfaz compilada, los símbolos y las dependencias de producción. Es un paquete portable con lanzador CMD, no un instalador ni un ejecutable único GordoStage.exe.
+- Bienvenida con proyectos, importación/exportación JSON, configuración, permisos y usuarios.
+- Tema oscuro Neón y tema claro, elegidos por dispositivo.
+- Seguridad opcional: sin clave en instalaciones nuevas; activar, desactivar y cambiar desde el anfitrión. Chat habilitable y opción de participación con usuarios registrados.
+- Usuarios con puesto, edición/lectura y PIN opcional. Identificación rápida al abrir un proyecto, nombre por puesto o alias y autor automático en chat/comentarios.
+- Múltiples proyectos guardados en servidor y pestañas laterales independientes por dispositivo. Hover/foco muestra nombre y descripción. Cerrar una pestaña no elimina el proyecto compartido.
+- Chat flotante inferior derecho, minimizable, mensajes sin leer y conversación por proyecto.
+- Herramientas con iconos: selección, dibujo, comentarios, borrar trazo o goma parcial. Color, grosor, opacidad y deshacer/rehacer.
+- Rutas visuales de energía, audio, multipar, Ethernet y vídeo con etiquetas y leyenda.
+- Subir símbolos PNG/WebP/JPEG desde cualquier puesto editor; biblioteca compartida almacenada en el servidor.
+- JSON v4 editable con descripción, estilos de trazos, rutas e imágenes propias incrustadas. Importa versiones anteriores. PDF conserva el rider y sus anotaciones.
 
-Si Windows solicita permiso de firewall, permite el acceso en la red privada de confianza. Los otros dispositivos entran desde un navegador usando la dirección LAN del anfitrión; no necesitan instalar nada. La red y el firewall del lugar pueden requerir ajustes que esta Release no configura.
+Se conservan los 173 símbolos, datos técnicos por equipo, mono/estéreo L/R, micrófono/DI, energía, phantom, input list personalizable y comentarios de posiciones/montaje.
 
-Los proyectos y el chat se guardan en la carpeta **data/** junto al lanzador. Detén el servidor antes de copiarla como respaldo. Al actualizar, conserva esa carpeta o exporta el proyecto JSON. El paquete no incluye datos personales ni credenciales de desarrollo.
+## Actualizar desde 0.1.x
 
-Incluye 173 símbolos, datos técnicos por equipo, input list vinculado con mono/estéreo L/R, alimentación y phantom, chat de editores, comentarios de montaje/posiciones, dibujo sobre el plano, JSON v3 e impresión PDF.
+Detén el servidor y respalda `data/`. Extrae el nuevo ZIP y copia esa carpeta junto al lanzador antes de iniciar. El proyecto y chat anteriores se migran al proyecto inicial. El paquete no contiene datos de desarrollo. Para transferir solo un proyecto, usa JSON; chat, usuarios y configuración pertenecen al servidor.
 
-Es una versión de prueba: un proyecto por servidor, código de edición compartido y conflictos a nivel de proyecto completo. No incluye cuentas, sincronización por internet, instalador ni QR.
+Los otros PCs/tablets acceden por la dirección LAN mostrada en consola. No requieren instalar nada. Si Windows solicita firewall, permite acceso en la red privada. El anfitrión administra desde `http://127.0.0.1:3000`.
 
-Se publica únicamente después de compilar y ejecutar pruebas del paquete con su runtime incluido en un runner Windows. Se adjunta un archivo SHA-256 para comprobar la descarga.
+## Alcance de esta prueba
+
+ZIP portable con CMD, todavía sin instalador ni ejecutable único. Detecta conflictos por proyecto completo; no combina cambios simultáneos ni ofrece colaboración sin conexión. Las rutas de cable son gráficas, sin conexiones automáticas a puertos ni cálculo eléctrico. El historial de dibujo es local en memoria y se reinicia al recibir dibujos remotos. Los perfiles son locales, sin cuentas o sincronización de un servicio en internet.
+
+La publicación requiere compilación, tests y prueba nativa del paquete con el runtime incluido en Windows. Se adjunta SHA-256 para verificar la descarga. La prueba física de red entre tus PCs queda por realizar.

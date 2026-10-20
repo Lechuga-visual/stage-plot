@@ -12,6 +12,7 @@ test("chat privado persistente, notificaciones y transferencia de proyecto entre
   let app, other, ws;
   try {
     ({ app } = await createServer({
+      localAdmin: false,
       directory: join(directory, "one"),
       editCode: "editor",
     }));
@@ -56,7 +57,10 @@ test("chat privado persistente, notificaciones y transferencia de proyecto entre
       ).statusCode,
       201,
     );
-    assert.deepEqual(JSON.parse((await notification)[0]), { type: "chat" });
+    assert.deepEqual(JSON.parse((await notification)[0]), {
+      type: "chat",
+      projectId: "default",
+    });
     assert.equal(
       (await send(app, "GET", "/api/chat")).json()[0].text,
       "Revisar batería",
@@ -81,6 +85,10 @@ test("chat privado persistente, notificaciones y transferencia de proyecto entre
     });
     document.drawings.push({
       color: "#123456",
+      opacity: 1,
+      width: 3,
+      kind: "free",
+      label: "",
       points: [
         [20, 20],
         [80, 80],
@@ -101,6 +109,7 @@ test("chat privado persistente, notificaciones y transferencia de proyecto entre
       exportProject((await app.inject("/api/project")).json().document),
     );
     ({ app: other } = await createServer({
+      localAdmin: false,
       directory: join(directory, "two"),
       editCode: "editor",
     }));
@@ -121,6 +130,7 @@ test("chat privado persistente, notificaciones y transferencia de proyecto entre
     ws.terminate();
     await app.close();
     ({ app } = await createServer({
+      localAdmin: false,
       directory: join(directory, "one"),
       editCode: "editor",
     }));

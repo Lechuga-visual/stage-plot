@@ -41,6 +41,6 @@ Se admiten hasta 500 elementos en el plano, 64 entradas por equipo y 500 canales
 
 ## Portabilidad e impresión
 
-El formato JSON versión 3 guarda los IDs de símbolo, fichas técnicas, entradas y vínculos, además del plano y el resto del rider. Se importan versiones anteriores, conservando los ocho tipos originales como alias. Actualiza ambos servidores a esta versión antes de transferir un JSON v3; los servidores antiguos no conocen los nuevos símbolos ni vínculos.
+El formato JSON versión 4 guarda los IDs de símbolo, fichas técnicas, entradas y vínculos, además del plano y el resto del rider. Se importan versiones anteriores, conservando los ocho tipos originales como alias. Actualiza ambos servidores a esta versión antes de transferir un JSON v4; los servidores antiguos no conocen los nuevos símbolos ni vínculos.
 
-Los WebP se sirven desde la instalación local, sin descargar imágenes de TechRider durante el montaje. El JSON referencia símbolos del catálogo de la app, no incrusta las imágenes. La impresión a PDF incluye el plano y un resumen de alimentación y entradas de los equipos configurados. El chat sigue siendo independiente del rider.
+Los WebP incluidos se sirven desde la instalación local, sin descargar imágenes de TechRider durante el montaje. El JSON referencia los símbolos del catálogo e incrusta las imágenes personalizadas utilizadas. La impresión a PDF incluye el plano y un resumen de alimentación y entradas de los equipos configurados. El chat sigue siendo independiente del rider.

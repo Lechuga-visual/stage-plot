@@ -1,3 +1,4 @@
+import { openDefault } from "./browser-helpers.mjs";
 import { chromium } from "playwright";
 import assert from "node:assert/strict";
 import { mkdtempSync, rmSync, readFileSync } from "node:fs";
@@ -5,7 +6,11 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { createServer } from "../server/app.js";
 const directory = mkdtempSync(join(tmpdir(), "stage-equipment-"));
-const { app } = await createServer({ directory, editCode: "equipment-test" });
+const { app } = await createServer({
+  localAdmin: false,
+  directory,
+  editCode: "equipment-test",
+});
 let browser;
 try {
   await app.listen({ port: 0, host: "127.0.0.1" });
@@ -32,7 +37,8 @@ try {
   p.on("pageerror", (e) => errors.push(e.message));
   q.on("pageerror", (e) => errors.push(e.message));
   await p.goto(base);
-  await p.locator("#chat-form").waitFor();
+  await openDefault(p);
+  await p.locator("#chat-form").waitFor({ state: "attached" });
   const saved = () =>
     p.waitForFunction(
       () =>
@@ -41,7 +47,8 @@ try {
     );
   await saved();
   await q.goto(base);
-  await q.locator("#chat-form").waitFor();
+  await openDefault(q);
+  await q.locator("#chat-form").waitFor({ state: "attached" });
   await p.locator("#symbol-category").selectOption("Todos");
   assert.equal(await p.locator("[data-add]").count(), 173);
   assert.equal(
@@ -124,19 +131,17 @@ try {
   await p.locator("#export").click();
   const download = await downloadPromise;
   const exported = JSON.parse(readFileSync(await download.path(), "utf8"));
-  assert.equal(exported.formatVersion, 3);
+  assert.equal(exported.formatVersion, 4);
   assert.equal(
     exported.items.find((i) => i.id === item.id).technical.powerNotes,
     "230 V · 2 enchufes",
   );
   p.once("dialog", (d) => d.accept());
-  await p
-    .locator("#import-file")
-    .setInputFiles({
-      name: "rider.json",
-      mimeType: "application/json",
-      buffer: Buffer.from(JSON.stringify(exported)),
-    });
+  await p.locator("#import-file").setInputFiles({
+    name: "rider.json",
+    mimeType: "application/json",
+    buffer: Buffer.from(JSON.stringify(exported)),
+  });
   await saved();
   await p.locator(`[data-item="${item.id}"]`).click();
   assert.equal(await field("microphone").inputValue(), "DI Radial");

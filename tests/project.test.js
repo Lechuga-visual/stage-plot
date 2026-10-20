@@ -22,6 +22,10 @@ export function annotated() {
   s.channels[0].c_patch = "A1";
   s.drawings.push({
     color: "#ff0000",
+    opacity: 1,
+    width: 3,
+    kind: "free",
+    label: "",
     points: [
       [0, 0],
       [50, 30],
@@ -38,7 +42,7 @@ export function annotated() {
 }
 test("migra archivos anteriores sin modificar el original", () => {
   const s = normalizeProject(legacy);
-  assert.equal(s.formatVersion, 3);
+  assert.equal(s.formatVersion, 4);
   assert.equal(s.items[0].comment, "");
   assert.equal(legacy.formatVersion, undefined);
   assert.equal(s.channels[0].mic, "SM58");

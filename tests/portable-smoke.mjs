@@ -36,7 +36,7 @@ try {
       env: {
         ...process.env,
         PORT: "0",
-        STAGE_EDIT_CODE: "portable-test",
+        STAGE_EDIT_CODE: "",
         GORDOSTAGE_NO_BROWSER: "1",
       },
       stdio: ["ignore", "pipe", "pipe"],
@@ -71,7 +71,38 @@ try {
   );
   assert.equal(symbol.status, 200);
   assert.match(symbol.headers.get("content-type"), /image\/webp/);
-  assert.equal((await fetch(base + "/api/chat")).status, 403);
+  assert.equal((await fetch(base + "/api/chat")).status, 200);
+  assert.equal(
+    (await (await fetch(base + "/api/security")).json()).securityEnabled,
+    false,
+  );
+  const profile = await (
+    await fetch(base + "/api/profiles", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        name: "Lectura portable",
+        role: "Producción",
+        permission: "viewer",
+      }),
+    })
+  ).json();
+  const session = await (
+    await fetch(base + "/api/session", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ profileId: profile.id }),
+    })
+  ).json();
+  assert.ok(session.token);
+  assert.equal(
+    (
+      await fetch(base + "/api/chat", {
+        headers: { "x-session-token": session.token },
+      })
+    ).status,
+    403,
+  );
   const document = normalizeProject({
     band: "Prueba portable",
     event: "",

@@ -1,3 +1,7 @@
+import { setupIdentity } from "./identity.js";
+import { setupChat } from "./chat.js";
+import { mountHome } from "./home.js";
+import { setTheme } from "./theme.js";
 import {
   SYMBOLS,
   SYMBOL_CATEGORIES,
@@ -11,6 +15,12 @@ import { normalizeProject, exportProject } from "../shared/project.js";
 import { mountFeatures } from "./features.js";
 import { collaborate } from "./collaboration.js";
 let collaboration;
+let customLibrary = [];
+let view = "home";
+const showHome = () => {
+  view = collaboration ? "home" : "editor";
+  render();
+};
 import "./style.css";
 const initial = {
   band: "Los Eléctricos",
@@ -71,18 +81,27 @@ function save() {
 function render() {
   document.querySelector("#app").innerHTML = `
 <aside class="rail"><a class="brand" href="#" aria-label="GordoStage"><img src="/brand/gordostage-logo.png" alt="GordoStage"></a><button class="rail-active" title="Editor">▧</button><div class="rail-bottom">GS</div></aside>
-<div class="workspace"><header><div class="wordmark"><img src="/brand/gordostage-logo.png" alt=""><div class="brand-copy"><strong>GordoStage</strong><span>PLATAFORMA DE LOGÍSTICA DE ESCENARIO</span></div></div><div class="header-right"><span id="save-status">● Guardado en este dispositivo</span><button id="export" class="button">↓ Exportar proyecto</button><button id="print" class="button dark">↗ Exportar PDF</button></div></header>
-<main><div class="breadcrumb">MIS PROYECTOS <span>/</span> RIDER TÉCNICO</div><section class="heading"><div><div class="eyebrow">EL SHOW EMPIEZA AQUÍ</div><input id="band" class="band" aria-label="Nombre de la banda" value="${esc(state.band)}"><input id="event" class="event" aria-label="Evento" value="${esc(state.event)}"></div><div class="project-badge"><span class="green-dot"></span> Proyecto en edición</div></section>
+<div class="workspace"><header><div class="wordmark"><img src="/brand/gordostage-logo.png" alt=""><div class="brand-copy"><strong>GordoStage</strong><span>PLATAFORMA DE LOGÍSTICA DE ESCENARIO</span></div></div><div class="header-right"><button id="theme-toggle" class="button" title="Cambiar tema claro / neón" aria-label="Cambiar tema claro / neón">◐</button><span id="save-status">● Guardado en este dispositivo</span><button id="export" class="button">↓ Exportar proyecto</button><button id="print" class="button dark">↗ Exportar PDF</button></div></header>
+<main><div class="breadcrumb">MIS PROYECTOS <span>/</span> RIDER TÉCNICO</div><section class="heading"><div><div class="eyebrow">EL SHOW EMPIEZA AQUÍ</div><input id="band" class="band" aria-label="Nombre de la banda" value="${esc(state.band)}"><input id="event" class="event" aria-label="Evento" value="${esc(state.event)}"><input id="project-description" class="project-description" aria-label="Descripción del proyecto" maxlength="1000" placeholder="Descripción del montaje o evento…" value="${esc(state.description)}"></div><div class="project-badge"><span class="green-dot"></span> Proyecto en edición</div></section>
 <nav class="tabs"><button data-tab="plot" class="${tab === "plot" ? "active" : ""}">▧ &nbsp; Stage plot</button><button data-tab="channels" class="${tab === "channels" ? "active" : ""}">☷ &nbsp; Lista de canales <span>${state.channels.length}</span></button><div class="tabs-tail">DISEÑA. CONECTA. TOCA.</div></nav>
-<div class="editor ${tab === "channels" ? "channels-only" : ""}"><aside class="palette"><div class="section-label">TU ESCENARIO</div><h2>Todo en su lugar.</h2><p>Añade elementos y arrástralos al escenario.</p><div class="section-label category">BIBLIOTECA · ${SYMBOLS.length} SÍMBOLOS</div><label class="symbol-search-label">Buscar equipo<input id="symbol-search" type="search" placeholder="Instrumento, micrófono, FOH…" value="${esc(symbolQuery)}"></label><select id="symbol-category" aria-label="Categoría de símbolos"><option>Frecuentes</option><option>Todos</option>${SYMBOL_CATEGORIES.map((c) => `<option ${symbolCategory === c ? "selected" : ""}>${esc(c)}</option>`).join("")}</select><div id="symbol-results" aria-live="polite"></div><div class="tools" id="symbol-tools">${symbolButtons()}</div><div class="tip"><span>✧</span><div><b>Hecho para el directo</b><p>Piensa el escenario desde el público. Así todos hablan el mismo idioma.</p></div></div></aside>
+<div class="editor ${tab === "channels" ? "channels-only" : ""}"><aside class="palette"><div class="section-label">TU ESCENARIO</div><h2>Todo en su lugar.</h2><p>Añade elementos y arrástralos al escenario.</p><div class="section-label category">BIBLIOTECA · ${SYMBOLS.length} SÍMBOLOS</div><label class="symbol-search-label">Buscar equipo<input id="symbol-search" type="search" placeholder="Instrumento, micrófono, FOH…" value="${esc(symbolQuery)}"></label><select id="symbol-category" aria-label="Categoría de símbolos"><option>Frecuentes</option><option>Todos</option><option>Personalizados</option>${SYMBOL_CATEGORIES.map((c) => `<option ${symbolCategory === c ? "selected" : ""}>${esc(c)}</option>`).join("")}</select><button class="button upload-symbol-button" data-edit id="upload-symbol">＋ Subir icono</button><input data-edit id="symbol-file" type="file" accept="image/png,image/webp,image/jpeg" hidden><div id="symbol-results" aria-live="polite"></div><div class="tools" id="symbol-tools">${symbolButtons()}</div><div class="tip"><span>✧</span><div><b>Hecho para el directo</b><p>Piensa el escenario desde el público. Así todos hablan el mismo idioma.</p></div></div></aside>
 <section class="canvas-panel"><div class="canvas-toolbar"><div><b>Vista del escenario</b><span>Perspectiva del público</span></div><div class="dimensions"><input id="width" type="number" min="2" max="100" aria-label="Ancho en metros" value="${state.width}"> × <input id="depth" type="number" min="2" max="100" aria-label="Fondo en metros" value="${state.depth}"> m</div></div><div class="stage-wrap"><div class="stage-top">FONDO DEL ESCENARIO</div><div class="stage" id="stage" style="aspect-ratio:${state.width}/${state.depth}">${state.items.map((i) => `<button class="stage-item ${selected === i.id ? "selected" : ""}" data-item="${i.id}" style="left:${i.x}%;top:${i.y}%" aria-label="${esc(i.label)}"><span class="instrument ">${symbolImage(i.type)}</span><span class="item-label">${esc(i.label)}</span></button>`).join("")}<div class="stage-mark">GORDOSTAGE</div></div><div class="audience"><span></span>↓ &nbsp; PÚBLICO &nbsp; ↓<span></span></div></div><div class="canvas-footer"><span>↔ Arrastra para mover · Selecciona para editar</span><span>${state.items.length} elementos <i>·</i> ${state.width} × ${state.depth} m</span></div><div class="item-editor">${selected !== null ? `<label>Nombre <input id="item-name" value="${esc(state.items.find((i) => i.id === selected)?.label || "")}"></label><button class="button danger" id="delete-item">Eliminar elemento</button>` : "<span>✧ Un buen show empieza con un buen plano.</span>"}</div></section></div>
 <section class="channel-section ${tab === "channels" ? "focused" : ""}"><div class="section-heading"><div><div class="section-label">CADA SEÑAL CUENTA</div><h2>Lista de canales <span>${state.channels.length} entradas</span></h2></div><button id="add-channel" class="button">+ Añadir canal</button></div><div class="table-wrap"><table><thead><tr><th>CH</th><th>FUENTE / INSTRUMENTO</th><th>MICRÓFONO / DI</th><th>PIE</th><th>NOTAS</th><th></th></tr></thead><tbody>${state.channels.map((c, n) => `<tr><td><span class="channel-number">${String(n + 1).padStart(2, "0")}</span></td>${["source", "mic", "stand", "notes"].map((k) => `<td><input aria-label="${k} canal ${n + 1}" data-channel="${n}" data-field="${k}" value="${esc(c[k])}" placeholder="—"></td>`).join("")}<td><button class="remove-channel" data-remove="${n}" aria-label="Eliminar canal ${n + 1}">×</button></td></tr>`).join("")}</tbody></table></div></section><section class="notes"><div class="section-label">NOTAS PARA EL EQUIPO TÉCNICO</div><textarea id="notes" aria-label="Notas técnicas" placeholder="Alimentación, monitores, necesidades especiales…">${esc(state.notes)}</textarea></section><footer><span>GordoStage <b>•</b> Menos improvisación. Más música.</span><button id="import" class="text-button">Importar proyecto</button><input type="file" id="import-file" accept="application/json" hidden></footer></main></div>`;
   bind();
   mountFeatures({ state, selected, save, render, collaboration });
   mountEquipment({ state, selected, save, render });
   collaboration?.decorate();
+  mountHome({ api: collaboration, visible: view === "home", showHome });
 }
 function bind() {
+  document.querySelector("#theme-toggle").onclick = () =>
+    setTheme(
+      document.documentElement.dataset.theme === "neon" ? "warm" : "neon",
+    );
+  document.querySelector("#project-description").oninput = (e) => {
+    state.description = e.target.value;
+    save();
+  };
   for (const k of ["band", "event", "notes"])
     document.getElementById(k).oninput = (e) => {
       state[k] = e.target.value;
@@ -108,6 +127,15 @@ function bind() {
       const id = Number(el.dataset.item),
         item = state.items.find((i) => i.id === id);
       selected = id;
+      if (
+        collaboration &&
+        (!collaboration.access().canEdit ||
+          !collaboration.access().connected ||
+          collaboration.access().conflict)
+      ) {
+        render();
+        return;
+      }
       let moved = false;
       el.setPointerCapture(e.pointerId);
       const rect = document.querySelector("#stage").getBoundingClientRect();
@@ -155,6 +183,13 @@ function bind() {
       }[e.key];
       if (delta) {
         e.preventDefault();
+        if (
+          collaboration &&
+          (!collaboration.access().canEdit ||
+            !collaboration.access().connected ||
+            collaboration.access().conflict)
+        )
+          return;
         const item = state.items.find((i) => i.id === Number(el.dataset.item));
         item.x = Math.max(7, Math.min(93, item.x + delta[0]));
         item.y = Math.max(8, Math.min(91, item.y + delta[1]));
@@ -254,7 +289,20 @@ collaboration = await collaborate({
     if (!state.items.some((item) => item.id === selected)) selected = null;
   },
   render,
+  openEditor: () => {
+    view = "editor";
+  },
 });
+if (!collaboration) view = "editor";
+if (collaboration) {
+  refreshAssets();
+  setupIdentity(collaboration);
+  setupChat(collaboration);
+  window.addEventListener("gordostage-project-list", () => {
+    if (view === "home")
+      mountHome({ api: collaboration, visible: true, showHome });
+  });
+}
 render();
 
 window.addEventListener("beforeprint", () =>
@@ -270,8 +318,10 @@ window.addEventListener("afterprint", () =>
 );
 
 function symbolImage(type) {
-  const symbol = getSymbol(type);
-  return symbol ? `<img src="${symbol.src}" alt="" draggable="false">` : "";
+  const symbol = lookupSymbol(type);
+  return symbol
+    ? `<img class="${symbol.custom ? "custom-symbol" : "builtin-symbol"}" src="${symbol.src}" alt="" draggable="false">`
+    : "";
 }
 function filteredSymbols() {
   const query = symbolQuery
@@ -279,7 +329,7 @@ function filteredSymbols() {
     .replace(/[\u0300-\u036f]/g, "")
     .toLowerCase()
     .trim();
-  return SYMBOLS.filter((symbol) =>
+  return availableSymbols().filter((symbol) =>
     !query
       ? symbolCategory === "Todos" ||
         (symbolCategory === "Frecuentes"
@@ -315,14 +365,76 @@ function bindLibrary() {
     symbolCategory = e.target.value;
     repaint();
   };
+  document.querySelector("#upload-symbol").onclick = () =>
+    document.querySelector("#symbol-file").click();
+  document.querySelector("#symbol-file").onchange = async (e) => {
+    if (!collaboration)
+      return alert("La subida de iconos requiere un servidor local.");
+    const file = e.target.files[0];
+    if (!file) return;
+    if (
+      !["image/png", "image/webp", "image/jpeg"].includes(file.type) ||
+      file.size > 2 * 1024 * 1024
+    )
+      return alert("Usa PNG, WebP o JPEG de hasta 2 MB.");
+    try {
+      const dataUrl = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+      const image = new Image();
+      image.src = dataUrl;
+      await image.decode();
+      if (image.width > 4096 || image.height > 4096)
+        throw Error("Máximo 4096 × 4096 píxeles");
+      const r = await collaboration.request("/api/assets", {
+        method: "POST",
+        body: JSON.stringify({
+          label: file.name
+            .replace(/\.[^.]+$/, "")
+            .replace(/[_-]/g, " ")
+            .slice(0, 100),
+          dataUrl,
+        }),
+      });
+      if (!r.ok) throw Error((await r.json()).error);
+      const asset = await r.json();
+      if (!state.customAssets.some((a) => a.id === asset.id))
+        state.customAssets.push(asset);
+      symbolCategory = "Personalizados";
+      symbolQuery = "";
+      save();
+      await refreshAssets();
+      render();
+    } catch (error) {
+      alert(error.message || "No se pudo subir la imagen");
+    }
+  };
   repaint();
 }
 function bindSymbolButtons() {
   document.querySelectorAll("[data-add]").forEach(
     (button) =>
-      (button.onclick = () => {
+      (button.onclick = async () => {
         if (state.items.length >= 500) return alert("Máximo 500 elementos");
-        const symbol = getSymbol(button.dataset.add);
+        let symbol = lookupSymbol(button.dataset.add);
+        if (
+          symbol.custom &&
+          !state.customAssets.some((a) => a.id === symbol.id)
+        ) {
+          try {
+            const r = await collaboration.request(
+              "/api/assets/" + symbol.id + "/document",
+            );
+            if (!r.ok) throw Error();
+            state.customAssets.push(await r.json());
+            symbol = lookupSymbol(symbol.id);
+          } catch {
+            return alert("No se pudo cargar el icono del servidor");
+          }
+        }
         const item = {
           id: Math.max(Date.now(), ...state.items.map((i) => i.id + 1)),
           type: symbol.id,
@@ -339,3 +451,45 @@ function bindSymbolButtons() {
       }),
   );
 }
+
+function availableSymbols() {
+  const custom = new Map(
+    customLibrary.map((a) => [
+      a.id,
+      {
+        id: a.id,
+        label: a.label,
+        category: "Personalizados",
+        custom: true,
+        src: "/api/assets/" + a.id,
+      },
+    ]),
+  );
+  for (const a of state.customAssets || [])
+    custom.set(a.id, {
+      id: a.id,
+      label: a.label,
+      category: "Personalizados",
+      custom: true,
+      src: a.dataUrl,
+    });
+  return [...SYMBOLS, ...custom.values()];
+}
+function lookupSymbol(id) {
+  return getSymbol(id) || availableSymbols().find((s) => s.id === id);
+}
+async function refreshAssets() {
+  if (!collaboration) return;
+  try {
+    const r = await collaboration.request("/api/assets");
+    if (r.ok) {
+      customLibrary = await r.json();
+      if (document.querySelector("#symbol-tools")) {
+        document.querySelector("#symbol-tools").innerHTML = symbolButtons();
+        bindSymbolButtons();
+        collaboration.decorate();
+      }
+    }
+  } catch {}
+}
+window.addEventListener("gordostage-assets", refreshAssets);

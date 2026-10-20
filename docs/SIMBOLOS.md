@@ -253,3 +253,11 @@ Los proyectos antiguos mantienen sus IDs de equipo. Se resuelven con estos alias
 | di          | active_di_box.webp       |
 
 El catálogo fuente es `shared/symbols.js` y se utiliza tanto para renderizar el editor como para validar los proyectos en el servidor. Los recursos marcados `production` permiten reutilización posterior en la interfaz.
+
+## Símbolos propios
+
+**Subir símbolo** acepta PNG, WebP y JPEG de hasta 2 MB; la interfaz comprueba además un máximo de 4096 píxeles por lado. SVG no se admite en esta versión. La categoría **Personalizados** reúne la biblioteca compartida del servidor y los símbolos que utiliza el proyecto.
+
+Cualquier puesto con permiso de edición puede subir una imagen desde su propio PC. El servidor la guarda en SQLite, deduplicada por SHA-256, y la ofrece al resto de puestos. No depende de la ruta original del archivo. En el modo individual se conserva dentro del proyecto del navegador.
+
+El JSON v4 incrusta las imágenes personalizadas usadas para que el proyecto pueda pasar a otro servidor sin perderlas. Se admiten hasta 100 imágenes por proyecto y 10 MiB en conjunto para sus datos incrustados. Los 173 símbolos incluidos siguen referenciados por ID; no se duplican en cada JSON. Respaldar `data/` conserva también imágenes subidas que aún no estén utilizadas en un proyecto.

@@ -2,51 +2,72 @@
 
 **Plataforma de logística de escenario.**
 
-Prototipo de stage plot y lista de canales para bandas. Editor con elementos móviles, notas técnicas, exportación/importación JSON e impresión a PDF. La primera prueba colaborativa reutiliza el editor JavaScript existente; la migración a React/TypeScript y el ejecutable quedan para etapas posteriores.
-
-La identidad visual y el estado de la biblioteca de símbolos se documentan en [docs/IDENTIDAD.md](docs/IDENTIDAD.md).
-
-## Biblioteca y equipos vinculados
-
-Incluye **173 símbolos WebP en 12 categorías**, con búsqueda en español o por nombre original y una selección de equipos frecuentes. Los ocho tipos de equipo anteriores siguen abriendo correctamente y ahora usan los símbolos nuevos. Los recursos de producción y logística también se conservan para futuras funciones de interfaz.
-
-Consulta el [inventario completo de símbolos](docs/SIMBOLOS.md). Al pulsar un equipo en el plano se abre su ficha para configurar alimentación y entradas de audio: fuente, micrófono/DI, mono/estéreo, phantom, soporte y notas. Cada entrada genera canales vinculados; también se pueden asociar canales que ya existan. Un equipo puede tener varias entradas independientes.
-
-El [funcionamiento y orden del input list](docs/INPUT_LIST.md) está documentado con ejemplos. El proyecto de ejemplo sigue una convención de sonido en vivo, sin imponer una norma universal ni ordenar automáticamente los canales nuevos.
-
-## Capturas
-
-Capturas de la aplicación en funcionamiento con datos de ejemplo.
-
-### Plano de escenario y anotaciones
-
-![Editor de escenario con instrumentos, monitores, dibujo y comentario de posición](docs/screenshots/stage-plot.png)
-
-### Input list personalizable
-
-![Lista de canales con columna Patch, edición de celdas y controles de orden](docs/screenshots/input-list.png)
-
-### Datos técnicos por equipo
-
-![Ficha de un teclado estéreo con DI, phantom y alimentación eléctrica](docs/screenshots/ficha-tecnica.png)
-
-### Símbolos de producción y logística
-
-![Biblioteca con búsqueda, categorías y recursos para producción](docs/screenshots/biblioteca-simbolos.png)
-
-### Coordinación durante el montaje
-
-![Comentarios de montaje y chat privado entre editores](docs/screenshots/montaje-chat.png)
+Stage plots y riders técnicos para bandas, productoras y equipos de montaje. Funciona como servidor local compartido desde un PC Windows, con acceso desde los navegadores de la misma red. También incluye un editor individual que se puede alojar como sitio estático.
 
 ## Descargar para Windows
 
-La distribución de pruebas usa **Windows 10/11 de 64 bits**. En [Releases](https://github.com/Lechuga-visual/stage-plot/releases), el paquete listo para usar se llama **GordoStage-0.1.1-windows-x64.zip**; los enlaces automáticos Source code son código fuente.
+Descarga **GordoStage-0.2.0-windows-x64.zip** desde [la Release v0.2.0](https://github.com/Lechuga-visual/stage-plot/releases/tag/v0.2.0), extrae todo y abre **Iniciar GordoStage.cmd**. Incluye la interfaz compilada y Node.js; no requiere herramientas de desarrollo. Los enlaces **Source code** son código fuente.
 
-Extrae todo el ZIP y abre **Iniciar GordoStage.cmd**. Incluye Node.js y la interfaz compilada: no requiere instalar herramientas de desarrollo. El navegador se abre en el anfitrión y la consola muestra el código de edición y las direcciones LAN. Mantén la ventana abierta; los datos se guardan en `data/` junto al lanzador. Es un paquete portable, todavía no un instalador ni un ejecutable único. Detalles de construcción y validación en [docs/DISTRIBUCION.md](docs/DISTRIBUCION.md).
+En una instalación nueva **no se pide clave**. La bienvenida permite abrir proyectos, importar/exportar JSON, configurar seguridad, registrar usuarios y elegir tema. El PC anfitrión administra los permisos desde su propio navegador. La consola muestra las direcciones LAN para los demás PCs y tablets. Mantén esa ventana abierta mientras trabajan; los datos se guardan en `data/` junto al lanzador. Es un ZIP portable con lanzador CMD; todavía no es un instalador ni un único `.exe`.
 
-## Ejecutar desde el código fuente
+Consulta [distribución y actualización](docs/DISTRIBUCION.md) y [notas de versión](docs/RELEASE_NOTES.md).
 
-Requiere Node.js 24 y npm. En la carpeta del repositorio:
+## Implementado
+
+- **Proyectos compartidos:** crear y abrir varios proyectos; pestañas en la barra lateral, cierre de pestañas por dispositivo y nombre/descripción al pasar el ratón o enfocar. Cada puesto elige su proyecto sin cambiar la vista de los demás. Todos los proyectos guardados siguen disponibles en el servidor.
+- **Bienvenida y temas:** accesos a proyectos, importación/exportación, configuración, permisos y usuarios. Tema oscuro Neón y tema claro GordoStage, guardados por navegador. El botón del encabezado también cambia el tema desde el editor.
+- **Seguridad opcional:** activar/desactivar y cambiar la clave desde el PC anfitrión; habilitar/deshabilitar chat y exigir identificación con usuarios registrados. Perfiles con nombre, puesto, edición o lectura y PIN opcional. Las claves y PIN se guardan mediante hash con sal.
+- **Identidad y chat:** identificación al abrir un proyecto, con puestos Escenario, FOH, Monitores, Producción, Backline, Iluminación, Vídeo, Booking y Otro. Nombre automático por puesto o alias. Chat flotante inferior derecho, minimizable, con contador de mensajes sin leer; separado por proyecto y disponible también en la bienvenida.
+- **Plano:** instrumentos móviles y comentarios por equipo o por punto libre. Paleta compacta con iconos para seleccionar, dibujar, comentar, borrar un trazo completo o borrar partes con goma. Color, grosor, opacidad y deshacer/rehacer de dibujos.
+- **Cableado visual:** rutas con esquinas y etiquetas para energía, audio, multipar, Ethernet y vídeo, con colores/estilos diferenciados y leyenda. Se conservan en JSON y PDF.
+- **Biblioteca:** 173 símbolos WebP en 12 categorías, búsqueda en español o por nombre original y frecuentes. Subida de PNG, WebP o JPEG desde cualquier puesto editor; almacenamiento en el servidor y biblioteca compartida de personalizados.
+- **Ficha técnica:** pulsar un equipo para indicar energía, entradas, micrófono/DI, señal mono/estéreo, phantom, soporte y notas. Las entradas generan canales vinculados; estéreo genera L/R. También se vinculan canales existentes.
+- **Input list:** celdas editables, hasta 20 columnas personalizadas, nombres y orden configurables, altas/bajas y orden manual de hasta 500 canales. La edición de datos vinculados actualiza la ficha del equipo.
+- **Portabilidad:** JSON editable v4, con importación de versiones anteriores, e impresión a PDF del rider con plano, rutas, comentarios y resumen técnico. Los símbolos personalizados usados viajan incrustados en el JSON.
+
+El [orden del input list](docs/INPUT_LIST.md) usa una convención de sonido en vivo como punto de partida: batería, percusión, bajo, guitarras, teclados, pistas/DJ, vientos/cuerdas, coros, voz principal y talkback. No impone una norma universal ni ordena automáticamente los canales nuevos. Consulta el [inventario completo de símbolos](docs/SIMBOLOS.md) y la [identidad visual](docs/IDENTIDAD.md).
+
+## Capturas
+
+Datos de ejemplo de la aplicación ejecutándose; se regeneran sin acceder a los proyectos del usuario.
+
+### Bienvenida y proyectos
+
+![Bienvenida con acceso a proyectos, configuración, usuarios y tema Neón](docs/screenshots/bienvenida.png)
+
+### Editor de escenario
+
+![Plano con biblioteca, rutas, comentarios y paleta de herramientas](docs/screenshots/stage-plot.png)
+
+### Proyectos y descripción al pasar el ratón
+
+![Barra de proyectos con nombre y descripción en el tooltip](docs/screenshots/proyectos.png)
+
+### Input list y datos técnicos
+
+![Lista de canales con Patch, señal, phantom y alimentación](docs/screenshots/input-list.png)
+
+![Ficha de teclado estéreo con DI, phantom y alimentación eléctrica](docs/screenshots/ficha-tecnica.png)
+
+### Biblioteca y coordinación de montaje
+
+![Símbolos de producción y logística](docs/screenshots/biblioteca-simbolos.png)
+
+![Chat flotante durante el montaje](docs/screenshots/montaje-chat.png)
+
+## Uso en red local
+
+El anfitrión abre `http://127.0.0.1:3000`; los otros puestos usan una dirección LAN mostrada en la consola. Permite el puerto TCP 3000 en el firewall de la red privada si es necesario. No se instala nada en los dispositivos que acceden con navegador.
+
+Desde **Configuración y permisos** el anfitrión decide si usa clave y puede cambiarla. En modo protegido, los otros dispositivos usan **Entrar a editar**. Un perfil de lectura permanece de lectura aunque conozca la clave. Los perfiles sin PIN sirven para identificarse; si necesitas controlar quién usa cada perfil, configura PIN y activa **Solo usuarios registrados**. Esta opción restringe la participación y edición; el rider sigue disponible para consulta en la red. No son cuentas de un servicio web.
+
+Los datos se guardan en `data/stagecraft.sqlite`. Detén el servidor antes de copiar `data/` como respaldo completo: incluye proyectos, imágenes, chat, usuarios y configuración. El JSON transfiere un proyecto; no incluye chat, perfiles, PIN ni claves. En la bienvenida importar crea otro proyecto; en el editor importar sustituye el actual tras confirmación.
+
+Cada guardado lleva una revisión. Si otro puesto guarda primero, se conserva la copia local y se indica conflicto; exporta esa copia antes de cargar la del servidor. WebSocket y consultas periódicas recuperan cambios. La app detecta conflictos por proyecto completo, sin combinar campos ni permitir edición colaborativa sin conexión.
+
+## Ejecutar desde código fuente
+
+Requiere Node.js 24 y npm:
 
 ```sh
 npm ci
@@ -54,59 +75,22 @@ npm run build
 npm start
 ```
 
-El servidor muestra el puerto (3000 por defecto), las direcciones de red y un código de edición generado para esa sesión. Abre una de esas direcciones desde los otros dispositivos de la misma red. Permite el puerto TCP 3000 en el firewall de la red privada si fuera necesario. No abras puertos del router a internet. No hace falta instalar Codex ni Node en los dispositivos que solo consultan o editan con su navegador.
+`PORT` y `HOST` cambian puerto e interfaz. `STAGE_EDIT_CODE` permite configurar una clave inicial al crear una base nueva; después se conserva la configuración guardada y se administra desde la interfaz del anfitrión. Las versiones anteriores de la base y el chat se migran al proyecto inicial.
 
-Todos entran inicialmente como lectores. Pulsa **Entrar a editar** e introduce el código mostrado por el anfitrión. Un código vacío vuelve al modo lectura. El código se conserva en la sesión del navegador. Se puede fijar con `STAGE_EDIT_CODE`; no lo incluyas en archivos compartidos. `PORT` y `HOST` permiten cambiar el puerto y la interfaz.
+`npm run dev` inicia Vite en modo individual, sin API colaborativa. `dist/` se puede alojar como sitio estático barato: conserva el editor y almacenamiento del navegador, JSON y PDF. La bienvenida multiusuario, usuarios, chat y biblioteca compartida necesitan `npm start`. El servidor web con cuentas/organizaciones todavía está pendiente en [ROADMAP.md](ROADMAP.md).
 
-Los datos se guardan en `data/stagecraft.sqlite` (directorio ignorado por Git). Para respaldar todos los datos, detén el servidor antes de copiar `data/`. Para transferir un proyecto usa **Exportar proyecto** e **Importar proyecto**. La primera sesión de edición inicializa el servidor con el proyecto del navegador; después manda la versión del servidor.
-
-Cada escritura incluye una revisión: si otro dispositivo guardó primero, se conserva la copia local y se muestra un conflicto. Exporta tu copia antes de cargar la versión del servidor. Esta prueba rechaza conflictos a nivel de proyecto; todavía no combina campos ni permite editar sin conexión. Los cambios pendientes intentan guardarse al recuperar conexión. WebSocket avisa de cambios y una consulta periódica recupera avisos perdidos.
-
-Es una sesión local de un único proyecto, con lectura accesible a quienes alcanzan el servidor y código compartido de edición. HTTP local no cifra tráfico: úsalo en una red de confianza. Cuentas, permisos por usuario, adjuntos, QR, historial navegable, versión aprobada y empaquetado de escritorio todavía no están implementados.
-
-## Desarrollo y verificaciones
+## Comprobaciones y capturas
 
 ```sh
-npm test
 npm run build
-npm start
-```
-
-`npm run dev` inicia el editor independiente de Vite, sin servidor colaborativo. Para probar colaboración, reconstruye y usa `npm start`. `dist/` también se puede publicar como sitio estático: conserva el modo individual y guardado en el navegador. Las tipografías externas son opcionales y tienen fuentes locales de respaldo.
-
-Las tareas cloud ya están aisladas: usa el checkout existente, sin crear worktrees. No publiques datos de prueba ni el código de edición. La prueba automatizada verifica permisos, validación de datos, notificaciones WebSocket, conflictos de revisión, persistencia tras reinicio y entrega de la página. La prueba física entre dos PCs sigue siendo necesaria para verificar Wi-Fi y firewall.
-
-## Chat y anotaciones de montaje
-
-- **Chat de editores:** aparece al entrar con código de edición. Escribe tu nombre y envía mensajes. SQLite conserva los últimos 200. Los lectores no pueden consultar el chat. Los nombres son declarados por cada persona, sin cuentas ni identidad verificada. El chat es independiente del proyecto: no viaja en JSON ni aparece en PDF. No envíes de nuevo un mensaje si tienes dudas de si llegó: el envío todavía no tiene identificador de deduplicación.
-- **Comentarios de montaje:** escribe tu nombre y una observación técnica que deba acompañar al proyecto. Estos comentarios se comparten con los lectores, se exportan en JSON y se imprimen en el rider.
-- **Dibujo:** elige Dibujar y un color, y traza con ratón o pantalla táctil. Deshacer quita el último trazo guardado del proyecto. Vuelve a Mover para arrastrar instrumentos.
-- **Posiciones:** selecciona un instrumento para editar su comentario o usa Comentar posición y pulsa cualquier punto del plano. Los puntos numerados se corresponden con la lista de comentarios; se pueden editar y eliminar. Los dibujos y comentarios usan coordenadas relativas y escalan con el plano.
-- **Input list:** añade, renombra, reordena y quita columnas; edita las celdas, añade/elimina canales y cambia su orden. La numeración CH se recalcula automáticamente. El formato permite hasta 20 columnas y 500 canales.
-
-## Formato portable
-
-Los proyectos actuales llevan `formatVersion: 3`. Conservan los datos de banda, dimensiones, instrumentos y sus comentarios, columnas ordenadas, celdas, trazos, comentarios de posiciones y de montaje, además de la ficha técnica y los vínculos entre equipo y canales. El esquema y las migraciones se comparten en `shared/project.js` entre navegador y servidor. Se admiten los JSON anteriores sin versión y de versiones 1 y 2; los formatos futuros desconocidos se rechazan. Importar reemplaza el proyecto actual después de confirmación: expórtalo primero si necesitas conservarlo. Transferir un archivo no sincroniza los servidores automáticamente.
-
-La transferencia entre dos instancias locales está probada. El editor estático también usa el mismo formato. La versión de servidor web con cuentas todavía no existe: su adaptación está registrada en [ROADMAP.md](ROADMAP.md).
-
-## Prueba de navegador
-
-Después de `npm ci` y `npm run build`:
-
-```sh
+npm test
 npx playwright install chromium
 npm run test:browser
-```
-
-Si Chromium ya está instalado, puedes usar `CHROMIUM_PATH=/usr/bin/chromium npm run test:browser` en Linux. Esta prueba crea una base temporal, dos sesiones de edición y una de lectura. Las pruebas verifican chat, permisos, columnas personalizadas, dibujo, comentarios, carga de los 173 símbolos, ficha técnica, canales L/R, alimentación, edición desde la tabla, transferencia JSON por la interfaz, generación PDF y ancho móvil. No modifica los datos del servidor habitual. Ejecutar `npm test` no requiere navegador.
-
-## Regenerar capturas
-
-Después de compilar y preparar Chromium como en la prueba de navegador:
-
-```sh
 npm run screenshots
+npm run package:windows
+npm run test:portable
 ```
 
-En Linux, con Chromium instalado: `CHROMIUM_PATH=/usr/bin/chromium npm run screenshots`. El script usa una base temporal con datos de ejemplo; no lee los proyectos del servidor habitual ni incluye códigos de acceso en las imágenes.
+En Linux con Chromium instalado puedes anteponer `CHROMIUM_PATH=/usr/bin/chromium` a las pruebas de navegador y capturas. Las pruebas usan bases temporales: verifican migraciones, permisos, persistencia, proyectos independientes, chat, dibujos/goma, cableado, imágenes, fichas, lista de canales, JSON, PDF y vista móvil. La publicación Windows exige además ejecutar el paquete con su runtime incluido en un runner Windows.
+
+La goma divide trazos vectoriales. Deshacer/rehacer conserva hasta 50 pasos de dibujo en memoria por proyecto y se reinicia si llegan dibujos modificados desde otro puesto. Las rutas son anotaciones gráficas: no conectan puertos automáticamente ni calculan cargas. La prueba física entre PCs sigue pendiente para comprobar la red y el firewall del lugar.

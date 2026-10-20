@@ -14,7 +14,7 @@ try {
   const actualPort = app.server.address().port;
   const local = `http://127.0.0.1:${actualPort}`;
   console.log(
-    `\nGordoStage - Servidor local\n\nEn este PC: ${local}\nCódigo de edición: ${server.editCode}\n\nOtros dispositivos de la misma red:`,
+    `\nGordoStage - Servidor local\n\nEn este PC: ${local}\n${server.securityEnabled ? "Seguridad activada" : "Seguridad opcional desactivada · configúrala desde el anfitrión"}\n\nOtros dispositivos de la misma red:`,
   );
   for (const entries of Object.values(networkInterfaces()))
     for (const entry of entries || [])

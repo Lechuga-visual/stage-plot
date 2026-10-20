@@ -2,7 +2,7 @@ import { chromium } from "playwright";
 import { mkdtempSync, mkdirSync, rmSync } from "node:fs";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
-import { randomBytes } from "node:crypto";
+import { openDefault } from "../tests/browser-helpers.mjs";
 import { createServer } from "../server/app.js";
 import {
   ensureTechnicalColumns,
@@ -13,12 +13,12 @@ import { normalizeProject } from "../shared/project.js";
 
 // Demo data only. Never connect to the user's running server or database.
 const directory = mkdtempSync(join(tmpdir(), "stage-screenshots-"));
-const editCode = randomBytes(16).toString("hex");
-const { app } = await createServer({ directory, editCode });
+const { app } = await createServer({ directory });
 let browser;
 try {
   const document = normalizeProject({
     band: "Los Eléctricos",
+    description: "Escenario principal · Gira de verano · 9 canales",
     event: "Rider técnico · Gira de verano",
     width: 10,
     depth: 8,
@@ -70,7 +70,11 @@ try {
   document.columns.push({ id: "c_patch", label: "Patch" });
   document.channels.forEach((c, n) => (c.c_patch = `A${n + 1}`));
   document.drawings.push({
-    color: "#cc4433",
+    color: "#48d8ff",
+    kind: "ethernet",
+    width: 3,
+    opacity: 0.9,
+    label: "FOH → stagebox",
     points: [
       [7, 10],
       [7, 72],
@@ -116,7 +120,7 @@ try {
   document.items.push(keys);
   ensureTechnicalColumns(document);
   reconcileInputs(document);
-  const headers = { "x-edit-code": editCode };
+  const headers = {};
   const saved = await app.inject({
     method: "PUT",
     url: "/api/project",
@@ -139,6 +143,26 @@ try {
       headers,
       payload: { author, text },
     });
+  const secondProject = await app.inject({
+    method: "POST",
+    url: "/api/projects",
+    payload: {
+      document: normalizeProject({
+        ...document,
+        band: "Festival del Puerto",
+        description: "Escenario B · Jornada del sábado · Backline compartido",
+      }),
+    },
+  });
+  await app.inject({
+    method: "POST",
+    url: "/api/profiles",
+    payload: {
+      name: "Equipo de escenario",
+      role: "Escenario",
+      permission: "editor",
+    },
+  });
   await app.listen({ port: 0, host: "127.0.0.1" });
   browser = await chromium.launch({
     headless: true,
@@ -156,15 +180,21 @@ try {
   await context.route("https://fonts.googleapis.com/**", (route) =>
     route.abort(),
   );
-  await context.addInitScript(
-    (code) => sessionStorage.setItem("stagecraft-edit-code", code),
-    editCode,
-  );
+  await context.addInitScript((secondId) => {
+    localStorage.setItem("gordostage-chat-minimized", "true");
+    localStorage.setItem(
+      "gordostage-open-projects",
+      JSON.stringify(["default", secondId]),
+    );
+  }, secondProject.json().id);
   const page = await context.newPage();
   const errors = [];
   page.on("pageerror", (e) => errors.push(e.message));
   await page.goto(`http://127.0.0.1:${app.server.address().port}`);
-  await page.locator("#chat-log article").nth(2).waitFor();
+  await page.locator('[data-home-open="default"]').waitFor();
+  mkdirSync("docs/screenshots", { recursive: true });
+  await page.screenshot({ path: "docs/screenshots/bienvenida.png" });
+  await openDefault(page);
   await page.evaluate(() => document.fonts.ready);
   mkdirSync("docs/screenshots", { recursive: true });
   await page
@@ -185,19 +215,17 @@ try {
     .screenshot({ path: "docs/screenshots/ficha-tecnica.png" });
   await page.locator('[data-tab="channels"]').click();
   await page.screenshot({ path: "docs/screenshots/input-list.png" });
-  await page.evaluate(() => {
-    const group = document.createElement("div");
-    group.id = "capture-montage";
-    const mounting = document.querySelector(".mounting-section");
-    mounting.before(group);
-    group.append(mounting, document.querySelector(".chat-section"));
-  });
-  await page
-    .locator("#capture-montage")
-    .screenshot({ path: "docs/screenshots/montaje-chat.png" });
+  await page.locator('[data-tab="plot"]').click();
+  await page.locator("#toggle-chat").click();
+  await page.locator("#chat-log article").nth(2).waitFor();
+  await page.locator("#stage").scrollIntoViewIfNeeded();
+  await page.screenshot({ path: "docs/screenshots/montaje-chat.png" });
+  await page.locator("#toggle-chat").click();
+  await page.locator('[data-project="default"]').hover();
+  await page.screenshot({ path: "docs/screenshots/proyectos.png" });
   if (errors.length) throw Error(errors.join("\n"));
   console.log(
-    "Capturas generadas: stage-plot, input-list, montaje-chat, biblioteca y ficha técnica (datos de ejemplo).",
+    "Capturas generadas: bienvenida, stage-plot, input-list, montaje-chat, proyectos, biblioteca y ficha técnica (datos de ejemplo).",
   );
 } finally {
   await browser?.close();

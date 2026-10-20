@@ -19,7 +19,11 @@ test("lectores, editores, difusión, conflictos y persistencia", async () => {
   const directory = mkdtempSync(join(tmpdir(), "stage-test-"));
   let app, ws;
   try {
-    ({ app } = await createServer({ directory, editCode: "test-code" }));
+    ({ app } = await createServer({
+      localAdmin: false,
+      directory,
+      editCode: "test-code",
+    }));
     await app.listen({ port: 0, host: "127.0.0.1" });
     const base = `http://127.0.0.1:${app.server.address().port}`;
     ws = new WebSocket(base.replace("http", "ws") + "/live");
@@ -67,7 +71,11 @@ test("lectores, editores, difusión, conflictos y persistencia", async () => {
     );
     ws.terminate();
     await app.close();
-    ({ app } = await createServer({ directory, editCode: "test-code" }));
+    ({ app } = await createServer({
+      localAdmin: false,
+      directory,
+      editCode: "test-code",
+    }));
     const restored = (await app.inject("/api/project")).json();
     assert.equal(restored.revision, 2);
     assert.equal(restored.document.band, "A");

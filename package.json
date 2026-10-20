@@ -1,6 +1,6 @@
 {
   "name": "gordostage",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -9,7 +9,7 @@
     "preview": "vite preview --host 0.0.0.0",
     "start": "node server/app.js",
     "test": "node --test tests/*.test.js",
-    "test:browser": "node tests/browser-smoke.mjs && node tests/equipment-browser.mjs",
+    "test:browser": "node tests/browser-smoke.mjs && node tests/equipment-browser.mjs && node tests/workspace-browser.mjs",
     "screenshots": "node scripts/screenshots.mjs",
     "package:windows": "node scripts/package-windows.mjs",
     "test:portable": "node tests/portable-smoke.mjs"
