@@ -3,6 +3,7 @@ import {
   removeChannel,
   findLinkedInput,
 } from "../shared/equipment.js";
+import { mountChannelOrder } from "./channel-order.js";
 import { refreshChannelCells } from "./equipment-panel.js";
 const esc = (s) =>
   String(s).replace(
@@ -22,12 +23,14 @@ export function mountFeatures({
   save,
   render,
   collaboration,
+  deleteItem,
+  clearItemSelection,
 }) {
   const projectId = collaboration?.access().projectId || "local";
   const currentIdentity = identity();
   // Customize the input list without losing hidden cells when removing a column.
   const table = document.querySelector(".channel-section table");
-  table.innerHTML = `<thead><tr><th>CH</th>${state.columns.map((c, n) => `<th><input data-edit data-column="${n}" aria-label="Nombre columna ${n + 1}" value="${esc(c.label)}"><div class="column-actions"><button data-edit data-col-move="${n}" data-dir="-1" aria-label="Mover columna a la izquierda" ${n === 0 ? "disabled" : ""}>←</button><button data-edit data-col-move="${n}" data-dir="1" aria-label="Mover columna a la derecha" ${n === state.columns.length - 1 ? "disabled" : ""}>→</button><button data-edit data-col-delete="${n}" aria-label="Eliminar columna" ${state.columns.length === 1 ? "disabled" : ""}>×</button></div></th>`).join("")}<th class="row-actions">Orden</th></tr></thead><tbody>${state.channels.map((c, n) => `<tr><td>${n + 1}</td>${state.columns.map((col) => `<td><input data-channel="${n}" data-field="${col.id}" aria-label="${esc(col.label)} canal ${n + 1}" value="${esc(c[col.id] || "")}"></td>`).join("")}<td class="row-actions"><button data-edit data-row-move="${n}" data-dir="-1" aria-label="Subir canal ${n + 1}" ${n === 0 ? "disabled" : ""}>↑</button><button data-edit data-row-move="${n}" data-dir="1" aria-label="Bajar canal ${n + 1}" ${n === state.channels.length - 1 ? "disabled" : ""}>↓</button><button data-edit data-row-delete="${n}" aria-label="Eliminar canal ${n + 1}">×</button></td></tr>`).join("")}</tbody>`;
+  table.innerHTML = `<thead><tr><th class="channel-index"><label><input data-edit id="select-all-channels" type="checkbox" aria-label="Seleccionar todos los canales"> CH</label></th>${state.columns.map((c, n) => `<th><input data-edit data-column="${n}" aria-label="Nombre columna ${n + 1}" value="${esc(c.label)}"><div class="column-actions"><button data-edit data-col-move="${n}" data-dir="-1" aria-label="Mover columna a la izquierda" ${n === 0 ? "disabled" : ""}>←</button><button data-edit data-col-move="${n}" data-dir="1" aria-label="Mover columna a la derecha" ${n === state.columns.length - 1 ? "disabled" : ""}>→</button><button data-edit data-col-delete="${n}" aria-label="Eliminar columna" ${state.columns.length === 1 ? "disabled" : ""}>×</button></div></th>`).join("")}<th class="row-actions">Orden</th></tr></thead><tbody>${state.channels.map((c, n) => `<tr data-channel-row="${n}"><td class="channel-index"><button data-edit class="channel-drag-handle" draggable="true" data-drag-channel="${n}" aria-label="Arrastrar canal ${n + 1}" title="Arrastrar canal o selección">⋮⋮</button><input data-edit data-row-select="${n}" type="checkbox" aria-label="Seleccionar canal ${n + 1}"><span>${n + 1}</span></td>${state.columns.map((col) => `<td><input data-channel="${n}" data-field="${col.id}" aria-label="${esc(col.label)} canal ${n + 1}" value="${esc(c[col.id] || "")}"></td>`).join("")}<td class="row-actions"><button data-edit class="channel-drag-handle" draggable="true" data-drag-channel="${n}" aria-label="Arrastrar canal ${n + 1} desde el final" title="Arrastrar canal o selección">⋮⋮</button><button data-edit data-row-move="${n}" data-dir="-1" aria-label="Subir canal ${n + 1}" ${n === 0 ? "disabled" : ""}>↑</button><button data-edit data-row-move="${n}" data-dir="1" aria-label="Bajar canal ${n + 1}" ${n === state.channels.length - 1 ? "disabled" : ""}>↓</button><button data-edit data-row-delete="${n}" aria-label="Eliminar canal ${n + 1}">×</button></td></tr>`).join("")}</tbody>`;
   table.querySelectorAll("[data-channel]").forEach((el) => {
     const row = state.channels[+el.dataset.channel];
     if (
@@ -140,7 +143,16 @@ export function mountFeatures({
     save();
     render();
   };
-  mountDrawing({ state, save, render, collaboration });
+  mountChannelOrder({ state, table, save, render, collaboration });
+  mountDrawing({
+    state,
+    save,
+    render,
+    collaboration,
+    selectedItemId: selected,
+    deleteItem,
+    clearItemSelection,
+  });
   const item = state.items.find((i) => i.id === selected);
   if (item) {
     const label = document.createElement("label");
@@ -158,7 +170,7 @@ export function mountFeatures({
     .filter((i) => i.comment)
     .map(
       (i) =>
-        `<article><b>${esc(i.label)}</b><p>${esc(i.comment)}</p></article>`,
+        `<article data-item-comment="${i.id}"><b>${esc(i.label)}</b><p>${esc(i.comment)}</p></article>`,
     )
     .join(
       "",

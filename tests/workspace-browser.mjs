@@ -202,7 +202,7 @@ try {
   await p.locator("#export").click();
   const downloaded = await downloadPromise;
   const portable = JSON.parse(readFileSync(await downloaded.path(), "utf8"));
-  assert.equal(portable.formatVersion, 4);
+  assert.equal(portable.formatVersion, 5);
   assert.equal(portable.customAssets.length, 1);
   assert.match(portable.customAssets[0].dataUrl, /^data:image\/webp;base64,/);
   assert.equal(portable.drawings.at(-1).kind, "ethernet");

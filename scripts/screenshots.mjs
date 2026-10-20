@@ -171,7 +171,7 @@ try {
       : {}),
   });
   const context = await browser.newContext({
-    viewport: { width: 1440, height: 1200 },
+    viewport: { width: 1600, height: 1440 },
     deviceScaleFactor: 1,
     locale: "es-CL",
     timezoneId: "America/Santiago",
@@ -223,9 +223,38 @@ try {
   await page.locator("#toggle-chat").click();
   await page.locator('[data-project="default"]').hover();
   await page.screenshot({ path: "docs/screenshots/proyectos.png" });
+  await page.locator("#print").click();
+  await page
+    .locator("#workspace-dialog")
+    .screenshot({ path: "docs/screenshots/exportacion-pdf.png" });
+  await page.locator("#workspace-dialog [data-dismiss]").click();
+  await page.locator("#symbol-style").selectOption("x32");
+  await page.locator("#symbol-category").selectOption("Todos");
+  await page
+    .locator("#symbol-tools img")
+    .evaluateAll((images) => Promise.all(images.map((img) => img.decode())));
+  await page
+    .locator(".palette")
+    .screenshot({ path: "docs/screenshots/iconos-x32-m32.png" });
+  await page.locator('[data-item="8"]').click();
+  await page.locator('[data-technical-field="signal"]').selectOption("custom");
+  await page.locator("[data-channel-count]").fill("4");
+  await page.locator("[data-channel-count]").press("Tab");
+  for (const [n, label] of [
+    "Piano L",
+    "Piano R",
+    "Pads L",
+    "Pads R",
+  ].entries()) {
+    await page.locator(`[data-channel-label="${n}"]`).fill(label);
+    await page.locator(`[data-channel-label="${n}"]`).press("Tab");
+  }
+  await page
+    .locator(".equipment-panel")
+    .screenshot({ path: "docs/screenshots/canales-personalizados.png" });
   if (errors.length) throw Error(errors.join("\n"));
   console.log(
-    "Capturas generadas: bienvenida, stage-plot, input-list, montaje-chat, proyectos, biblioteca y ficha técnica (datos de ejemplo).",
+    "Capturas generadas: bienvenida, editor, lista, chat, proyectos, biblioteca, ficha técnica, PDF configurable, X32/M32 y canales personalizados (datos de ejemplo).",
   );
 } finally {
   await browser?.close();

@@ -7,6 +7,8 @@ export const esc = (s) =>
       ],
   );
 const paths = {
+  volume: "M3 9h4l5-5v16l-5-5H3V9zm12-2a7 7 0 010 10m3-13a11 11 0 010 16",
+  mute: "M3 9h4l5-5v16l-5-5H3V9zm13 0 5 6m0-6-5 6",
   move: "M4 3l6 16 2-7 7-2L4 3z",
   pen: "M4 20l4-1L20 7l-4-4L4 15v5zm10-15 4 4",
   comment: "M4 4h16v12H9l-5 4V4z",

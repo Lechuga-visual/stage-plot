@@ -1,3 +1,5 @@
+import { BEHRINGER_SYMBOLS } from "./behringer-symbols.js";
+export { BEHRINGER_SYMBOLS };
 // Original WebP files supplied by the user; stable IDs match original filenames.
 export const SYMBOLS = [
   {
@@ -1223,10 +1225,38 @@ export const LEGACY_ALIASES = {
   amp: "electric_guitar_amp",
   di: "active_di_box",
 };
-const byId = new Map(SYMBOLS.map((symbol) => [symbol.id, symbol]));
-export function getSymbol(id) {
-  return byId.get(LEGACY_ALIASES[id] || id);
+const genericById = new Map(SYMBOLS.map((symbol) => [symbol.id, symbol]));
+const x32ById = new Map(BEHRINGER_SYMBOLS.map((symbol) => [symbol.id, symbol]));
+const equivalents = new Map();
+for (const symbol of BEHRINGER_SYMBOLS)
+  if (symbol.canonical && !equivalents.has(symbol.canonical))
+    equivalents.set(symbol.canonical, symbol);
+for (const [id, base] of Object.entries({
+  double_keyboard_rig: "single_keyboard_rig",
+  grand_piano: "digital_piano",
+  upright_piano: "digital_piano",
+  classical_guitar: "acoustic_guitar",
+  electronic_drum_kit: "acoustic_drum_kit",
+  hybrid_drum_kit: "acoustic_drum_kit",
+  utility_dynamic_mic: "vocal_mic_wired",
+}))
+  equivalents.set(id, equivalents.get(base));
+export function getSymbol(id, style = "generic") {
+  const resolved = LEGACY_ALIASES[id] || id;
+  const original = genericById.get(resolved) || x32ById.get(resolved);
+  if (!original) return;
+  if (style === "x32")
+    return original.family === "x32"
+      ? original
+      : equivalents.get(resolved) || original;
+  return original.canonical
+    ? genericById.get(original.canonical) || original
+    : original;
 }
+export function getOriginalSymbol(id) {
+  return genericById.get(LEGACY_ALIASES[id] || id) || x32ById.get(id);
+}
+export const ALL_SYMBOLS = [...SYMBOLS, ...BEHRINGER_SYMBOLS];
 export const SYMBOL_CATEGORIES = [
   ...new Set(SYMBOLS.map((symbol) => symbol.category)),
 ];
@@ -1241,7 +1271,7 @@ export const COMMON_SYMBOL_IDS = [
   "active_di_box",
 ];
 export const symbolSearchText = (symbol) =>
-  `${symbol.label} ${symbol.id} ${symbol.category}`
+  `${symbol.label} ${symbol.originalLabel || ""} ${symbol.id} ${symbol.category}`
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
     .toLowerCase();

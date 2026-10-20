@@ -5,6 +5,8 @@ import {
   newInput,
   ensureTechnicalColumns,
   reconcileInputs,
+  inputSides,
+  inputSource,
 } from "../shared/equipment.js";
 const esc = (s) =>
   String(s).replace(
@@ -29,7 +31,7 @@ export function mountEquipment({ state, selected, save, render }) {
     const unlinked = state.channels
       .map((row, index) => ({ row, index }))
       .filter(({ row }) => !row._link);
-    panel.innerHTML = `<div class="section-label">DATOS TÉCNICOS · ${esc(item.label)}</div><h2>Equipo e input list</h2><p>Configura entradas independientes para este equipo. Cada entrada estéreo ocupa dos canales: L y R.</p><div class="equipment-power"><label>Alimentación del equipo<select data-edit id="equipment-power">${Object.entries(
+    panel.innerHTML = `<div class="section-label">DATOS TÉCNICOS · ${esc(item.label)}</div><h2>Equipo e input list</h2><p>Configura entradas independientes para este equipo. Elige mono, estéreo o una cantidad personalizada de canales con etiquetas individuales.</p><div class="equipment-power"><label>Alimentación del equipo<select data-edit id="equipment-power">${Object.entries(
       POWER_OPTIONS,
     )
       .map(
@@ -41,7 +43,7 @@ export function mountEquipment({ state, selected, save, render }) {
       )}</select></label><label>Detalle de alimentación<input data-edit id="power-notes" maxlength="2000" value="${esc(t.powerNotes)}" placeholder="230 V · enchufe al lado del teclado"></label></div><div class="equipment-inputs">${t.inputs
       .map(
         (input, n) =>
-          `<fieldset><legend>Entrada ${n + 1}</legend><div class="technical-grid"><label>Fuente<input data-edit data-input-id="${input.id}" data-technical-field="name" value="${esc(input.name)}" maxlength="1000"></label><label>Micrófono / DI<input data-edit data-input-id="${input.id}" data-technical-field="microphone" value="${esc(input.microphone)}" maxlength="1000" placeholder="SM57, DI activa…"></label><label>Señal<select data-edit data-input-id="${input.id}" data-technical-field="signal"><option value="mono" ${input.signal === "mono" ? "selected" : ""}>Mono · 1 canal</option><option value="stereo" ${input.signal === "stereo" ? "selected" : ""}>Estéreo · 2 canales L/R</option></select></label><label>Pie / soporte<input data-edit data-input-id="${input.id}" data-technical-field="stand" value="${esc(input.stand)}" maxlength="1000"></label><label>Phantom 48 V<select data-edit data-input-id="${input.id}" data-technical-field="phantom"><option value="false" ${!input.phantom ? "selected" : ""}>No</option><option value="true" ${input.phantom ? "selected" : ""}>Sí</option></select></label><label>Notas de entrada<input data-edit data-input-id="${input.id}" data-technical-field="notes" value="${esc(input.notes)}" maxlength="10000"></label></div><div class="input-footer"><span>Canales ${state.channels
+          `<fieldset><legend>Entrada ${n + 1}</legend><div class="technical-grid"><label>Fuente<input data-edit data-input-id="${input.id}" data-technical-field="name" value="${esc(input.name)}" maxlength="1000"></label><label>Micrófono / DI<input data-edit data-input-id="${input.id}" data-technical-field="microphone" value="${esc(input.microphone)}" maxlength="1000" placeholder="SM57, DI activa…"></label><label>Señal<select data-edit data-input-id="${input.id}" data-technical-field="signal"><option value="mono" ${input.signal === "mono" ? "selected" : ""}>Mono · 1 canal</option><option value="stereo" ${input.signal === "stereo" ? "selected" : ""}>Estéreo · 2 canales L/R</option><option value="custom" ${input.signal === "custom" ? "selected" : ""}>Cantidad personalizada</option></select></label><label>Pie / soporte<input data-edit data-input-id="${input.id}" data-technical-field="stand" value="${esc(input.stand)}" maxlength="1000"></label><label>Phantom 48 V<select data-edit data-input-id="${input.id}" data-technical-field="phantom"><option value="false" ${!input.phantom ? "selected" : ""}>No</option><option value="true" ${input.phantom ? "selected" : ""}>Sí</option></select></label><label>Notas de entrada<input data-edit data-input-id="${input.id}" data-technical-field="notes" value="${esc(input.notes)}" maxlength="10000"></label></div>${input.signal === "custom" ? `<div class="custom-input-channels"><label>Cantidad de canales<input data-edit type="number" min="1" max="64" data-input-id="${input.id}" data-channel-count value="${input.channelLabels.length}"></label><p>Etiquetas individuales. Micrófono, phantom, soporte y notas son comunes a este grupo; usa entradas independientes si difieren.</p><div class="technical-grid">${input.channelLabels.map((label, index) => `<label>Canal ${index + 1}<input data-edit data-input-id="${input.id}" data-channel-label="${index}" value="${esc(label)}" maxlength="1000" placeholder="${esc(input.name)} ${index + 1}"></label>`).join("")}</div></div>` : ""}<div class="input-footer"><span>Canales ${state.channels
             .map((row, index) =>
               row._link?.itemId === item.id && row._link?.inputId === input.id
                 ? index + 1
@@ -94,15 +96,31 @@ export function mountEquipment({ state, selected, save, render }) {
       const update = () => {
         const input = t.inputs.find((input) => input.id === el.dataset.inputId);
         const field = el.dataset.technicalField;
-        if (
-          field === "signal" &&
-          el.value === "stereo" &&
-          input.signal === "mono" &&
-          state.channels.length >= 500
-        ) {
-          el.value = input.signal;
-          alert("Máximo 500 canales");
-          return;
+        if (field === "signal") {
+          const count =
+            el.value === "custom"
+              ? input.channelLabels?.length ||
+                (input.signal === "stereo" ? 2 : 4)
+              : el.value === "stereo"
+                ? 2
+                : 1;
+          const oldCount = inputSides(input).length;
+          if (state.channels.length - oldCount + count > 500) {
+            el.value = input.signal;
+            alert("Máximo 500 canales");
+            return;
+          }
+          if (
+            count < oldCount &&
+            !confirm(
+              "Se eliminarán los canales sobrantes y sus datos de patch. ¿Continuar?",
+            )
+          ) {
+            el.value = input.signal;
+            return;
+          }
+          if (el.value === "custom" && !input.channelLabels?.length)
+            input.channelLabels = Array(count).fill("");
         }
         input[field] = field === "phantom" ? el.value === "true" : el.value;
         save();
@@ -117,6 +135,43 @@ export function mountEquipment({ state, selected, save, render }) {
         el.oninput = update;
         el.onchange = render;
       }
+    });
+    panel.querySelectorAll("[data-channel-count]").forEach(
+      (el) =>
+        (el.onchange = () => {
+          const input = t.inputs.find((i) => i.id === el.dataset.inputId);
+          const count = Math.max(1, Math.min(64, Math.floor(+el.value || 1))),
+            old = input.channelLabels.length;
+          if (state.channels.length - old + count > 500) {
+            el.value = old;
+            alert("Máximo 500 canales");
+            return;
+          }
+          if (
+            count < old &&
+            !confirm(
+              "Se eliminarán los canales sobrantes y sus datos de patch. ¿Continuar?",
+            )
+          ) {
+            el.value = old;
+            return;
+          }
+          input.channelLabels = Array.from(
+            { length: count },
+            (_, n) => input.channelLabels[n] || "",
+          );
+          save();
+          render();
+        }),
+    );
+    panel.querySelectorAll("[data-channel-label]").forEach((el) => {
+      el.oninput = () => {
+        const input = t.inputs.find((i) => i.id === el.dataset.inputId);
+        input.channelLabels[+el.dataset.channelLabel] = el.value;
+        save();
+        refreshChannelCells(state);
+      };
+      el.onchange = render;
     });
     panel.querySelectorAll("[data-delete-input]").forEach(
       (button) =>
@@ -160,12 +215,22 @@ export function mountEquipment({ state, selected, save, render }) {
     summary.innerHTML = `<h2>Equipos y requerimientos técnicos</h2>${configured
       .map(
         (item) =>
-          `<article><b>${esc(item.label)}</b><p>Alimentación: ${esc(powerLabel(item))}</p>${technical(
+          `<article data-equipment-summary="${item.id}"><b>${esc(item.label)}</b><p>Alimentación: ${esc(powerLabel(item))}</p>${technical(
             item,
           )
             .inputs.map(
               (input) =>
-                `<p>${esc(input.name)} · ${input.signal === "stereo" ? "Estéreo L/R" : "Mono"} · ${esc(input.microphone || "Micrófono / DI por definir")} · Phantom: ${input.phantom ? "48 V" : "No"}</p>`,
+                `<p>${esc(input.name)} · ${
+                  input.signal === "custom"
+                    ? `${input.channelLabels.length} canales · ${inputSides(
+                        input,
+                      )
+                        .map((side) => esc(inputSource(input, side)))
+                        .join(" / ")}`
+                    : input.signal === "stereo"
+                      ? "Estéreo L/R"
+                      : "Mono"
+                } · ${esc(input.microphone || "Micrófono / DI por definir")} · Phantom: ${input.phantom ? "48 V" : "No"}</p>`,
             )
             .join("")}</article>`,
       )

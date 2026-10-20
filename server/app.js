@@ -184,6 +184,31 @@ export async function createServer({
       return reply.code(403).send({ error: "Origen no permitido" });
     }
   });
+  app.get("/api/network", async (req) => {
+    const binding = app.server.address();
+    const port =
+      typeof binding === "object" && binding
+        ? binding.port
+        : Number(process.env.PORT || 3000);
+    const loopback =
+      typeof binding === "object" &&
+      ["127.0.0.1", "::1"].includes(binding?.address);
+    const hosts = loopback
+      ? []
+      : [
+          ...new Set(
+            Object.values(networkInterfaces())
+              .flat()
+              .filter((i) => i && i.family === "IPv4" && !i.internal)
+              .map((i) => i.address),
+          ),
+        ];
+    return {
+      port,
+      addresses: hosts.map((ip) => `${req.protocol}://${ip}:${port}`),
+      currentAddress: `${req.protocol}://${req.headers.host}`,
+    };
+  });
   app.get("/api/security", async (req) => access(req));
   app.put("/api/security", async (req, reply) => {
     if (!isHost(req))

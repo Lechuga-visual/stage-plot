@@ -12,6 +12,7 @@ export function newInput(name = "Nueva fuente") {
     name,
     microphone: "",
     signal: "mono",
+    channelLabels: [],
     phantom: false,
     stand: "",
     notes: "",
@@ -38,19 +39,39 @@ export function ensureTechnicalColumns(project) {
       for (const row of project.channels) row[id] = "";
     }
 }
+export function inputSides(input) {
+  return input.signal === "custom"
+    ? (input.channelLabels || []).map((_, n) => `C${n + 1}`)
+    : input.signal === "stereo"
+      ? ["L", "R"]
+      : ["M"];
+}
+export function inputSource(input, side) {
+  return input.signal === "custom"
+    ? input.channelLabels[Number(side.slice(1)) - 1] ||
+        `${input.name} ${Number(side.slice(1))}`
+    : input.name + (side === "M" ? "" : " " + side);
+}
+export function signalLabel(input, side) {
+  return input.signal === "custom"
+    ? `Personalizado ${side.slice(1)} / ${input.channelLabels.length}`
+    : input.signal === "stereo"
+      ? `Estéreo ${side}`
+      : "Mono";
+}
 const linkKey = (link) => `${link.itemId}:${link.inputId}:${link.side}`;
 export function reconcileInputs(project) {
   const expected = new Map();
   for (const item of project.items)
     for (const input of technical(item).inputs)
-      for (const side of input.signal === "stereo" ? ["L", "R"] : ["M"]) {
+      for (const side of inputSides(input)) {
         const link = { itemId: item.id, inputId: input.id, side };
         const values = {
-          source: input.name + (side === "M" ? "" : " " + side),
+          source: inputSource(input, side),
           mic: input.microphone,
           stand: input.stand,
           notes: input.notes,
-          c_signal: input.signal === "mono" ? "Mono" : "Estéreo " + side,
+          c_signal: signalLabel(input, side),
           c_phantom: input.phantom ? "Sí · 48 V" : "No",
           c_power: powerLabel(item),
         };
@@ -65,27 +86,35 @@ export function reconcileInputs(project) {
     if (!row._link) return [row];
     const key = linkKey(row._link);
     // Preserve the L/mono row, its patch and its position when changing signal mode.
-    const fallbackSide =
-      row._link.side === "M" ? "L" : row._link.side === "L" ? "M" : null;
+    const fallbackSides =
+      { M: ["L", "C1"], L: ["M", "C1"], R: ["C2"], C1: ["M", "L"], C2: ["R"] }[
+        row._link.side
+      ] || [];
     const entry =
       expected.get(key) ||
-      (fallbackSide &&
-        expected.get(linkKey({ ...row._link, side: fallbackSide })));
+      fallbackSides
+        .map((side) => expected.get(linkKey({ ...row._link, side })))
+        .find(Boolean);
     if (!entry) return [];
     expected.delete(linkKey(entry.link));
     return [update(row, entry)];
   });
   for (const entry of expected.values()) {
     const row = update({}, entry);
-    const leftIndex =
+    const predecessor =
       entry.link.side === "R"
-        ? project.channels.findIndex(
-            (c) =>
-              c._link?.itemId === entry.link.itemId &&
-              c._link.inputId === entry.link.inputId &&
-              c._link.side === "L",
-          )
-        : -1;
+        ? "L"
+        : /^C[2-9]$|^C[1-6][0-9]$/.test(entry.link.side)
+          ? `C${Number(entry.link.side.slice(1)) - 1}`
+          : null;
+    const leftIndex = predecessor
+      ? project.channels.findIndex(
+          (c) =>
+            c._link?.itemId === entry.link.itemId &&
+            c._link.inputId === entry.link.inputId &&
+            c._link.side === predecessor,
+        )
+      : -1;
     if (leftIndex >= 0) project.channels.splice(leftIndex + 1, 0, row);
     else project.channels.push(row);
   }
@@ -108,7 +137,9 @@ export function updateChannel(project, index, field, value) {
       stand: "stand",
       notes: "notes",
     }[field];
-    if (key)
+    if (field === "source" && input.signal === "custom")
+      input.channelLabels[Number(row._link.side.slice(1)) - 1] = value;
+    else if (key)
       input[key] =
         field === "source" && input.signal === "stereo"
           ? value.replace(/ [LR]$/, "")

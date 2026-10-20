@@ -1,0 +1,16 @@
+<svg width="64px" height="64px" viewBox="10 10 44 44" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    .stroke {
+      stroke: #000000;
+    }
+    .fill {
+      fill: #000000;
+    }
+  </style>
+  <g id="icon" stroke-width="2.25" class="stroke" fill="none">
+    <path d="M18 17 18 28 24 28" />
+    <path d="M34.5 39 34.5 35C34.5 33 37.5 33 37.5 35L37.5 39" />
+    <ellipse class="fill" stroke="none" rx="7.5" ry="2.25" cx="36" cy="40.75" />
+    <path d="M29.5 41 29.5 55M42.5 41 42.5 55" />
+  </g>
+</svg>

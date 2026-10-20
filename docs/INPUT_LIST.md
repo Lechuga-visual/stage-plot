@@ -15,7 +15,7 @@ GordoStage no impone una norma universal de numeración. El ejemplo inicial usa 
 
 Una agrupación de referencia para bandas completas es batería, percusión, bajo, guitarras, teclados, pistas/DJ, vientos/cuerdas, coros, voz principal y talkback. No constituye una norma obligatoria ni una clasificación automática. Cada producción puede acordar otro patch.
 
-Las nuevas entradas vinculadas se agregan al final de la lista. Un par estéreo se crea L antes de R. Las flechas permiten reordenar filas manualmente; CH se recalcula según su posición, no representa una toma física fija. La columna personalizada Patch permite anotar esa asignación por separado. El programa todavía no mantiene los pares juntos cuando se reordenan manualmente ni ofrece plantillas de festival.
+Las nuevas entradas vinculadas se agregan al final de la lista. Un par estéreo se crea L antes de R. Las asas ⋮⋮ al principio o final de cada fila permiten arrastrarla. Marca varias casillas para mover canales juntos; Shift+clic selecciona un rango. También hay un destino antes de CH o al final, utilizable con teclado. Se conserva el orden relativo del grupo y sus datos. Las flechas siguen disponibles; CH se recalcula según su posición, no representa una toma física fija. La columna personalizada Patch permite anotar esa asignación por separado. El programa todavía no mantiene los pares juntos cuando se reordenan manualmente ni ofrece plantillas de festival.
 
 ## Configurar un equipo
 
@@ -41,6 +41,16 @@ Se admiten hasta 500 elementos en el plano, 64 entradas por equipo y 500 canales
 
 ## Portabilidad e impresión
 
-El formato JSON versión 4 guarda los IDs de símbolo, fichas técnicas, entradas y vínculos, además del plano y el resto del rider. Se importan versiones anteriores, conservando los ocho tipos originales como alias. Actualiza ambos servidores a esta versión antes de transferir un JSON v4; los servidores antiguos no conocen los nuevos símbolos ni vínculos.
+El formato JSON versión 5 guarda los IDs de símbolo, fichas técnicas, entradas y vínculos, además del plano y el resto del rider. Se importan versiones anteriores, conservando los ocho tipos originales como alias. Actualiza ambos servidores a esta versión antes de transferir un JSON v5; los servidores antiguos no conocen los nuevos símbolos ni vínculos.
 
 Los WebP incluidos se sirven desde la instalación local, sin descargar imágenes de TechRider durante el montaje. El JSON referencia los símbolos del catálogo e incrusta las imágenes personalizadas utilizadas. La impresión a PDF incluye el plano y un resumen de alimentación y entradas de los equipos configurados. El chat sigue siendo independiente del rider.
+
+## Cantidad personalizada
+
+En **Señal**, además de mono y estéreo, selecciona **Cantidad personalizada**. Indica de 1 a 64 canales y escribe cada etiqueta; si la dejas vacía se usa el nombre de fuente y su número. Por ejemplo, un playback de cuatro canales: Click, Pistas L, Pistas R y Guía.
+
+Las etiquetas aparecen directamente en la lista y también se pueden editar desde la columna Fuente. Micrófono/DI, phantom, soporte y notas son comunes a esa entrada; crea entradas independientes si esos datos difieren. La alimentación sigue perteneciendo al equipo.
+
+Cambiar entre mono, estéreo y personalizado conserva el patch y posición de los canales compatibles (M/L/C1 y R/C2). Aumentar la cantidad agrega canales; reducirla o convertir a un modo menor pide confirmar la eliminación de sobrantes. Borrar una fila vinculada elimina toda la entrada y sus canales, con confirmación. El límite total sigue siendo 500 canales por proyecto.
+
+El JSON v5 guarda las etiquetas y vínculos personalizados y el estilo de iconos. Importa JSON anteriores, incluido v4. Actualiza el destino antes de importar un v5.

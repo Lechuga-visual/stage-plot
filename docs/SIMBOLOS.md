@@ -260,4 +260,17 @@ El catálogo fuente es `shared/symbols.js` y se utiliza tanto para renderizar el
 
 Cualquier puesto con permiso de edición puede subir una imagen desde su propio PC. El servidor la guarda en SQLite, deduplicada por SHA-256, y la ofrece al resto de puestos. No depende de la ruta original del archivo. En el modo individual se conserva dentro del proyecto del navegador.
 
-El JSON v4 incrusta las imágenes personalizadas usadas para que el proyecto pueda pasar a otro servidor sin perderlas. Se admiten hasta 100 imágenes por proyecto y 10 MiB en conjunto para sus datos incrustados. Los 173 símbolos incluidos siguen referenciados por ID; no se duplican en cada JSON. Respaldar `data/` conserva también imágenes subidas que aún no estén utilizadas en un proyecto.
+El JSON v5 incrusta las imágenes personalizadas usadas para que el proyecto pueda pasar a otro servidor sin perderlas. Se admiten hasta 100 imágenes por proyecto y 10 MiB en conjunto para sus datos incrustados. Los 173 símbolos incluidos siguen referenciados por ID; no se duplican en cada JSON. Respaldar `data/` conserva también imágenes subidas que aún no estén utilizadas en un proyecto.
+
+## Colección X32 / M32
+
+Se incluyen **74 SVG** de [mamarguerat/behringer-icons](https://github.com/mamarguerat/behringer-icons), commit `2d2c040afcad653d7a12f33a0348dc69a7646cc7`. Los SVG originales no se han modificado. Su licencia GPL-3.0, README de origen y registro de procedencia acompañan los recursos en `public/symbols/behringer/` y viajan también en el paquete portable.
+
+El selector **Estilo de iconos** alterna **Genéricos · TechRider** y **X32 / M32**. Se guarda en el proyecto y viaja en JSON v5; el PDF usa el estilo elegido. Los IDs y datos de los equipos no cambian al alternar. Los equipos con equivalencia cambian su representación; donde no existe equivalencia se conserva el símbolo original. Los personalizados siguen disponibles en ambos estilos.
+
+El catálogo traducido está en `shared/behringer-symbols.js`, con búsqueda por nombre español, nombre original o ID `x32_01` a `x32_74`. Incluye batería y percusión, bajos, guitarras, amplificadores, teclados, vientos, voces, micrófonos, conectores, monitores, PA y utilidades de mezcla/routing.
+
+
+## Colección solicitada de Tecrider
+
+La biblioteca de https://tecrider.com/stage-plot-icons está pendiente de incorporación. La descarga desde el entorno de desarrollo devuelve HTTP 403 del proxy porque el dominio no está permitido. No se han inventado ni sustituido esos recursos; se podrán integrar al habilitar el acceso o recibir los archivos.

@@ -1,7 +1,12 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
-import { SYMBOLS, getSymbol, LEGACY_ALIASES } from "../shared/symbols.js";
+import {
+  SYMBOLS,
+  getSymbol,
+  LEGACY_ALIASES,
+  BEHRINGER_SYMBOLS,
+} from "../shared/symbols.js";
 import { normalizeProject, exportProject } from "../shared/project.js";
 import {
   newInput,
@@ -102,7 +107,7 @@ test("eliminar una entrada borra su par, preserva canales manuales y rechaza enl
   assert.equal(s.channels.length, 1);
   assert.equal(s.items[0].technical.inputs.length, 0);
 });
-test("un proyecto v2 conserva columnas, dibujos y canales al migrar a v4", () => {
+test("un proyecto v2 conserva columnas, dibujos y canales al migrar a v5", () => {
   const s = project();
   s.formatVersion = 2;
   delete s.items[0].technical;
@@ -115,7 +120,7 @@ test("un proyecto v2 conserva columnas, dibujos y canales al migrar a v4", () =>
     ],
   });
   const migrated = normalizeProject(s);
-  assert.equal(migrated.formatVersion, 4);
+  assert.equal(migrated.formatVersion, 5);
   assert.deepEqual(
     migrated.drawings.map((d) => d.points),
     s.drawings.map((d) => d.points),
@@ -154,4 +159,78 @@ test("convertir mono/estéreo conserva patch, posición y crea la pareja contigu
     ["Piano", "Último"],
   );
   assert.equal(s.channels[0].c_patch, "A9");
+});
+
+test("canales personalizados se etiquetan por separado, mantienen patch al cambiar modo y viajan en JSON", () => {
+  const s = project(),
+    input = newInput("Playback");
+  input.signal = "stereo";
+  technical(s.items[0]).inputs.push(input);
+  reconcileInputs(s);
+  s.columns.push({ id: "c_patch", label: "Patch" });
+  s.channels.forEach((r, n) => (r.c_patch = `A${n + 1}`));
+  input.signal = "custom";
+  input.channelLabels = ["Click", "Pistas L", "Pistas R", "Guía"];
+  reconcileInputs(s);
+  assert.deepEqual(
+    s.channels.slice(1).map((c) => c.source),
+    input.channelLabels,
+  );
+  assert.equal(s.channels[1].c_patch, "A2");
+  assert.equal(s.channels[2].c_patch, "A3");
+  updateChannel(s, 2, "source", "Secuencia izquierda");
+  assert.equal(input.channelLabels[1], "Secuencia izquierda");
+  assert.equal(input.name, "Playback");
+  assert.equal(s.channels[3].source, "Pistas R");
+  const restored = normalizeProject(JSON.parse(exportProject(s)));
+  assert.deepEqual(restored, s);
+  const fake = structuredClone(restored);
+  fake.channels[1]._link.side = "C64";
+  assert.throws(() => normalizeProject(fake));
+  input.channelLabels = input.channelLabels.slice(0, 2);
+  reconcileInputs(s);
+  assert.equal(s.channels.length, 3);
+  assert.equal(s.channels[2].c_patch, "A3");
+  input.signal = "stereo";
+  reconcileInputs(s);
+  assert.deepEqual(
+    s.channels.slice(1).map((c) => c.source),
+    ["Playback L", "Playback R"],
+  );
+  assert.equal(s.channels[1].c_patch, "A2");
+  assert.equal(s.channels[2].c_patch, "A3");
+});
+test("JSON v4 migra las entradas sin perder nombres ni vínculos", () => {
+  const s = project(),
+    input = newInput("Piano");
+  input.signal = "stereo";
+  technical(s.items[0]).inputs.push(input);
+  reconcileInputs(s);
+  s.formatVersion = 4;
+  delete input.channelLabels;
+  const copy = normalizeProject(s);
+  assert.equal(copy.formatVersion, 5);
+  assert.deepEqual(copy.items[0].technical.inputs[0].channelLabels, []);
+  assert.deepEqual(copy.channels, s.channels);
+  assert.equal(s.formatVersion, 4);
+  assert.equal(input.channelLabels, undefined);
+});
+
+test("colección X32/M32 incluye 74 SVG originales con licencia, equivalencias y conservación de IDs", () => {
+  assert.equal(BEHRINGER_SYMBOLS.length, 74);
+  assert.equal(new Set(BEHRINGER_SYMBOLS.map((s) => s.id)).size, 74);
+  assert.ok(existsSync("public/symbols/behringer/LICENSE"));
+  for (const symbol of BEHRINGER_SYMBOLS) {
+    const svg = readFileSync("public" + symbol.src, "utf8");
+    assert.match(svg, /<svg/);
+    assert.doesNotMatch(svg, /<script|foreignObject|onload=/i);
+    assert.ok(getSymbol(symbol.id));
+  }
+  assert.equal(getSymbol("guitar", "x32").id, "x32_20");
+  assert.equal(getSymbol("keys", "x32").id, "x32_30");
+  assert.equal(getSymbol("x32_21", "x32").id, "x32_21");
+  const s = project();
+  s.symbolStyle = "x32";
+  s.items[0].type = "x32_21";
+  assert.deepEqual(normalizeProject(JSON.parse(exportProject(s))), s);
 });

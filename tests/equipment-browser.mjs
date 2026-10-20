@@ -131,7 +131,7 @@ try {
   await p.locator("#export").click();
   const download = await downloadPromise;
   const exported = JSON.parse(readFileSync(await download.path(), "utf8"));
-  assert.equal(exported.formatVersion, 4);
+  assert.equal(exported.formatVersion, 5);
   assert.equal(
     exported.items.find((i) => i.id === item.id).technical.powerNotes,
     "230 V · 2 enchufes",

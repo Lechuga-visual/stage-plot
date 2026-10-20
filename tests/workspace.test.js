@@ -400,7 +400,7 @@ test("migración conserva proyecto y chat de la versión 0.1", async () => {
     const restored = (await app.inject("/api/project")).json();
     assert.equal(restored.revision, 7);
     assert.equal(restored.document.band, "Banda antigua");
-    assert.equal(restored.document.formatVersion, 4);
+    assert.equal(restored.document.formatVersion, 5);
     assert.equal(
       (await app.inject("/api/chat")).json()[0].text,
       "Guardado antes",

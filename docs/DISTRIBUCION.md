@@ -1,8 +1,8 @@
 # Distribución portable de Windows
 
-Para Windows 10/11 x64, descarga `GordoStage-0.2.0-windows-x64.zip` de [la Release v0.2.0](https://github.com/Lechuga-visual/stage-plot/releases/tag/v0.2.0). Los ZIP automáticos de código fuente no son paquetes listos para ejecutar.
+Para Windows 10/11 x64, descarga `GordoStage-0.3.0-windows-x64.zip` de [la Release v0.3.0](https://github.com/Lechuga-visual/stage-plot/releases/tag/v0.3.0). Los ZIP automáticos de código fuente no son paquetes listos para ejecutar.
 
-El paquete incluye interfaz compilada, 173 WebP, servidor, esquema compartido, dependencias de producción bloqueadas y runtime oficial Node.js 24.19.0 x64 con licencia. Incluye lanzador CMD y LEEME. No copia la carpeta de datos del desarrollo.
+El paquete incluye interfaz compilada, 173 WebP, 74 SVG X32/M32 con su licencia, servidor, esquema compartido, dependencias de producción bloqueadas y runtime oficial Node.js 24.19.0 x64 con licencia. Incluye lanzador CMD y LEEME. No copia la carpeta de datos del desarrollo.
 
 ## Inicio y acceso
 
@@ -18,9 +18,9 @@ Si el puerto 3000 está ocupado, cambia `PORT`. `GORDOSTAGE_NO_BROWSER=1` evita 
 
 ## Datos y actualización
 
-Los datos se crean en `data/stagecraft.sqlite` junto al lanzador. Para actualizar: detén el servidor, respalda `data/`, extrae la versión nueva en otra carpeta y copia allí `data/` antes de iniciar. Se migran el proyecto y chat de las versiones anteriores sin descartarlos. Conserva el respaldo anterior mientras pruebas.
+Los datos se crean en `data/stagecraft.sqlite` junto al lanzador. Para actualizar: detén el servidor, respalda `data/`, extrae la versión nueva en otra carpeta y copia allí `data/` antes de iniciar. Se migran los proyectos y chat de las versiones anteriores, incluida 0.2.0, sin descartarlos. Conserva el respaldo anterior mientras pruebas.
 
-Exportar JSON transfiere un proyecto con descripción, plano, fichas, input list, comentarios, rutas e imágenes personalizadas usadas. No transfiere perfiles, claves o chat; esos datos están en el respaldo completo. Los JSON v4 requieren una versión compatible del servidor de destino. Las preferencias de pestañas/tema pertenecen al navegador y las sesiones se vuelven a identificar tras reiniciar el servidor.
+Exportar JSON transfiere un proyecto con descripción, plano, fichas, input list, comentarios, rutas e imágenes personalizadas usadas. No transfiere perfiles, claves o chat; esos datos están en el respaldo completo. Los JSON v5 requieren una versión compatible del servidor de destino. Las preferencias de pestañas/tema pertenecen al navegador y las sesiones se vuelven a identificar tras reiniciar el servidor.
 
 ## Construcción y validación
 
@@ -43,3 +43,5 @@ La prueba portable copia a una ruta con espacios, inicia HTTP, comprueba símbol
 El workflow `.github/workflows/release-windows.yml`, activado por tags `v*`, verifica versión, instala con lockfile, compila, ejecuta los tests y empaqueta en Windows. Solo publica la prerelease tras aprobar la prueba con su runtime incluido. Después verifica el checksum y registra tag, commit, assets y ejecución en `docs/releases/latest.json`.
 
 Para versiones siguientes, actualiza versión y notas, sube el commit y crea un tag nuevo. No reemplaces assets ni reutilices tags ya entregados. Una compilación local o un tag por sí solos no acreditan que se haya publicado el paquete; comprueba la Release y su registro.
+
+Desde 0.3.0 el encabezado y la bienvenida muestran las direcciones detectadas y el puerto real. Con varias interfaces se ofrecen otras direcciones; elige la de la red compartida con los puestos. Los controles A−/A+ y el mute del chat se guardan en cada navegador. El JSON v5 añade grupos de canales y elección de iconos; se siguen importando archivos anteriores.

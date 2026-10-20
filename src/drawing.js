@@ -17,7 +17,15 @@ let tool = "move",
   projectId = "",
   optionChanging = false;
 const histories = new Map();
-export function mountDrawing({ state, save, render, collaboration }) {
+export function mountDrawing({
+  state,
+  save,
+  render,
+  collaboration,
+  selectedItemId,
+  deleteItem,
+  clearItemSelection,
+}) {
   const id = collaboration?.access().projectId || "local";
   if (projectId !== id) {
     projectId = id;
@@ -54,28 +62,18 @@ export function mountDrawing({ state, save, render, collaboration }) {
   const stage = document.querySelector("#stage"),
     wrap = document.querySelector(".stage-wrap");
   stage.tabIndex = 0;
+  if (selectedItemId !== null && selectedItemId !== undefined) selected = -1;
   const selectedDrawing = state.drawings[selected];
   const controls = document.createElement("div");
   controls.className = "drawing-tools";
-  controls.innerHTML = `<div class="tool-rail" role="toolbar" aria-label="Herramientas del plano">${[
-    ["move", "move", "Seleccionar y mover"],
-    ["draw", "pen", "Dibujo libre"],
-    ["comment", "comment", "Comentario de posición"],
-    ["erase-stroke", "delete", "Eliminar trazo completo"],
-    ["erase", "eraser", "Goma: borrar parte del trazo"],
-    ["cable", "cable", "Trazar cableado"],
-  ]
-    .map(([key, ico, label]) =>
-      iconButton(
-        "tool-" + key,
-        ico,
-        label,
-        `data-edit data-tool="${key}" aria-pressed="${tool === key}"`,
-      ),
-    )
-    .join(
-      "",
-    )}${iconButton("undo-drawing", "undo", "Deshacer dibujo o borrado", "data-edit")}${iconButton("redo-drawing", "undo", "Rehacer dibujo o borrado", "data-edit")}</div><div class="drawing-options"><label title="Color del trazo">Color<input data-edit id="draw-color" type="color" value="${selectedDrawing?.color || color}"></label><label>Grosor<input data-edit id="draw-width" type="number" min="1" max="40" value="${selectedDrawing?.width || width}"></label><label>Opacidad <span id="opacity-value">${Math.round((selectedDrawing?.opacity ?? opacity) * 100)}%</span><input data-edit id="draw-opacity" type="range" min="5" max="100" value="${Math.round((selectedDrawing?.opacity ?? opacity) * 100)}"></label>${tool === "erase" ? `<label>Goma (px)<input data-edit id="eraser-size" type="number" min="4" max="80" value="${eraserSize}"></label>` : ""}${
+  const toolButton = (key, ico, label) =>
+    iconButton(
+      "tool-" + key,
+      ico,
+      label,
+      `data-edit data-tool="${key}" aria-pressed="${tool === key}"`,
+    );
+  controls.innerHTML = `<div class="tool-rail" role="toolbar" aria-label="Herramientas del plano"><div class="tool-group" role="group" aria-label="Equipos y selección"><span class="tool-group-label">Items</span>${toolButton("move", "move", "Seleccionar y mover equipos o trazos")}${toolButton("comment", "comment", "Comentario de posición")}${toolButton("erase-stroke", "delete", "Eliminar equipo o trazo seleccionado")}</div><div class="tool-group" role="group" aria-label="Dibujo y cableado"><span class="tool-group-label">Trazos</span>${toolButton("draw", "pen", "Dibujar trazos")}${toolButton("erase", "eraser", "Goma: borrar parte de un trazo")}${toolButton("cable", "cable", "Trazar cableado")}${iconButton("undo-drawing", "undo", "Deshacer dibujo o borrado de trazos", "data-edit")}${iconButton("redo-drawing", "undo", "Rehacer dibujo o borrado de trazos", "data-edit")}</div></div><div class="drawing-options"><label title="Color del trazo">Color<input data-edit id="draw-color" type="color" value="${selectedDrawing?.color || color}"></label><label>Grosor<input data-edit id="draw-width" type="number" min="1" max="40" value="${selectedDrawing?.width || width}"></label><label>Opacidad <span id="opacity-value">${Math.round((selectedDrawing?.opacity ?? opacity) * 100)}%</span><input data-edit id="draw-opacity" type="range" min="5" max="100" value="${Math.round((selectedDrawing?.opacity ?? opacity) * 100)}"></label>${tool === "erase" ? `<label>Goma (px)<input data-edit id="eraser-size" type="number" min="4" max="80" value="${eraserSize}"></label>` : ""}${
     tool === "cable"
       ? `<label>Tipo de cable<select data-edit id="cable-kind">${Object.entries(
           CABLE_TYPES,
@@ -88,14 +86,39 @@ export function mountDrawing({ state, save, render, collaboration }) {
             "",
           )}</select></label><label>Etiqueta<input data-edit id="cable-label" maxlength="120" value="${esc(cableLabel)}" placeholder="Origen → destino"></label><button data-edit id="finish-cable" class="button">Terminar cable</button>`
       : ""
-  }<span class="drawing-hint">${tool === "cable" ? "Clic para cada esquina · Enter o doble clic para terminar · Esc para cancelar" : tool === "erase" ? "Arrastra para borrar una parte" : selectedDrawing ? "Trazo seleccionado · ajusta color, grosor u opacidad" : "Selecciona un equipo o un trazo para editar"}</span></div>`;
+  }<span class="drawing-hint">${tool === "cable" ? "Clic para cada esquina · Enter o doble clic para terminar · Esc para cancelar" : tool === "erase" ? "Arrastra para borrar una parte" : selectedDrawing ? "Trazo seleccionado · ajusta color, grosor u opacidad" : "Items: seleccionar, comentar o eliminar · Trazos: dibujar, goma y cableado"}</span></div>`;
   wrap.prepend(controls);
   controls.querySelectorAll("[data-tool]").forEach((button) => {
     button.classList.toggle("chosen", button.dataset.tool === tool);
     button.onclick = () => {
-      tool = button.dataset.tool;
+      const next = button.dataset.tool;
+      if (!allowed()) return;
+      if (
+        next === "erase-stroke" &&
+        selectedItemId !== null &&
+        selectedItemId !== undefined
+      ) {
+        tool = "move";
+        deleteItem?.(selectedItemId);
+        return;
+      }
+      if (
+        next === "erase-stroke" &&
+        selected >= 0 &&
+        state.drawings[selected]
+      ) {
+        const before = snapshot();
+        state.drawings.splice(selected, 1);
+        selected = -1;
+        record(before);
+        save();
+        render();
+        return;
+      }
+      tool = next;
       cableDraft = null;
       selected = -1;
+      if (next !== "move") clearItemSelection?.();
       render();
     };
   });
@@ -127,6 +150,7 @@ export function mountDrawing({ state, save, render, collaboration }) {
       label.setAttribute("fill", d.color);
       label.setAttribute("font-size", "1.6");
       label.textContent = d.label || CABLE_TYPES[d.kind].label;
+      label.dataset.strokeLabel = index;
       svg.append(label);
     }
     return line;
@@ -162,6 +186,7 @@ export function mountDrawing({ state, save, render, collaboration }) {
   }
   if (tool !== "move") stage.classList.add("annotating");
   stage.classList.toggle("eraser-active", tool === "erase");
+  stage.classList.toggle("delete-mode", tool === "erase-stroke");
   function option(field, value) {
     if (!allowed()) return;
     if (selected >= 0 && state.drawings[selected]) {
@@ -269,6 +294,12 @@ export function mountDrawing({ state, save, render, collaboration }) {
     "pointerdown",
     (e) => {
       if (!allowed()) return;
+      if (tool === "erase-stroke" && e.target.closest("[data-item]")) {
+        e.preventDefault();
+        e.stopPropagation();
+        deleteItem?.(Number(e.target.closest("[data-item]").dataset.item));
+        return;
+      }
       if (tool === "move" && e.target.closest("[data-item]")) return;
       const rect = stage.getBoundingClientRect();
       const point = (event) => [
@@ -283,6 +314,7 @@ export function mountDrawing({ state, save, render, collaboration }) {
       ];
       const start = point(e);
       if (tool === "move") {
+        clearItemSelection?.();
         selected = hitStroke(state.drawings, start, rect.width, rect.height);
         render();
         return;

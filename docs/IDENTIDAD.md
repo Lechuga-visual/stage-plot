@@ -11,7 +11,7 @@ La identidad usa la referencia visual enviada por el usuario: sala de ensayo iso
 | Azul    | `#56b8db` | Estado de sesión y detalles   |
 | Crema   | `#fff3e8` | Fondos y superficies          |
 
-Los nombres internos de almacenamiento `stagecraft-v1`, `stagecraft-edit-code` y `data/stagecraft.sqlite` se conservan para mantener los proyectos y sesiones existentes. El formato JSON está en versión 4, con importación de proyectos anteriores y los archivos exportados se llaman `gordostage-rider.json`.
+Los nombres internos de almacenamiento `stagecraft-v1`, `stagecraft-edit-code` y `data/stagecraft.sqlite` se conservan para mantener los proyectos y sesiones existentes. El formato JSON está en versión 5, con importación de proyectos anteriores y los archivos exportados se llaman `gordostage-rider.json`.
 
 ## Biblioteca de símbolos
 
@@ -25,4 +25,6 @@ La bienvenida permite elegir **Neón**, oscuro con detalles cian/violeta y super
 
 La barra lateral conserva el logo y aloja proyectos abiertos, con nombre y descripción al pasar el ratón o enfocar. Cerrar una pestaña afecta solo a ese navegador. La bienvenida agrupa proyectos, importación/exportación, configuración, permisos y usuarios. El chat vive en un panel flotante independiente del editor.
 
-Los JSON v4 también guardan descripción, estilos de trazo, cableado e imágenes propias. El formato importa las versiones anteriores sin exigir convertirlas a mano.
+Los JSON v5 también guardan descripción, estilos de trazo, cableado e imágenes propias. El formato importa las versiones anteriores sin exigir convertirlas a mano.
+
+La versión 0.3.0 añade selector Genéricos/X32-M32, con 74 SVG originales y su licencia, y guarda el estilo por proyecto. El texto crece un 20% por defecto y A−/A+ permite ajustarlo por puesto. La impresión restablece el tamaño base para que el tema y preferencias de cada navegador no alteren el tamaño del PDF. La exportación permite elegir secciones, equipos, canales e información gráfica sin editar el rider.

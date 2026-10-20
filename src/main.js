@@ -1,10 +1,13 @@
+import { openPdfExport } from "./pdf-export.js";
+import { mountPreferences } from "./preferences.js";
 import { setupIdentity } from "./identity.js";
 import { setupChat } from "./chat.js";
 import { mountHome } from "./home.js";
 import { setTheme } from "./theme.js";
 import {
   SYMBOLS,
-  SYMBOL_CATEGORIES,
+  BEHRINGER_SYMBOLS,
+  getOriginalSymbol,
   COMMON_SYMBOL_IDS,
   getSymbol,
   symbolSearchText,
@@ -81,17 +84,50 @@ function save() {
 function render() {
   document.querySelector("#app").innerHTML = `
 <aside class="rail"><a class="brand" href="#" aria-label="GordoStage"><img src="/brand/gordostage-logo.png" alt="GordoStage"></a><button class="rail-active" title="Editor">▧</button><div class="rail-bottom">GS</div></aside>
-<div class="workspace"><header><div class="wordmark"><img src="/brand/gordostage-logo.png" alt=""><div class="brand-copy"><strong>GordoStage</strong><span>PLATAFORMA DE LOGÍSTICA DE ESCENARIO</span></div></div><div class="header-right"><button id="theme-toggle" class="button" title="Cambiar tema claro / neón" aria-label="Cambiar tema claro / neón">◐</button><span id="save-status">● Guardado en este dispositivo</span><button id="export" class="button">↓ Exportar proyecto</button><button id="print" class="button dark">↗ Exportar PDF</button></div></header>
+<div class="workspace"><header><div class="wordmark"><img src="/brand/gordostage-logo.png" alt=""><div class="brand-copy"><strong>GordoStage</strong><span>PLATAFORMA DE LOGÍSTICA DE ESCENARIO</span></div><div id="header-network" class="server-network" hidden></div></div><div class="header-right"><div id="text-size-controls" role="group" aria-label="Tamaño de texto"></div><button id="theme-toggle" class="button" title="Cambiar tema claro / neón" aria-label="Cambiar tema claro / neón">◐</button><span id="save-status">● Guardado en este dispositivo</span><button id="export" class="button">↓ Exportar proyecto</button><button id="print" class="button dark">↗ Exportar PDF</button></div></header>
 <main><div class="breadcrumb">MIS PROYECTOS <span>/</span> RIDER TÉCNICO</div><section class="heading"><div><div class="eyebrow">EL SHOW EMPIEZA AQUÍ</div><input id="band" class="band" aria-label="Nombre de la banda" value="${esc(state.band)}"><input id="event" class="event" aria-label="Evento" value="${esc(state.event)}"><input id="project-description" class="project-description" aria-label="Descripción del proyecto" maxlength="1000" placeholder="Descripción del montaje o evento…" value="${esc(state.description)}"></div><div class="project-badge"><span class="green-dot"></span> Proyecto en edición</div></section>
 <nav class="tabs"><button data-tab="plot" class="${tab === "plot" ? "active" : ""}">▧ &nbsp; Stage plot</button><button data-tab="channels" class="${tab === "channels" ? "active" : ""}">☷ &nbsp; Lista de canales <span>${state.channels.length}</span></button><div class="tabs-tail">DISEÑA. CONECTA. TOCA.</div></nav>
-<div class="editor ${tab === "channels" ? "channels-only" : ""}"><aside class="palette"><div class="section-label">TU ESCENARIO</div><h2>Todo en su lugar.</h2><p>Añade elementos y arrástralos al escenario.</p><div class="section-label category">BIBLIOTECA · ${SYMBOLS.length} SÍMBOLOS</div><label class="symbol-search-label">Buscar equipo<input id="symbol-search" type="search" placeholder="Instrumento, micrófono, FOH…" value="${esc(symbolQuery)}"></label><select id="symbol-category" aria-label="Categoría de símbolos"><option>Frecuentes</option><option>Todos</option><option>Personalizados</option>${SYMBOL_CATEGORIES.map((c) => `<option ${symbolCategory === c ? "selected" : ""}>${esc(c)}</option>`).join("")}</select><button class="button upload-symbol-button" data-edit id="upload-symbol">＋ Subir icono</button><input data-edit id="symbol-file" type="file" accept="image/png,image/webp,image/jpeg" hidden><div id="symbol-results" aria-live="polite"></div><div class="tools" id="symbol-tools">${symbolButtons()}</div><div class="tip"><span>✧</span><div><b>Hecho para el directo</b><p>Piensa el escenario desde el público. Así todos hablan el mismo idioma.</p></div></div></aside>
+<div class="editor ${tab === "channels" ? "channels-only" : ""}"><aside class="palette"><div class="section-label">TU ESCENARIO</div><h2>Todo en su lugar.</h2><p>Añade elementos y arrástralos al escenario.</p><div class="section-label category">BIBLIOTECA · ${state.symbolStyle === "x32" ? BEHRINGER_SYMBOLS.length : SYMBOLS.length} SÍMBOLOS</div><label class="symbol-search-label">Estilo de iconos<select data-edit id="symbol-style"><option value="generic" ${state.symbolStyle === "generic" ? "selected" : ""}>Genéricos · TechRider</option><option value="x32" ${state.symbolStyle === "x32" ? "selected" : ""}>X32 / M32</option></select></label><label class="symbol-search-label">Buscar equipo<input id="symbol-search" type="search" placeholder="Instrumento, micrófono, FOH…" value="${esc(symbolQuery)}"></label><select id="symbol-category" aria-label="Categoría de símbolos"><option>Frecuentes</option><option>Todos</option><option>Personalizados</option>${[...new Set((state.symbolStyle === "x32" ? BEHRINGER_SYMBOLS : SYMBOLS).map((s) => s.category))].map((c) => `<option ${symbolCategory === c ? "selected" : ""}>${esc(c)}</option>`).join("")}</select><button class="button upload-symbol-button" data-edit id="upload-symbol">＋ Subir icono</button><input data-edit id="symbol-file" type="file" accept="image/png,image/webp,image/jpeg" hidden><div id="symbol-results" aria-live="polite"></div><div class="tools" id="symbol-tools">${symbolButtons()}</div><div class="tip"><span>✧</span><div><b>Hecho para el directo</b><p>Piensa el escenario desde el público. Así todos hablan el mismo idioma.</p></div></div></aside>
 <section class="canvas-panel"><div class="canvas-toolbar"><div><b>Vista del escenario</b><span>Perspectiva del público</span></div><div class="dimensions"><input id="width" type="number" min="2" max="100" aria-label="Ancho en metros" value="${state.width}"> × <input id="depth" type="number" min="2" max="100" aria-label="Fondo en metros" value="${state.depth}"> m</div></div><div class="stage-wrap"><div class="stage-top">FONDO DEL ESCENARIO</div><div class="stage" id="stage" style="aspect-ratio:${state.width}/${state.depth}">${state.items.map((i) => `<button class="stage-item ${selected === i.id ? "selected" : ""}" data-item="${i.id}" style="left:${i.x}%;top:${i.y}%" aria-label="${esc(i.label)}"><span class="instrument ">${symbolImage(i.type)}</span><span class="item-label">${esc(i.label)}</span></button>`).join("")}<div class="stage-mark">GORDOSTAGE</div></div><div class="audience"><span></span>↓ &nbsp; PÚBLICO &nbsp; ↓<span></span></div></div><div class="canvas-footer"><span>↔ Arrastra para mover · Selecciona para editar</span><span>${state.items.length} elementos <i>·</i> ${state.width} × ${state.depth} m</span></div><div class="item-editor">${selected !== null ? `<label>Nombre <input id="item-name" value="${esc(state.items.find((i) => i.id === selected)?.label || "")}"></label><button class="button danger" id="delete-item">Eliminar elemento</button>` : "<span>✧ Un buen show empieza con un buen plano.</span>"}</div></section></div>
 <section class="channel-section ${tab === "channels" ? "focused" : ""}"><div class="section-heading"><div><div class="section-label">CADA SEÑAL CUENTA</div><h2>Lista de canales <span>${state.channels.length} entradas</span></h2></div><button id="add-channel" class="button">+ Añadir canal</button></div><div class="table-wrap"><table><thead><tr><th>CH</th><th>FUENTE / INSTRUMENTO</th><th>MICRÓFONO / DI</th><th>PIE</th><th>NOTAS</th><th></th></tr></thead><tbody>${state.channels.map((c, n) => `<tr><td><span class="channel-number">${String(n + 1).padStart(2, "0")}</span></td>${["source", "mic", "stand", "notes"].map((k) => `<td><input aria-label="${k} canal ${n + 1}" data-channel="${n}" data-field="${k}" value="${esc(c[k])}" placeholder="—"></td>`).join("")}<td><button class="remove-channel" data-remove="${n}" aria-label="Eliminar canal ${n + 1}">×</button></td></tr>`).join("")}</tbody></table></div></section><section class="notes"><div class="section-label">NOTAS PARA EL EQUIPO TÉCNICO</div><textarea id="notes" aria-label="Notas técnicas" placeholder="Alimentación, monitores, necesidades especiales…">${esc(state.notes)}</textarea></section><footer><span>GordoStage <b>•</b> Menos improvisación. Más música.</span><button id="import" class="text-button">Importar proyecto</button><input type="file" id="import-file" accept="application/json" hidden></footer></main></div>`;
   bind();
-  mountFeatures({ state, selected, save, render, collaboration });
+  mountFeatures({
+    state,
+    selected,
+    save,
+    render,
+    collaboration,
+    deleteItem,
+    clearItemSelection: () => {
+      selected = null;
+    },
+  });
   mountEquipment({ state, selected, save, render });
   collaboration?.decorate();
   mountHome({ api: collaboration, visible: view === "home", showHome });
+  mountPreferences();
+}
+function deleteItem(id = selected) {
+  if (
+    collaboration &&
+    (!collaboration.access().canEdit ||
+      !collaboration.access().connected ||
+      collaboration.access().conflict)
+  )
+    return;
+  const item = state.items.find((i) => i.id === id);
+  if (!item) return;
+  const linked = state.channels.filter((c) => c._link?.itemId === id).length;
+  if (
+    !confirm(
+      `¿Eliminar “${item.label}” del escenario?${linked ? ` También se eliminarán sus ${linked} canales vinculados.` : ""}`,
+    )
+  )
+    return;
+  state.items = state.items.filter((i) => i.id !== id);
+  selected = null;
+  save();
+  render();
 }
 function bind() {
   document.querySelector("#theme-toggle").onclick = () =>
@@ -209,23 +245,7 @@ function bind() {
       save();
     };
   const del = document.querySelector("#delete-item");
-  if (del)
-    del.onclick = () => {
-      const linked = state.channels.filter(
-        (c) => c._link?.itemId === selected,
-      ).length;
-      if (
-        linked &&
-        !confirm(
-          `Se eliminarán el equipo y sus ${linked} canales vinculados. ¿Continuar?`,
-        )
-      )
-        return;
-      state.items = state.items.filter((i) => i.id !== selected);
-      selected = null;
-      save();
-      render();
-    };
+  if (del) del.onclick = () => deleteItem();
   document.querySelectorAll("[data-channel]").forEach(
     (i) =>
       (i.oninput = (e) => {
@@ -247,7 +267,7 @@ function bind() {
     save();
     render();
   };
-  document.querySelector("#print").onclick = () => window.print();
+  document.querySelector("#print").onclick = () => openPdfExport(state);
   document.querySelector("#export").onclick = () => {
     const url = URL.createObjectURL(
       new Blob([exportProject(state)], { type: "application/json" }),
@@ -333,7 +353,19 @@ function filteredSymbols() {
     !query
       ? symbolCategory === "Todos" ||
         (symbolCategory === "Frecuentes"
-          ? COMMON_SYMBOL_IDS.includes(symbol.id)
+          ? (state.symbolStyle === "x32"
+              ? [
+                  "x32_50",
+                  "x32_20",
+                  "x32_17",
+                  "x32_11",
+                  "x32_30",
+                  "x32_63",
+                  "x32_25",
+                  "x32_54",
+                ]
+              : COMMON_SYMBOL_IDS
+            ).includes(symbol.id)
           : symbol.category === symbolCategory)
       : symbolSearchText(symbol).includes(query),
   );
@@ -347,6 +379,13 @@ function symbolButtons() {
     .join("");
 }
 function bindLibrary() {
+  document.querySelector("#symbol-style").onchange = (e) => {
+    state.symbolStyle = e.target.value;
+    symbolCategory = "Frecuentes";
+    symbolQuery = "";
+    save();
+    render();
+  };
   const category = document.querySelector("#symbol-category");
   category.value = symbolCategory;
   const repaint = () => {
@@ -419,7 +458,9 @@ function bindSymbolButtons() {
     (button) =>
       (button.onclick = async () => {
         if (state.items.length >= 500) return alert("Máximo 500 elementos");
-        let symbol = lookupSymbol(button.dataset.add);
+        let symbol =
+          getOriginalSymbol(button.dataset.add) ||
+          lookupSymbol(button.dataset.add);
         if (
           symbol.custom &&
           !state.customAssets.some((a) => a.id === symbol.id)
@@ -473,10 +514,16 @@ function availableSymbols() {
       custom: true,
       src: a.dataUrl,
     });
-  return [...SYMBOLS, ...custom.values()];
+  return [
+    ...(state.symbolStyle === "x32" ? BEHRINGER_SYMBOLS : SYMBOLS),
+    ...custom.values(),
+  ];
 }
 function lookupSymbol(id) {
-  return getSymbol(id) || availableSymbols().find((s) => s.id === id);
+  return (
+    getSymbol(id, state.symbolStyle) ||
+    availableSymbols().find((s) => s.id === id)
+  );
 }
 async function refreshAssets() {
   if (!collaboration) return;

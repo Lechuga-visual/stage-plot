@@ -71,6 +71,14 @@ try {
   );
   assert.equal(symbol.status, 200);
   assert.match(symbol.headers.get("content-type"), /image\/webp/);
+  const consoleIcon = await fetch(base + "/symbols/behringer/30.svg");
+  assert.equal(consoleIcon.status, 200);
+  assert.match(consoleIcon.headers.get("content-type"), /image\/svg\+xml/);
+  assert.ok(existsSync(join(directory, "dist/symbols/behringer/LICENSE")));
+  assert.equal(
+    (await (await fetch(base + "/api/network")).json()).port,
+    Number(new URL(base).port),
+  );
   assert.equal((await fetch(base + "/api/chat")).status, 200);
   assert.equal(
     (await (await fetch(base + "/api/security")).json()).securityEnabled,

@@ -1,7 +1,7 @@
 import { validateImage } from "./assets.js";
-import { reconcileInputs, POWER_OPTIONS } from "./equipment.js";
+import { reconcileInputs, POWER_OPTIONS, inputSides } from "./equipment.js";
 import { getSymbol } from "./symbols.js";
-export const FORMAT_VERSION = 4;
+export const FORMAT_VERSION = 5;
 export const DEFAULT_COLUMNS = [
   { id: "source", label: "Fuente / instrumento" },
   { id: "mic", label: "Micrófono / DI" },
@@ -25,7 +25,9 @@ const validTechnical = (t) =>
       /^in_[a-zA-Z0-9_-]+$/.test(input.id) &&
       text(input.name, 1000) &&
       text(input.microphone, 1000) &&
-      ["mono", "stereo"].includes(input.signal) &&
+      ["mono", "stereo", "custom"].includes(input.signal) &&
+      list(input.channelLabels, 64, (label) => text(label, 1000)) &&
+      (input.signal !== "custom" || input.channelLabels.length > 0) &&
       typeof input.phantom === "boolean" &&
       text(input.stand, 1000) &&
       text(input.notes, 10000),
@@ -39,6 +41,7 @@ export function validProject(s) {
     text(s.band) &&
     text(s.event) &&
     text(s.description, 1000) &&
+    ["generic", "x32"].includes(s.symbolStyle) &&
     text(s.notes) &&
     list(
       s.customAssets,
@@ -127,10 +130,16 @@ export function normalizeProject(input) {
       s.formatVersion !== 1 &&
       s.formatVersion !== 2 &&
       s.formatVersion !== 3 &&
-      s.formatVersion !== 4)
+      s.formatVersion !== 4 &&
+      s.formatVersion !== 5)
   )
     throw Error("Versión de proyecto no compatible");
-  if (s.formatVersion !== 2 && s.formatVersion !== 3 && s.formatVersion !== 4) {
+  if (
+    s.formatVersion !== 2 &&
+    s.formatVersion !== 3 &&
+    s.formatVersion !== 4 &&
+    s.formatVersion !== 5
+  ) {
     s.formatVersion = 2;
     s.columns = structuredClone(DEFAULT_COLUMNS);
     if (!Array.isArray(s.items)) throw Error("Proyecto inválido");
@@ -146,6 +155,10 @@ export function normalizeProject(input) {
   for (const item of s.items || [])
     if (item.technical === undefined)
       item.technical = { power: "none", powerNotes: "", inputs: [] };
+  for (const item of s.items || [])
+    for (const input of item.technical?.inputs || [])
+      input.channelLabels ??= [];
+  s.symbolStyle ??= "generic";
   s.description ??= "";
   s.customAssets ||= [];
   if (Array.isArray(s.drawings))
@@ -185,19 +198,15 @@ function validLink(project, link) {
     !link ||
     !Number.isSafeInteger(link.itemId) ||
     typeof link.inputId !== "string" ||
-    !["M", "L", "R"].includes(link.side)
+    typeof link.side !== "string" ||
+    !/^(M|L|R|C[1-9][0-9]?)$/.test(link.side)
   )
     return false;
   const item = project.items.find((item) => item.id === link.itemId);
   const input = item?.technical?.inputs.find(
     (input) => input.id === link.inputId,
   );
-  return (
-    !!input &&
-    (input.signal === "mono"
-      ? link.side === "M"
-      : ["L", "R"].includes(link.side))
-  );
+  return !!input && inputSides(input).includes(link.side);
 }
 
 function validImage(dataUrl) {

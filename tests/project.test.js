@@ -42,7 +42,7 @@ export function annotated() {
 }
 test("migra archivos anteriores sin modificar el original", () => {
   const s = normalizeProject(legacy);
-  assert.equal(s.formatVersion, 4);
+  assert.equal(s.formatVersion, 5);
   assert.equal(s.items[0].comment, "");
   assert.equal(legacy.formatVersion, undefined);
   assert.equal(s.channels[0].mic, "SM58");

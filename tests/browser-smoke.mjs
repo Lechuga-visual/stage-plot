@@ -55,6 +55,14 @@ try {
   await openDefault(q);
   await q.locator("#chat-form").waitFor({ state: "attached" });
   await reader.goto(base);
+  await reader.locator("#home-security").waitFor();
+  assert.equal(await reader.locator("#home-security").isDisabled(), true);
+  assert.equal(await reader.locator("#home-users").isDisabled(), true);
+  assert.ok(
+    await reader
+      .locator("#home-users")
+      .evaluate((el) => Number(getComputedStyle(el).opacity) < 1),
+  );
   await openDefault(reader, { identify: false });
   await reader.locator("#access-code").waitFor();
   assert.equal(await reader.locator("#chat-text").isDisabled(), true);
@@ -106,7 +114,7 @@ try {
   await p.locator("#export").click();
   const download = await downloadPromise;
   const data = JSON.parse(readFileSync(await download.path(), "utf8"));
-  assert.equal(data.formatVersion, 4);
+  assert.equal(data.formatVersion, 5);
   assert.equal(data.drawings.length, 1);
   assert.equal(data.columns.at(-1).label, "Patch");
   assert.equal(data.channels[0][data.columns.at(-1).id], "A1");
